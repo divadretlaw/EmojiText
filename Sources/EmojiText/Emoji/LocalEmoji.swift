@@ -13,7 +13,7 @@ public struct LocalEmoji: CustomEmoji {
     public let image: UIImage
     
     public func image(font: UIFont) -> UIImage {
-        return image(height: font.capHeight)
+        return image(height: font.capHeight + abs(font.descender))
     }
     
     public func image(height: CGFloat) -> UIImage {
