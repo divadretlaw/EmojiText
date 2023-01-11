@@ -81,8 +81,7 @@ public struct EmojiText: View {
         var markdown = rawMarkdown
         
         for emoji in localEmojis {
-            // Use empty markdown image `![]()` as separator
-            markdown = markdown.replacingOccurrences(of: ":\(emoji.shortcode):", with: "![]()\(emoji.shortcode)![]()")
+            markdown = markdown.replacingOccurrences(of: ":\(emoji.shortcode):", with: "\(String.emojiSeparator)\(emoji.shortcode)\(String.emojiSeparator)")
         }
         
         return markdown
@@ -97,7 +96,7 @@ public struct EmojiText: View {
         
         let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         
-        markdown.split(separator: "![]()", omittingEmptySubsequences: true).forEach { substring in
+        markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
             if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
                 result = result + Text("\(Image(uiImage: image.image(font: font)))")
             } else {
@@ -125,6 +124,12 @@ public struct EmojiText: View {
         } catch {
             return AttributedString(stringLiteral: string)
         }
+    }
+}
+
+extension String {
+    static var emojiSeparator: String {
+        "<custom_emoji/>"
     }
 }
 
