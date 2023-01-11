@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Nuke
+import os
 
 /// Markdown formatted Text with support for custom emojis
 ///
@@ -15,8 +16,12 @@ import Nuke
 /// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
 public struct EmojiText: View {
     @Environment(\.imagePipeline) var imagePipeline
+    @Environment(\.placeholderEmoji) var placeholderEmoji
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    
+    @ScaledMetric
+    var scaleFactor: CGFloat = 1.0
     
     let rawMarkdown: String
     let emojis: [any CustomEmoji]
@@ -24,23 +29,54 @@ public struct EmojiText: View {
     var prepend: (() -> Text)?
     var append: (() -> Text)?
     
-    @State private var localEmojis: [LocalEmoji] = []
+    @State private var localEmojis = Set<LocalEmoji>()
+    
+    var logger = Logger()
     
     public var body: some View {
         rendered
             .task {
-                for emoji in emojis {
-                    switch emoji {
-                    case let remoteEmoji as RemoteEmoji:
-                        guard let response = try? await imagePipeline.image(for: remoteEmoji.url) else { break }
-                        localEmojis.append(LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image))
-                    case let localEmoji as LocalEmoji:
-                        localEmojis.append(localEmoji)
-                    default:
-                        break
-                    }
-                }
+                // Set placeholders
+                self.localEmojis = placeholders()
+                
+                // Load actual emojis
+                self.localEmojis = await loadRemoteEmoji()
             }
+    }
+    
+    func placeholders() -> Set<LocalEmoji> {
+        let placeholders = emojis.compactMap { emoji in
+            switch emoji {
+            case let remoteEmoji as RemoteEmoji:
+                return LocalEmoji.placeholder(for: remoteEmoji.shortcode, image: placeholderEmoji)
+            case let localEmoji as LocalEmoji:
+                return localEmoji
+            default:
+                return nil
+            }
+        }
+        return Set(placeholders)
+    }
+    
+    func loadRemoteEmoji() async -> Set<LocalEmoji> {
+        var loadedEmojis = Set<LocalEmoji>()
+        for emoji in emojis {
+            switch emoji {
+            case let remoteEmoji as RemoteEmoji:
+                do {
+                    let response = try await imagePipeline.image(for: remoteEmoji.url)
+                    loadedEmojis.insert(LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image))
+                } catch {
+                    logger.error("\(error.localizedDescription)")
+                }
+            case let localEmoji as LocalEmoji:
+                loadedEmojis.insert(localEmoji)
+            default:
+                break
+            }
+        }
+        
+        return loadedEmojis
     }
     
     /// Initialize a Markdown formatted Text with support for custom emojis
@@ -98,7 +134,7 @@ public struct EmojiText: View {
         
         markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
             if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
-                result = result + Text("\(Image(uiImage: image.image(font: font)))")
+                result = result + Text("\(Image(uiImage: image.image(font: font, scaleFactor: scaleFactor)))")
             } else {
                 result = result + Text(attributedString(from: substring))
             }
@@ -127,12 +163,6 @@ public struct EmojiText: View {
     }
 }
 
-extension String {
-    static var emojiSeparator: String {
-        "<custom_emoji/>"
-    }
-}
-
 struct EmojiText_Previews: PreviewProvider {
     static var emojis: [any CustomEmoji] {
         [
@@ -140,7 +170,13 @@ struct EmojiText_Previews: PreviewProvider {
             LocalEmoji(shortcode: "iphone", image: UIImage(systemName: "iphone")!)
         ]
     }
+    
     static var previews: some View {
-        EmojiText(markdown: "Hello World :mastodon: :iphone:", emojis: Self.emojis)
+        VStack {
+            EmojiText(markdown: "Hello World :mastodon: :iphone:",
+                      emojis: Self.emojis)
+            EmojiText(markdown: "Hello World :test:",
+                      emojis: [RemoteEmoji(shortcode: "test", url: URL(string: "about:blank")!)])
+        }
     }
 }

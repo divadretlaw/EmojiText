@@ -5,7 +5,7 @@
 //  Created by David Walter on 11.01.23.
 //
 
-import Foundation
+import UIKit
 
 /// A custom remote emoji
 public struct RemoteEmoji: CustomEmoji {

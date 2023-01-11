@@ -5,6 +5,8 @@
 //  Created by David Walter on 11.01.23.
 //
 
+import UIKit
+
 /// A custom emoji
 public protocol CustomEmoji: Equatable, Hashable, Identifiable {
     /// The ID of the emoji

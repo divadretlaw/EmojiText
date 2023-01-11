@@ -12,6 +12,10 @@ struct ImagePipelineKey: EnvironmentKey {
     static var defaultValue: ImagePipeline { .shared }
 }
 
+struct PlaceholderEmojiKey: EnvironmentKey {
+    static var defaultValue: UIImage? { nil }
+}
+
 public extension EnvironmentValues {
     var imagePipeline: ImagePipeline {
         get {
@@ -19,6 +23,15 @@ public extension EnvironmentValues {
         }
         set {
             self[ImagePipelineKey.self] = newValue
+        }
+    }
+    
+    var placeholderEmoji: UIImage? {
+        get {
+            self[PlaceholderEmojiKey.self]
+        }
+        set {
+            self[PlaceholderEmojiKey.self] = newValue
         }
     }
 }
