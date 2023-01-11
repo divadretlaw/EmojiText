@@ -33,6 +33,9 @@ public struct EmojiText: View {
     let rawMarkdown: String
     let emojis: [any CustomEmoji]
     
+    var prepend: (() -> Text)?
+    var append: (() -> Text)?
+    
     @State private var localEmojis: [LocalEmoji] = []
     
     public var body: some View {
@@ -66,6 +69,10 @@ public struct EmojiText: View {
     var rendered: Text {
         var result = Text(verbatim: "")
         
+        if let prepend = self.prepend {
+            result = result + prepend()
+        }
+        
         let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         
         markdown.split(separator: "![]()", omittingEmptySubsequences: true).forEach { substring in
@@ -74,6 +81,10 @@ public struct EmojiText: View {
             } else {
                 result = result + Text(attributedString(from: substring))
             }
+        }
+        
+        if let append = self.append {
+            result = result + append()
         }
         
         return result
@@ -92,6 +103,18 @@ public struct EmojiText: View {
         } catch {
             return AttributedString(stringLiteral: string)
         }
+    }
+    
+    public func prepend(text: () -> Text) -> Self {
+        var view = self
+        view.prepend = prepend
+        return view
+    }
+    
+    public func append(text: () -> Text) -> Self {
+        var view = self
+        view.append = append
+        return view
     }
 }
 
