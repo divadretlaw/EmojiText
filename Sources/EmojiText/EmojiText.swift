@@ -7,14 +7,13 @@
 
 import SwiftUI
 import Nuke
-import HTML2Markdown
 
+/// Markdown formatted Text with support for custom emojis
+///
+/// Custom Emojis are in the format `:emoji:`.
+/// Supports local and remote custom emojis.
+/// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
 public struct EmojiText: View {
-    public init(markdown: String, emojis: [any CustomEmoji]) {
-        self.rawMarkdown = markdown
-        self.emojis = emojis
-    }
-    
     @Environment(\.imagePipeline) var imagePipeline
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -43,6 +42,40 @@ public struct EmojiText: View {
                 }
             }
     }
+    
+    /// Initialize a Markdown formatted Text with support for custom emojis
+    ///
+    /// - Parameters:
+    ///     - markdown: Markdown formatted text to render
+    ///     - emojis: Array of custom emojis to render
+    public init(markdown: String, emojis: [any CustomEmoji]) {
+        self.rawMarkdown = markdown
+        self.emojis = emojis
+    }
+    
+    // MARK: - Modifier
+    
+    /// Prepend `Text` to the `EmojiText`
+    ///
+    /// - Parameter text: Callback generating the text to prepend
+    /// - Returns: ``EmojiText`` with some text prepended
+    public func prepend(text: @escaping () -> Text) -> Self {
+        var view = self
+        view.prepend = text
+        return view
+    }
+    
+    /// Append `Text` to the `EmojiText`
+    ///
+    /// - Parameter text: Callback generating the text to append
+    /// - Returns: ``EmojiText`` with some text appended
+    public func append(text: @escaping () -> Text) -> Self {
+        var view = self
+        view.append = text
+        return view
+    }
+    
+    // MARK: - Helper
     
     var markdown: String {
         var markdown = rawMarkdown
@@ -92,18 +125,6 @@ public struct EmojiText: View {
         } catch {
             return AttributedString(stringLiteral: string)
         }
-    }
-    
-    public func prepend(text: @escaping () -> Text) -> Self {
-        var view = self
-        view.prepend = text
-        return view
-    }
-    
-    public func append(text: @escaping () -> Text) -> Self {
-        var view = self
-        view.append = text
-        return view
     }
 }
 
