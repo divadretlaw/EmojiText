@@ -105,15 +105,15 @@ public struct EmojiText: View {
         }
     }
     
-    public func prepend(text: () -> Text) -> Self {
+    public func prepend(text: @escaping () -> Text) -> Self {
         var view = self
-        view.prepend = prepend
+        view.prepend = text
         return view
     }
     
-    public func append(text: () -> Text) -> Self {
+    public func append(text: @escaping () -> Text) -> Self {
         var view = self
-        view.append = append
+        view.append = text
         return view
     }
 }
