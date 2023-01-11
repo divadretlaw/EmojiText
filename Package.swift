@@ -22,7 +22,6 @@ let package = Package(
         .target(
             name: "EmojiText",
             dependencies: [
-                .product(name: "HTML2Markdown", package: "HTML2Markdown"),
                 .product(name: "Nuke", package: "Nuke")
             ]),
     ]
