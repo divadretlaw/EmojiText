@@ -15,17 +15,6 @@ public struct EmojiText: View {
         self.emojis = emojis
     }
     
-    public init(html: String, emojis: [any CustomEmoji]) {
-        do {
-            self.rawMarkdown = try HTMLParser()
-                .parse(html: html)
-                .toMarkdown(options: .unorderedListBullets)
-        } catch {
-            self.rawMarkdown = html
-        }
-        self.emojis = emojis
-    }
-    
     @Environment(\.imagePipeline) var imagePipeline
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize

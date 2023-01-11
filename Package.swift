@@ -14,7 +14,6 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-         .package(url: "https://gitlab.com/mflint/HTML2Markdown", from: "1.0.0"),
          .package(url: "https://github.com/kean/Nuke", from: "11.5.0")
     ],
     targets: [
