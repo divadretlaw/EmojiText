@@ -28,18 +28,9 @@ public struct LocalEmoji: CustomEmoji {
         return placeholder
     }
     
-    /// Scale emoji using `font`
-    ///
-    /// - Parameter font: The `UIFont` used to scale the emoji
-    public func image(font: UIFont, scaleFactor: CGFloat = 1) -> UIImage {
-        return image(height: (font.capHeight + abs(font.descender)) * scaleFactor)
-    }
-    
-    /// Scale emoji using height
-    ///
-    /// - Parameter height: The height of the emoji
-    public func image(height: CGFloat) -> UIImage {
-        return image.scalePreservingAspectRatio(targetSize: CGSize(width: height, height: height))
+    func resized(targetSize: CGSize) -> Self {
+        let image = image.scalePreservingAspectRatio(targetSize: targetSize)
+        return LocalEmoji(shortcode: shortcode, image: image)
     }
     
     // MARK: Hashable

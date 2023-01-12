@@ -44,13 +44,22 @@ public struct EmojiText: View {
             }
     }
     
+    var targetSize: CGSize {
+        let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
+        let height = (font.capHeight + abs(font.descender)) * scaleFactor
+        return CGSize(width: height, height: height)
+    }
+    
     func placeholders() -> Set<LocalEmoji> {
+        let targetSize = self.targetSize
+        
         let placeholders = emojis.compactMap { emoji in
             switch emoji {
             case let remoteEmoji as RemoteEmoji:
                 return LocalEmoji.placeholder(for: remoteEmoji.shortcode, image: placeholderEmoji)
+                    .resized(targetSize: targetSize)
             case let localEmoji as LocalEmoji:
-                return localEmoji
+                return localEmoji.resized(targetSize: targetSize)
             default:
                 return nil
             }
@@ -59,18 +68,20 @@ public struct EmojiText: View {
     }
     
     func loadRemoteEmoji() async -> Set<LocalEmoji> {
+        let targetSize = self.targetSize
+        
         var loadedEmojis = Set<LocalEmoji>()
         for emoji in emojis {
             switch emoji {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
-                    loadedEmojis.insert(LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image))
+                    loadedEmojis.insert(LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image.scalePreservingAspectRatio(targetSize: targetSize)))
                 } catch {
                     logger.error("\(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
-                loadedEmojis.insert(localEmoji)
+                loadedEmojis.insert(localEmoji.resized(targetSize: targetSize))
             default:
                 break
             }
@@ -130,11 +141,9 @@ public struct EmojiText: View {
             result = result + prepend()
         }
         
-        let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
-        
         markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
             if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
-                result = result + Text("\(Image(uiImage: image.image(font: font, scaleFactor: scaleFactor)))")
+                result = result + Text("\(Image(uiImage: image.image))")
             } else {
                 result = result + Text(attributedString(from: substring))
             }
