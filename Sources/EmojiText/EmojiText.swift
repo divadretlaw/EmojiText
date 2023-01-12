@@ -76,7 +76,8 @@ public struct EmojiText: View {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
-                    loadedEmojis.insert(LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image.scalePreservingAspectRatio(targetSize: targetSize)))
+                    let localEmoji = LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image)
+                    loadedEmojis.insert(localEmoji.resized(targetSize: targetSize))
                 } catch {
                     logger.error("\(error.localizedDescription)")
                 }
