@@ -36,6 +36,8 @@ public struct EmojiText: View {
     public var body: some View {
         rendered
             .task {
+                guard !emojis.isEmpty else { return }
+                
                 // Set placeholders
                 self.localEmojis = placeholders()
                 
@@ -46,49 +48,51 @@ public struct EmojiText: View {
     
     var targetSize: CGSize {
         let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
-        let height = (font.capHeight + abs(font.descender)) * scaleFactor
+        let height = font.capHeight * scaleFactor
         return CGSize(width: height, height: height)
     }
     
     func placeholders() -> Set<LocalEmoji> {
         let targetSize = self.targetSize
         
-        let placeholders = emojis.compactMap { emoji in
-            switch emoji {
-            case let remoteEmoji as RemoteEmoji:
-                return LocalEmoji.placeholder(for: remoteEmoji.shortcode, image: placeholderEmoji)
-                    .resized(targetSize: targetSize)
-            case let localEmoji as LocalEmoji:
-                return localEmoji.resized(targetSize: targetSize)
-            default:
-                return nil
+        let placeholders = emojis
+            .compactMap { emoji in
+                switch emoji {
+                case let remoteEmoji as RemoteEmoji:
+                    return LocalEmoji.placeholder(for: remoteEmoji.shortcode, image: placeholderEmoji)
+                case let localEmoji as LocalEmoji:
+                    return localEmoji
+                default:
+                    return nil
+                }
             }
-        }
+            .map { $0.resized(targetSize: targetSize) }
+        
         return Set(placeholders)
     }
     
     func loadRemoteEmoji() async -> Set<LocalEmoji> {
         let targetSize = self.targetSize
         
-        var loadedEmojis = Set<LocalEmoji>()
+        var loadedEmojis = [LocalEmoji]()
         for emoji in emojis {
             switch emoji {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
                     let localEmoji = LocalEmoji(shortcode: remoteEmoji.shortcode, image: response.image)
-                    loadedEmojis.insert(localEmoji.resized(targetSize: targetSize))
+                    loadedEmojis.append(localEmoji)
                 } catch {
                     logger.error("\(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
-                loadedEmojis.insert(localEmoji.resized(targetSize: targetSize))
+                loadedEmojis.append(localEmoji)
             default:
                 break
             }
         }
         
-        return loadedEmojis
+        return Set(loadedEmojis.map { $0.resized(targetSize: targetSize) })
     }
     
     /// Initialize a Markdown formatted Text with support for custom emojis
@@ -136,17 +140,17 @@ public struct EmojiText: View {
     }
     
     var rendered: Text {
-        var result = Text(verbatim: "")
+        var result = prepend?() ?? Text(verbatim: "")
         
-        if let prepend = self.prepend {
-            result = result + prepend()
-        }
-        
-        markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
-            if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
-                result = result + Text("\(Image(uiImage: image.image))")
-            } else {
-                result = result + Text(attributedString(from: substring))
+        if localEmojis.isEmpty {
+            result = result + Text(attributedString(from: markdown))
+        } else {
+            markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
+                if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
+                    result = result + Text("\(Image(uiImage: image.image))")
+                } else {
+                    result = result + Text(attributedString(from: substring))
+                }
             }
         }
         
@@ -160,7 +164,7 @@ public struct EmojiText: View {
     func attributedString(from substring: Substring) -> AttributedString {
         return attributedString(from: String(substring))
     }
-        
+    
     func attributedString(from string: String) -> AttributedString {
         do {
             // Add space between hashtags and mentions that follow each other
@@ -182,11 +186,26 @@ struct EmojiText_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        VStack {
-            EmojiText(markdown: "Hello World :mastodon: :iphone:",
+        List {
+            EmojiText(markdown: "Hello World :mastodon: with only a remote emoji",
                       emojis: Self.emojis)
-            EmojiText(markdown: "Hello World :test:",
+            EmojiText(markdown: "Hello World :mastodon: with only a remote emoji and a fake emoji :test:",
+                      emojis: Self.emojis)
+            EmojiText(markdown: "Hello World :mastodon: :iphone: with a remote and a local emoji",
+                      emojis: Self.emojis)
+            EmojiText(markdown: "Hello World :test: with a remote emoji that will not respond properly",
                       emojis: [RemoteEmoji(shortcode: "test", url: URL(string: "about:blank")!)])
+            EmojiText(markdown: "Hello World :notAnEmoji: with no emojis",
+                      emojis: [])
+            
+            EmojiText(markdown: "Hello World :mastodon:",
+                      emojis: Self.emojis)
+            .prepend {
+                Text("Prepended - ")
+            }
+            .append {
+                Text(" - Appended")
+            }
         }
     }
 }
