@@ -23,7 +23,8 @@ public struct EmojiText: View {
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
     
-    let rawMarkdown: String
+    let raw: String
+    let isMarkdown: Bool
     let emojis: [any CustomEmoji]
     
     var prepend: (() -> Text)?
@@ -101,7 +102,19 @@ public struct EmojiText: View {
     ///     - markdown: Markdown formatted text to render
     ///     - emojis: Array of custom emojis to render
     public init(markdown: String, emojis: [any CustomEmoji]) {
-        self.rawMarkdown = markdown
+        self.raw = markdown
+        self.isMarkdown = true
+        self.emojis = emojis
+    }
+    
+    /// Initialize a ``EmojiText`` with support for custom emojis
+    ///
+    /// - Parameters:
+    ///     - verbatim: A string to display without localization.
+    ///     - emojis: Array of custom emojis to render
+    public init(verbatim: String, emojis: [any CustomEmoji]) {
+        self.raw = verbatim
+        self.isMarkdown = false
         self.emojis = emojis
     }
     
@@ -129,27 +142,33 @@ public struct EmojiText: View {
     
     // MARK: - Helper
     
-    var markdown: String {
-        var markdown = rawMarkdown
+    var preRendered: String {
+        var text = raw
         
         for emoji in localEmojis {
-            markdown = markdown.replacingOccurrences(of: ":\(emoji.shortcode):", with: "\(String.emojiSeparator)\(emoji.shortcode)\(String.emojiSeparator)")
+            text = text.replacingOccurrences(of: ":\(emoji.shortcode):", with: "\(String.emojiSeparator)\(emoji.shortcode)\(String.emojiSeparator)")
         }
         
-        return markdown
+        return text
     }
     
     var rendered: Text {
         var result = prepend?() ?? Text(verbatim: "")
         
         if localEmojis.isEmpty {
-            result = result + Text(attributedString(from: markdown))
+            if isMarkdown {
+                result = result + Text(attributedString(from: preRendered))
+            } else {
+                result = result + Text(verbatim: preRendered)
+            }
         } else {
-            markdown.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
+            preRendered.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
                 if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
                     result = result + Text("\(Image(uiImage: image.image))")
-                } else {
+                } else if isMarkdown {
                     result = result + Text(attributedString(from: substring))
+                } else {
+                    result = result + Text(verbatim: String(substring))
                 }
             }
         }
@@ -167,7 +186,6 @@ public struct EmojiText: View {
     
     func attributedString(from string: String) -> AttributedString {
         do {
-            // Add space between hashtags and mentions that follow each other
             let options = AttributedString.MarkdownParsingOptions(allowsExtendedAttributes: true,
                                                                   interpretedSyntax: .inlineOnlyPreservingWhitespace)
             return try AttributedString(markdown: string, options: options)
@@ -187,24 +205,38 @@ struct EmojiText_Previews: PreviewProvider {
     
     static var previews: some View {
         List {
-            EmojiText(markdown: "Hello World :mastodon: with only a remote emoji",
-                      emojis: Self.emojis)
-            EmojiText(markdown: "Hello World :mastodon: with only a remote emoji and a fake emoji :test:",
-                      emojis: Self.emojis)
-            EmojiText(markdown: "Hello World :mastodon: :iphone: with a remote and a local emoji",
-                      emojis: Self.emojis)
-            EmojiText(markdown: "Hello World :test: with a remote emoji that will not respond properly",
-                      emojis: [RemoteEmoji(shortcode: "test", url: URL(string: "about:blank")!)])
-            EmojiText(markdown: "Hello World :notAnEmoji: with no emojis",
-                      emojis: [])
-            
-            EmojiText(markdown: "Hello World :mastodon:",
-                      emojis: Self.emojis)
-            .prepend {
-                Text("Prepended - ")
+            Section {
+                EmojiText(verbatim: "Hello World :mastodon: with only a remote emoji",
+                          emojis: emojis)
+                EmojiText(verbatim: "Hello World :mastodon: with only a remote emoji",
+                          emojis: emojis)
+                .font(.title)
+            } header: {
+                Text("Text")
             }
-            .append {
-                Text(" - Appended")
+            
+            Section {
+                EmojiText(markdown: "**Hello** *World* :mastodon: with only a remote emoji",
+                          emojis: emojis)
+                EmojiText(markdown: "**Hello** *World* :mastodon: with only a remote emoji and a fake emoji :test:",
+                          emojis: emojis)
+                EmojiText(markdown: "**Hello** *World* :mastodon: :iphone: with a remote and a local emoji",
+                          emojis: emojis)
+                EmojiText(markdown: "**Hello** *World* :test: with a remote emoji that will not respond properly",
+                          emojis: [RemoteEmoji(shortcode: "test", url: URL(string: "about:blank")!)])
+                EmojiText(markdown: "**Hello** *World* :notAnEmoji: with no emojis",
+                          emojis: [])
+                
+                EmojiText(markdown: "**Hello** *World* :mastodon:",
+                          emojis: emojis)
+                .prepend {
+                    Text("Prepended - ")
+                }
+                .append {
+                    Text(" - Appended")
+                }
+            } header: {
+                Text("Markdown")
             }
         }
     }

@@ -7,15 +7,24 @@ Render Custom Emoji in `Text`. Supports local and remote emojis. Remote emojis a
 Remote emoji
 
 ```swift
-EmojiText(markdown: "Hello World :my_emoji:",
+EmojiText(verbatim: "Hello World :my_emoji:",
           emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
 ```
 
 Local emoji
 
 ```swift
-EmojiText(markdown: "Hello World :my_emoji:",
+EmojiText(verbatim: "Hello World :my_emoji:",
           emojis: [LocalEmoji(shortcode: "my_emoji", image: /* some UIImage */)])
+```
+
+### Markdown
+
+Also supports Markdown
+
+```swift
+EmojiText(markdown: "**Hello** *World* :my_emoji:",
+          emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
 ```
 
 ## Configuration
