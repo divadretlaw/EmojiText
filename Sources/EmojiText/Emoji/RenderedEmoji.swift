@@ -10,7 +10,7 @@ import SwiftUI
 
 /// A rendered custom emoji
 struct RenderedEmoji: Equatable, Hashable, Identifiable {
-    let shortcode: String
+    private let shortcode: String
     let renderingMode: Image.TemplateRenderingMode?
     let symbolRenderingMode: SymbolRenderingMode?
     
@@ -49,9 +49,9 @@ struct RenderedEmoji: Equatable, Hashable, Identifiable {
         self.isPlaceholder = false
     }
     
-    init(placeholder shortcode: String, emoji: any CustomEmoji, targetSize: CGSize) {
+    init(placeholder emoji: any CustomEmoji, targetSize: CGSize) {
         self.isPlaceholder = true
-        self.shortcode = shortcode
+        self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
         self.symbolRenderingMode = emoji.symbolRenderingMode
         

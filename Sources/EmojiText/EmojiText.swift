@@ -30,7 +30,7 @@ public struct EmojiText: View {
     var prepend: (() -> Text)?
     var append: (() -> Text)?
     
-    @State private var renderedEmojis = Set<RenderedEmoji>()
+    @State private var renderedEmojis = [String: RenderedEmoji]()
     
     let logger = Logger()
     
@@ -53,50 +53,51 @@ public struct EmojiText: View {
         return CGSize(width: height, height: height)
     }
     
-    func loadPlaceholders() -> Set<RenderedEmoji> {
+    func loadPlaceholders() -> [String: RenderedEmoji] {
         let targetSize = self.targetSize
         
-        let placeholders = emojis
-            .compactMap { emoji in
-                switch emoji {
-                case let remoteEmoji as RemoteEmoji:
-                    return RenderedEmoji(placeholder: remoteEmoji.shortcode, emoji: placeholderEmoji, targetSize: targetSize)
-                case let localEmoji as LocalEmoji:
-                    return RenderedEmoji(from: localEmoji, targetSize: targetSize)
-                case let sfSymbolEmoji as SFSymbolEmoji:
-                    return RenderedEmoji(from: sfSymbolEmoji)
-                default:
-                    return nil
-                }
-            }
+        var placeholders = [String: RenderedEmoji]()
         
-        return Set(placeholders)
+        for emoji in emojis {
+            switch emoji {
+            case let localEmoji as LocalEmoji:
+                placeholders[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize)
+            case let sfSymbolEmoji as SFSymbolEmoji:
+                placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+            default:
+                placeholders[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetSize: targetSize)
+            }
+        }
+        
+        return placeholders
     }
     
-    func loadEmojis() async -> Set<RenderedEmoji> {
+    func loadEmojis() async -> [String: RenderedEmoji] {
         let targetSize = self.targetSize
         
-        var renderedEmojis = [RenderedEmoji]()
+        var renderedEmojis = [String: RenderedEmoji]()
+        
         for emoji in emojis {
             switch emoji {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
-                    let emoji = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize)
-                    renderedEmojis.append(emoji)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize)
                 } catch {
                     logger.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
-                renderedEmojis.append(RenderedEmoji(from: localEmoji, targetSize: targetSize))
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize)
             case let sfSymbolEmoji as SFSymbolEmoji:
-                renderedEmojis.append(RenderedEmoji(from: sfSymbolEmoji))
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
-                break
+                // Fallback to placeholder emoji
+                logger.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetSize: targetSize)
             }
         }
         
-        return Set(renderedEmojis)
+        return renderedEmojis
     }
     
     /// Initialize a Markdown formatted Text with support for custom emojis
@@ -148,8 +149,8 @@ public struct EmojiText: View {
     var preRendered: String {
         var text = raw
         
-        for emoji in renderedEmojis {
-            text = text.replacingOccurrences(of: ":\(emoji.shortcode):", with: "\(String.emojiSeparator)\(emoji.shortcode)\(String.emojiSeparator)")
+        for shortcode in renderedEmojis.keys {
+            text = text.replacingOccurrences(of: ":\(shortcode):", with: "\(String.emojiSeparator)\(shortcode)\(String.emojiSeparator)")
         }
         
         return text
@@ -175,7 +176,7 @@ public struct EmojiText: View {
                     .components(separatedBy: String.emojiSeparator)
             }
             splits.forEach { substring in
-                if let image = renderedEmojis.first(where: { $0.shortcode == substring }) {
+                if let image = renderedEmojis[substring] {
                     result = result + Text("\(image.image)")
                 } else if isMarkdown {
                     result = result + Text(attributedString(from: substring))
@@ -222,6 +223,8 @@ struct EmojiText_Previews: PreviewProvider {
                 EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
                           emojis: emojis)
                 .font(.title)
+                EmojiText(verbatim: "Large Image as Emoji :large:",
+                          emojis: [RemoteEmoji(shortcode: "large", url: URL(string: "https://sample-videos.com/img/Sample-jpg-image-15mb.jpeg")!)])
             } header: {
                 Text("Text")
             }
@@ -250,5 +253,9 @@ struct EmojiText_Previews: PreviewProvider {
                 Text("Markdown")
             }
         }
+        .environment(\.emojiImagePipeline, ImagePipeline { configuration in
+            configuration.imageCache = nil
+            configuration.dataCache = nil
+        })
     }
 }
