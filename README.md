@@ -35,13 +35,19 @@ EmojiText(markdown: "**Hello** *World* :my_emoji:",
 Remote emojis are replaced by a placeholder image. Default is the SF Symbol `square.dashed` but you can provide a placeholder image with
 
 ```swift
-.environment(\.placeholderEmoji, /* some UIImage or NSImage */)
+.placeholderEmoji(systemName: /* SF Symbol */)
 ```
 
-Remote emojis use `ImagePipeline.shared` from [Nuke](https://github.com/kean/Nuke) but you can provide a custom pipline with
+or
 
 ```swift
-.environment(\.imagePipeline, ImagePipeline())
+.placeholderEmoji(image: /* some UIImage or NSImage */)
+```
+
+Remote emojis use `ImagePipeline.shared` from [Nuke](https://github.com/kean/Nuke) to load them, but you can provide a custom pipeline with
+
+```swift
+.environment(\.emojiImagePipeline, ImagePipeline())
 ```
 
 ## License

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CoreGraphics
+import SwiftUI
 
 /// A local custom emoji
 public struct LocalEmoji: CustomEmoji {
@@ -14,23 +14,19 @@ public struct LocalEmoji: CustomEmoji {
     public let shortcode: String
     /// The image representing the emoji
     public let image: EmojiImage
+    /// The mode SwiftUI uses to render this emoji
+    public let renderingMode: Image.TemplateRenderingMode?
     
-    var isPlaceholder = false
-    
-    public init(shortcode: String, image: EmojiImage) {
+    /// Initialize a local emoji
+    ///
+    /// - Parameters:
+    ///     - shortcode: The shortcode of the emoji
+    ///     - image: The image containing the emoji
+    ///     - renderingMode: The mode SwiftUI uses to render this emoji
+    public init(shortcode: String, image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil) {
         self.shortcode = shortcode
         self.image = image
-    }
-    
-    static func placeholder(for shortcode: String, image: EmojiImage? = nil) -> Self {
-        var placeholder = LocalEmoji(shortcode: shortcode, image: image ?? EmojiImage(systemName: "square.dashed") ?? EmojiImage())
-        placeholder.isPlaceholder = true
-        return placeholder
-    }
-    
-    func resized(targetSize: CGSize) -> Self {
-        let image = image.scalePreservingAspectRatio(targetSize: targetSize)
-        return LocalEmoji(shortcode: shortcode, image: image)
+        self.renderingMode = renderingMode
     }
     
     // MARK: Hashable
@@ -38,13 +34,12 @@ public struct LocalEmoji: CustomEmoji {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
         hasher.combine(image)
-        hasher.combine(isPlaceholder)
     }
     
     // MARK: Equatable
     
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        guard lhs.shortcode == rhs.shortcode, lhs.isPlaceholder == rhs.isPlaceholder else { return false }
+        guard lhs.shortcode == rhs.shortcode else { return false }
         return lhs.image == rhs.image
     }
 }

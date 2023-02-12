@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// A custom emoji
 public protocol CustomEmoji: Equatable, Hashable, Identifiable {
@@ -13,10 +14,16 @@ public protocol CustomEmoji: Equatable, Hashable, Identifiable {
     var id: String { get }
     /// Shortcode of the emoji
     var shortcode: String { get }
+    /// The mode SwiftUI uses to render this emoji
+    var renderingMode: Image.TemplateRenderingMode? { get }
+    /// The symbol rendering mode to use for this emoji
+    var symbolRenderingMode: SymbolRenderingMode? { get }
 }
 
 public extension CustomEmoji {
     var id: String { shortcode }
+    var renderingMode: Image.TemplateRenderingMode? { nil }
+    var symbolRenderingMode: SymbolRenderingMode? { nil }
     
     // MARK: Hashable
     
@@ -27,6 +34,6 @@ public extension CustomEmoji {
     // MARK: Equatable
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.shortcode == rhs.shortcode
+        lhs.id == rhs.id
     }
 }
