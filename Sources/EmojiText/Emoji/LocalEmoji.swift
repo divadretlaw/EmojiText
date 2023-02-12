@@ -6,24 +6,24 @@
 //
 
 import Foundation
-import UIKit
+import CoreGraphics
 
 /// A local custom emoji
 public struct LocalEmoji: CustomEmoji {
     /// Shortcode of the emoji
     public let shortcode: String
     /// The image representing the emoji
-    public let image: UIImage
+    public let image: EmojiImage
     
     var isPlaceholder = false
     
-    public init(shortcode: String, image: UIImage) {
+    public init(shortcode: String, image: EmojiImage) {
         self.shortcode = shortcode
         self.image = image
     }
     
-    static func placeholder(for shortcode: String, image: UIImage? = nil) -> Self {
-        var placeholder = LocalEmoji(shortcode: shortcode, image: image ?? UIImage(systemName: "square.dashed") ?? UIImage())
+    static func placeholder(for shortcode: String, image: EmojiImage? = nil) -> Self {
+        var placeholder = LocalEmoji(shortcode: shortcode, image: image ?? EmojiImage(systemName: "square.dashed") ?? EmojiImage())
         placeholder.isPlaceholder = true
         return placeholder
     }

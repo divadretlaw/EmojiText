@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
 
 extension UIContentSizeCategory {
@@ -40,3 +41,4 @@ extension UIContentSizeCategory {
         }
     }
 }
+#endif

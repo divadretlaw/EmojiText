@@ -48,7 +48,7 @@ public struct EmojiText: View {
     }
     
     var targetSize: CGSize {
-        let font = UIFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
+        let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         let height = font.capHeight * scaleFactor
         return CGSize(width: height, height: height)
     }
@@ -163,7 +163,7 @@ public struct EmojiText: View {
             }
         } else {
             let splits: [String]
-            if #available(iOS 16, *) {
+            if #available(iOS 16, macOS 13, *) {
                 splits = preRendered
                     .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
                     .map { String($0) }
@@ -173,7 +173,7 @@ public struct EmojiText: View {
             }
             splits.forEach { substring in
                 if let image = localEmojis.first(where: { $0.shortcode == substring }) {
-                    result = result + Text("\(Image(uiImage: image.image))")
+                    result = result + Text("\(Image(emojiImage: image.image))")
                 } else if isMarkdown {
                     result = result + Text(attributedString(from: substring))
                 } else {
@@ -204,7 +204,7 @@ struct EmojiText_Previews: PreviewProvider {
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
-            LocalEmoji(shortcode: "iphone", image: UIImage(systemName: "iphone")!)
+            LocalEmoji(shortcode: "iphone", image: EmojiImage(systemName: "iphone")!)
         ]
     }
     

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 /// A custom remote emoji
 public struct RemoteEmoji: CustomEmoji {

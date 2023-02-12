@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 /// A custom emoji
 public protocol CustomEmoji: Equatable, Hashable, Identifiable {
