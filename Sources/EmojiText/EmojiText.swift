@@ -162,8 +162,17 @@ public struct EmojiText: View {
                 result = result + Text(verbatim: preRendered)
             }
         } else {
-            preRendered.split(separator: String.emojiSeparator, omittingEmptySubsequences: true).forEach { substring in
-                if let image = localEmojis.first(where: { $0.shortcode == String(substring) }) {
+            let splits: [String]
+            if #available(iOS 16, *) {
+                splits = preRendered
+                    .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
+                    .map { String($0) }
+            } else {
+                splits = preRendered
+                    .components(separatedBy: String.emojiSeparator)
+            }
+            splits.forEach { substring in
+                if let image = localEmojis.first(where: { $0.shortcode == substring }) {
                     result = result + Text("\(Image(uiImage: image.image))")
                 } else if isMarkdown {
                     result = result + Text(attributedString(from: substring))
@@ -178,10 +187,6 @@ public struct EmojiText: View {
         }
         
         return result
-    }
-    
-    func attributedString(from substring: Substring) -> AttributedString {
-        return attributedString(from: String(substring))
     }
     
     func attributedString(from string: String) -> AttributedString {
