@@ -9,7 +9,7 @@ import SwiftUI
 
 extension Image {
     init(emojiImage: EmojiImage) {
-        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
         self.init(uiImage: emojiImage)
         #else
         self.init(nsImage: emojiImage)
@@ -17,7 +17,7 @@ extension Image {
     }
 }
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
 import UIKit
 
 extension UIImage {
@@ -34,6 +34,18 @@ extension UIImage {
             height: size.height * scaleFactor
         )
         
+        #if os(watchOS)
+        UIGraphicsBeginImageContextWithOptions(scaledImageSize, false, scale)
+        defer { UIGraphicsEndImageContext() }
+        
+        // Draw and return the resized UIImage
+        self.draw(in: CGRect(
+            origin: .zero,
+            size: scaledImageSize
+        ))
+
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
+        #else
         // Draw and return the resized UIImage
         let renderer = UIGraphicsImageRenderer(
             size: scaledImageSize
@@ -47,6 +59,7 @@ extension UIImage {
         }
         
         return scaledImage
+        #endif
     }
 }
 #endif

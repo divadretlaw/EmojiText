@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-#if canImport(UIKit)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
 import UIKit
 
 extension UIContentSizeCategory {
