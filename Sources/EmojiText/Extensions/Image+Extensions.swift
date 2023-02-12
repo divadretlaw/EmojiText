@@ -9,7 +9,7 @@ import SwiftUI
 
 extension Image {
     init(emojiImage: EmojiImage) {
-        #if os(iOS) || targetEnvironment(macCatalyst)
+        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
         self.init(uiImage: emojiImage)
         #else
         self.init(nsImage: emojiImage)
@@ -17,7 +17,7 @@ extension Image {
     }
 }
 
-#if os(iOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
 import UIKit
 
 extension UIImage {

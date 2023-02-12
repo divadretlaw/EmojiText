@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if os(iOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
 import UIKit
 
 public typealias EmojiImage = UIImage

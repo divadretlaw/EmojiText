@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if os(iOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
 import UIKit
 
 extension UIFont {
@@ -18,7 +18,11 @@ extension UIFont {
         
         switch font {
         case .largeTitle:
+            #if os(tvOS)
+            return UIFont.preferredFont(forTextStyle: .title1, compatibleWith: traitCollection)
+            #else
             return UIFont.preferredFont(forTextStyle: .largeTitle, compatibleWith: traitCollection)
+            #endif
         case .title:
             return UIFont.preferredFont(forTextStyle: .title1, compatibleWith: traitCollection)
         case .title2:
