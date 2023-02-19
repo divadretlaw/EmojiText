@@ -16,6 +16,16 @@ final class TestTests: XCTestCase {
         isRecording = false
     }
     
+    func test_Empty() async throws {
+        let view = EmojiText(verbatim: "", emojis: [])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
+    func test_No_Emoji() async throws {
+        let view = EmojiText(verbatim: "Hello World", emojis: [])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
     func test_Mastodon() async throws {
         let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
