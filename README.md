@@ -3,7 +3,7 @@
 ![](https://img.shields.io/badge/Swift-5.7-orange?style=flat-square)
 ![](https://img.shields.io/badge/Platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey?style=flat-square)
 
-Render Custom Emoji in `Text`. Supports local and remote emojis. Remote emojis are loadad and cached using [Nuke](https://github.com/kean/Nuke)
+Render Custom Emoji in `Text`. Supports local and remote emojis. Remote emojis are loaded and cached using [Nuke](https://github.com/kean/Nuke)
 
 ## Usage
 

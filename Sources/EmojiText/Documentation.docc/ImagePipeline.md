@@ -1,6 +1,6 @@
 # Nuke
 
-``EmojiText`` resolves remote emojis uses `Nuke` and defaults to `ImagePipeline.shared` for the `ImagePipeline`
+``EmojiText`` resolves remote emojis using `Nuke` and defaults to `ImagePipeline.shared` for the `ImagePipeline`
 
 ## Overview
 
