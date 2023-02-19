@@ -30,6 +30,7 @@ public struct EmojiText: View {
     var prepend: (() -> Text)?
     var append: (() -> Text)?
     
+    @State private var preRendered: String?
     @State private var renderedEmojis = [String: RenderedEmoji]()
     
     let logger = Logger()
@@ -44,6 +45,9 @@ public struct EmojiText: View {
                 
                 // Load actual emojis
                 self.renderedEmojis = await loadEmojis()
+            }
+            .onChange(of: renderedEmojis) { emojis in
+                self.preRendered = preRender(with: emojis)
             }
     }
     
@@ -146,10 +150,10 @@ public struct EmojiText: View {
     
     // MARK: - Helper
     
-    var preRendered: String {
+    func preRender(with emojis: [String: RenderedEmoji]) -> String {
         var text = raw
         
-        for shortcode in renderedEmojis.keys {
+        for shortcode in emojis.keys {
             text = text.replacingOccurrences(of: ":\(shortcode):", with: "\(String.emojiSeparator)\(shortcode)\(String.emojiSeparator)")
         }
         
@@ -158,6 +162,8 @@ public struct EmojiText: View {
     
     var rendered: Text {
         var result = prepend?() ?? Text(verbatim: "")
+        
+        let preRendered = self.preRendered ?? raw
         
         if renderedEmojis.isEmpty {
             if isMarkdown {
@@ -181,7 +187,7 @@ public struct EmojiText: View {
                 } else if isMarkdown {
                     result = result + Text(attributedString(from: substring))
                 } else {
-                    result = result + Text(verbatim: String(substring))
+                    result = result + Text(verbatim: substring)
                 }
             }
         }
