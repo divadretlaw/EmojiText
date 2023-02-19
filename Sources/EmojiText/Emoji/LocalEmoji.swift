@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-/// A local custom emoji
+/// A custom local emoji
 public struct LocalEmoji: CustomEmoji {
     /// Shortcode of the emoji
     public let shortcode: String

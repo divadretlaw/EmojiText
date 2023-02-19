@@ -10,15 +10,22 @@ Render Custom Emoji in `Text`. Supports local and remote emojis. Remote emojis a
 Remote emoji
 
 ```swift
-EmojiText(verbatim: "Hello World :my_emoji:",
+EmojiText(verbatim: "Hello :my_emoji:",
           emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
 ```
 
 Local emoji
 
 ```swift
-EmojiText(verbatim: "Hello World :my_emoji:",
+EmojiText(verbatim: "Hello :my_emoji:",
           emojis: [LocalEmoji(shortcode: "my_emoji", image: /* some UIImage or NSImage */)])
+```
+
+SF Symbol
+
+```swift
+EmojiText(verbatim: "Hello Moon & Starts :moon.stars:",
+          emojis: [SFSymbolEmoji(shortcode: "moon.stars")])
 ```
 
 ### Markdown
@@ -32,7 +39,7 @@ EmojiText(markdown: "**Hello** *World* :my_emoji:",
 
 ## Configuration
 
-Remote emojis are replaced by a placeholder image. Default is the SF Symbol `square.dashed` but you can provide a placeholder image with
+Remote emojis are replaced by a placeholder image when loading. Default is the SF Symbol `square.dashed` but you can overide the placeholder image with
 
 ```swift
 .placeholderEmoji(systemName: /* SF Symbol */)

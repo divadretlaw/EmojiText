@@ -7,9 +7,10 @@
 
 import Foundation
 import SwiftUI
+import OSLog
 
 /// A rendered custom emoji
-struct RenderedEmoji: Equatable, Hashable, Identifiable {
+struct RenderedEmoji: Hashable, Equatable, Identifiable {
     private let shortcode: String
     let renderingMode: Image.TemplateRenderingMode?
     let symbolRenderingMode: SymbolRenderingMode?
@@ -61,7 +62,8 @@ struct RenderedEmoji: Equatable, Hashable, Identifiable {
         case let sfSymbolEmoji as SFSymbolEmoji:
             self._image = Image(systemName: sfSymbolEmoji.shortcode)
         default:
-            fatalError("Unsupported CustomEmoji was used as placeholder. Only LocalEmoji and SFSymbolEmoji are supported")
+            self._image = Image(systemName: SFSymbolEmoji.placeholder.shortcode)
+            Logger.emojiText.error("Unsupported CustomEmoji was used as placeholder. Only LocalEmoji and SFSymbolEmoji are supported. This is a bug. Please file a report at https://github.com/divadretlaw/EmojiText")
         }
     }
     

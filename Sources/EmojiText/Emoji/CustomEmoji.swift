@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// A custom emoji
-public protocol CustomEmoji: Equatable, Hashable, Identifiable {
+public protocol CustomEmoji: Hashable, Equatable, Identifiable {
     /// The ID of the emoji
     var id: String { get }
     /// Shortcode of the emoji
@@ -20,8 +20,8 @@ public protocol CustomEmoji: Equatable, Hashable, Identifiable {
     var symbolRenderingMode: SymbolRenderingMode? { get }
 }
 
+// Default Implementations
 public extension CustomEmoji {
-    var id: String { shortcode }
     var renderingMode: Image.TemplateRenderingMode? { nil }
     var symbolRenderingMode: SymbolRenderingMode? { nil }
     
@@ -36,4 +36,8 @@ public extension CustomEmoji {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+    
+    // MARK: Identifiable
+    
+    var id: String { shortcode }
 }

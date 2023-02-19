@@ -9,7 +9,7 @@ import SwiftUI
 import Nuke
 import os
 
-/// Markdown formatted Text with support for custom emojis
+/// Text with support for custom emojis
 ///
 /// Custom Emojis are in the format `:emoji:`.
 /// Supports local and remote custom emojis.
@@ -19,6 +19,7 @@ public struct EmojiText: View {
     @Environment(\.placeholderEmoji) var placeholderEmoji
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.emojiSize) var emojiSize
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -32,8 +33,6 @@ public struct EmojiText: View {
     
     @State private var preRendered: String?
     @State private var renderedEmojis = [String: RenderedEmoji]()
-    
-    let logger = Logger()
     
     public var body: some View {
         rendered
@@ -51,11 +50,7 @@ public struct EmojiText: View {
             }
     }
     
-    var targetSize: CGSize {
-        let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
-        let height = font.capHeight * scaleFactor
-        return CGSize(width: height, height: height)
-    }
+    // MARK: - Load Emojis
     
     func loadPlaceholders() -> [String: RenderedEmoji] {
         let targetSize = self.targetSize
@@ -88,7 +83,7 @@ public struct EmojiText: View {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize)
                 } catch {
-                    logger.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
+                    Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize)
@@ -96,13 +91,15 @@ public struct EmojiText: View {
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
                 // Fallback to placeholder emoji
-                logger.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
+                Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetSize: targetSize)
             }
         }
         
         return renderedEmojis
     }
+    
+    // MARK: - Initializers
     
     /// Initialize a Markdown formatted Text with support for custom emojis
     ///
@@ -150,6 +147,16 @@ public struct EmojiText: View {
     
     // MARK: - Helper
     
+    var targetSize: CGSize {
+        if let emojiSize = emojiSize {
+            return CGSize(width: emojiSize, height: emojiSize)
+        } else {
+            let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
+            let height = font.capHeight * scaleFactor
+            return CGSize(width: height, height: height)
+        }
+    }
+    
     func preRender(with emojis: [String: RenderedEmoji]) -> String {
         var text = raw
         
@@ -167,7 +174,7 @@ public struct EmojiText: View {
         
         if renderedEmojis.isEmpty {
             if isMarkdown {
-                result = result + Text(attributedString(from: preRendered))
+                result = result + Text(markdown: preRendered)
             } else {
                 result = result + Text(verbatim: preRendered)
             }
@@ -185,7 +192,7 @@ public struct EmojiText: View {
                 if let image = renderedEmojis[substring] {
                     result = result + Text("\(image.image)")
                 } else if isMarkdown {
-                    result = result + Text(attributedString(from: substring))
+                    result = result + Text(markdown: substring)
                 } else {
                     result = result + Text(verbatim: substring)
                 }
@@ -197,17 +204,6 @@ public struct EmojiText: View {
         }
         
         return result
-    }
-    
-    func attributedString(from string: String) -> AttributedString {
-        do {
-            let options = AttributedString.MarkdownParsingOptions(allowsExtendedAttributes: true,
-                                                                  interpretedSyntax: .inlineOnlyPreservingWhitespace)
-            return try AttributedString(markdown: string, options: options)
-        } catch {
-            logger.error("Unable to parse Markdown, falling back to raw string: \(error.localizedDescription)")
-            return AttributedString(stringLiteral: string)
-        }
     }
 }
 
@@ -222,6 +218,8 @@ struct EmojiText_Previews: PreviewProvider {
     static var previews: some View {
         List {
             Section {
+                EmojiText(verbatim: "Hello Moon & Starts :moon.stars:",
+                          emojis: [SFSymbolEmoji(shortcode: "moon.stars")])
                 EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
                           emojis: emojis)
                 EmojiText(verbatim: "Hello World :iphone: with a local emoji",
@@ -231,6 +229,9 @@ struct EmojiText_Previews: PreviewProvider {
                 .font(.title)
                 EmojiText(verbatim: "Large Image as Emoji :large:",
                           emojis: [RemoteEmoji(shortcode: "large", url: URL(string: "https://sample-videos.com/img/Sample-jpg-image-15mb.jpeg")!)])
+                EmojiText(verbatim: "Hello World :mastodon: with a custom emoji size",
+                          emojis: emojis)
+                .emojiSize(34)
             } header: {
                 Text("Text")
             }
