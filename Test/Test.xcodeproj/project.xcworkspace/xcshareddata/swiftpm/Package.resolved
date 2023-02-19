@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "graphicsrenderer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shaps80/GraphicsRenderer",
+      "state" : {
+        "revision" : "fa9b28096ea13eb59333a02d616244482ad6039f",
+        "version" : "1.4.4"
+      }
+    },
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke",
+      "state" : {
+        "revision" : "67bd45931180f652159e3342575277a7f197b3ab",
+        "version" : "11.6.2"
+      }
+    },
+    {
+      "identity" : "swift-snapshot-testing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
+      "state" : {
+        "branch" : "async",
+        "revision" : "28c1ed939b86e878f09b8b2203f5e4da91fb738d"
+      }
+    }
+  ],
+  "version" : 2
+}
