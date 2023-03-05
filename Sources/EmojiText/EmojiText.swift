@@ -36,7 +36,7 @@ public struct EmojiText: View {
     
     public var body: some View {
         rendered
-            .task {
+            .task(id: raw) {
                 guard !emojis.isEmpty else { return }
                 
                 // Set placeholders
