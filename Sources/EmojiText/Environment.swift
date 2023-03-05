@@ -24,6 +24,12 @@ struct EmojiSizeKey: EnvironmentKey {
     }
 }
 
+struct EmojiBaselineOffsetKey: EnvironmentKey {
+    static var defaultValue: CGFloat? {
+        nil
+    }
+}
+
 public extension EnvironmentValues {
     @available(*, deprecated, renamed: "emojiImagePipeline")
     var imagePipeline: ImagePipeline {
@@ -50,6 +56,15 @@ public extension EnvironmentValues {
         }
         set {
             self[EmojiSizeKey.self] = newValue
+        }
+    }
+    
+    var emojiBaselineOffset: CGFloat? {
+        get {
+            self[EmojiBaselineOffsetKey.self]
+        }
+        set {
+            self[EmojiBaselineOffsetKey.self] = newValue
         }
     }
 }
@@ -95,5 +110,17 @@ public extension View {
     /// you can provide a emoji size
     func emojiSize(_ size: CGFloat?) -> some View {
         environment(\.emojiSize, size)
+    }
+    
+    /// Overrides the baseline for custom emojis
+    ///
+    /// - Parameter offset: The size to render the custom emojis in
+    ///
+    /// While ``EmojiText`` tries to determine the baseline offset of the emoji based on the current font and dynamic type size
+    /// this only works with the system text styles, this is due to limitations of `SwiftUI.Font`.
+    /// In case you use a custom font or want to override the calculation of the emoji baseline offset for some other reason
+    /// you can provide a emoji baseline offset
+    func emojiBaselineOffset(_ offset: CGFloat?) -> some View {
+        environment(\.emojiBaselineOffset, offset)
     }
 }

@@ -20,6 +20,7 @@ public struct EmojiText: View {
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.emojiSize) var emojiSize
+    @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -72,6 +73,8 @@ public struct EmojiText: View {
     }
     
     func loadEmojis() async -> [String: RenderedEmoji] {
+        let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
+        let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let targetSize = self.targetSize
         
         var renderedEmojis = [String: RenderedEmoji]()
@@ -81,12 +84,12 @@ public struct EmojiText: View {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let response = try await imagePipeline.image(for: remoteEmoji.url)
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize, baselineOffset: baselineOffset)
                 } catch {
                     Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize)
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize, baselineOffset: baselineOffset)
             case let sfSymbolEmoji as SFSymbolEmoji:
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
@@ -152,7 +155,7 @@ public struct EmojiText: View {
             return CGSize(width: emojiSize, height: emojiSize)
         } else {
             let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
-            let height = font.capHeight * scaleFactor
+            let height = font.pointSize * scaleFactor
             return CGSize(width: height, height: height)
         }
     }
@@ -190,7 +193,11 @@ public struct EmojiText: View {
             }
             splits.forEach { substring in
                 if let image = renderedEmojis[substring] {
-                    result = result + Text("\(image.image)")
+                    if let baselineOffset = image.baselineOffset {
+                        result = result + Text("\(image.image)").baselineOffset(baselineOffset)
+                    } else {
+                        result = result + Text("\(image.image)")
+                    }
                 } else if isMarkdown {
                     result = result + Text(markdown: substring)
                 } else {
@@ -218,7 +225,7 @@ struct EmojiText_Previews: PreviewProvider {
     static var previews: some View {
         List {
             Section {
-                EmojiText(verbatim: "Hello Moon & Starts :moon.stars:",
+                EmojiText(verbatim: "Hello Moon & Stars :moon.stars:",
                           emojis: [SFSymbolEmoji(shortcode: "moon.stars")])
                 EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
                           emojis: emojis)
@@ -232,6 +239,7 @@ struct EmojiText_Previews: PreviewProvider {
                 EmojiText(verbatim: "Hello World :mastodon: with a custom emoji size",
                           emojis: emojis)
                 .emojiSize(34)
+                .emojiBaselineOffset(-8.5)
             } header: {
                 Text("Text")
             }

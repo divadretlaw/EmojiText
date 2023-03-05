@@ -16,6 +16,7 @@ public struct LocalEmoji: CustomEmoji {
     public let image: EmojiImage
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
+    public let baselineOffset: CGFloat?
     
     /// Initialize a local emoji
     ///
@@ -23,10 +24,12 @@ public struct LocalEmoji: CustomEmoji {
     ///     - shortcode: The shortcode of the emoji
     ///     - image: The image containing the emoji
     ///     - renderingMode: The mode SwiftUI uses to render this emoji
-    public init(shortcode: String, image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil) {
+    ///     - baselineOffset: The baseline offset to use when rendering this emoji
+    public init(shortcode: String, image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil, baselineOffset: CGFloat? = nil) {
         self.shortcode = shortcode
         self.image = image
         self.renderingMode = renderingMode
+        self.baselineOffset = baselineOffset
     }
     
     // MARK: Hashable

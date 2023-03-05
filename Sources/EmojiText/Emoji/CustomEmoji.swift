@@ -18,12 +18,15 @@ public protocol CustomEmoji: Hashable, Equatable, Identifiable {
     var renderingMode: Image.TemplateRenderingMode? { get }
     /// The symbol rendering mode to use for this emoji
     var symbolRenderingMode: SymbolRenderingMode? { get }
+    ///The symbols baseline offset
+    var baselineOffset: CGFloat? { get }
 }
 
 // Default Implementations
 public extension CustomEmoji {
     var renderingMode: Image.TemplateRenderingMode? { nil }
     var symbolRenderingMode: SymbolRenderingMode? { nil }
+    var baselineOffset: CGFloat? { nil }
     
     // MARK: Hashable
     
