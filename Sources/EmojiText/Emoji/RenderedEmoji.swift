@@ -12,32 +12,35 @@ import OSLog
 /// A rendered custom emoji
 struct RenderedEmoji: Hashable, Equatable, Identifiable {
     private let shortcode: String
+    let baselineOffset: CGFloat?
     let renderingMode: Image.TemplateRenderingMode?
     let symbolRenderingMode: SymbolRenderingMode?
     
     private let _image: Image
     private let isPlaceholder: Bool
     
-    init(from emoji: RemoteEmoji, image: EmojiImage, targetSize: CGSize? = nil) {
+    init(from emoji: RemoteEmoji, image: EmojiImage, targetSize: CGSize? = nil, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
         if let targetSize = targetSize {
             self._image = Image(emojiImage: image.scalePreservingAspectRatio(targetSize: targetSize))
         } else {
             self._image = Image(emojiImage: image)
         }
-        self.renderingMode = .original
+        self.renderingMode = emoji.renderingMode
+        self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.isPlaceholder = false
     }
     
-    init(from emoji: LocalEmoji, targetSize: CGSize? = nil) {
+    init(from emoji: LocalEmoji, targetSize: CGSize? = nil, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
         if let targetSize = targetSize {
             self._image = Image(emojiImage: emoji.image.scalePreservingAspectRatio(targetSize: targetSize))
         } else {
             self._image = Image(emojiImage: emoji.image)
         }
-        self.renderingMode = .original
+        self.renderingMode = emoji.renderingMode
+        self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.isPlaceholder = false
     }
@@ -46,6 +49,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.shortcode = emoji.shortcode
         self._image = Image(systemName: emoji.shortcode)
         self.renderingMode = emoji.renderingMode
+        self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
         self.isPlaceholder = false
     }
@@ -54,6 +58,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.isPlaceholder = true
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
+        self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
         
         switch emoji {
