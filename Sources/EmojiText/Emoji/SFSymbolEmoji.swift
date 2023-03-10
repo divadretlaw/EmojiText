@@ -32,4 +32,11 @@ public struct SFSymbolEmoji: CustomEmoji {
     static var placeholder: Self {
         SFSymbolEmoji(shortcode: "square.dashed", symbolRenderingMode: .monochrome, renderingMode: .template)
     }
+    
+    // MARK: Hashable
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(shortcode)
+        hasher.combine(renderingMode)
+    }
 }

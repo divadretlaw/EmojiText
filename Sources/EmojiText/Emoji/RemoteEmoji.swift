@@ -37,6 +37,8 @@ public struct RemoteEmoji: CustomEmoji {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
         hasher.combine(url)
+        hasher.combine(renderingMode)
+        hasher.combine(baselineOffset)
     }
     
     // MARK: Equatable

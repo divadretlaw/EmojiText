@@ -37,6 +37,8 @@ public struct LocalEmoji: CustomEmoji {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
         hasher.combine(image)
+        hasher.combine(renderingMode)
+        hasher.combine(baselineOffset)
     }
     
     // MARK: Equatable

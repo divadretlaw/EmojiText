@@ -37,8 +37,11 @@ public struct EmojiText: View {
     
     public var body: some View {
         rendered
-            .task(id: raw) {
-                guard !emojis.isEmpty else { return }
+            .task(id: hashValue) {
+                guard !emojis.isEmpty else {
+                    self.renderedEmojis = [:]
+                    return
+                }
                 
                 // Set placeholders
                 self.renderedEmojis = loadPlaceholders()
@@ -149,6 +152,15 @@ public struct EmojiText: View {
     }
     
     // MARK: - Helper
+    
+    var hashValue: Int {
+        var hasher = Hasher()
+        hasher.combine(raw)
+        for emoji in emojis {
+            hasher.combine(emoji)
+        }
+        return hasher.finalize()
+    }
     
     var targetSize: CGSize {
         if let emojiSize = emojiSize {
