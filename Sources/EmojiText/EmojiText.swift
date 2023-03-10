@@ -86,8 +86,8 @@ public struct EmojiText: View {
             switch emoji {
             case let remoteEmoji as RemoteEmoji:
                 do {
-                    let response = try await imagePipeline.image(for: remoteEmoji.url)
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: response.image, targetSize: targetSize, baselineOffset: baselineOffset)
+                    let image = try await imagePipeline.image(for: remoteEmoji.url)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetSize: targetSize, baselineOffset: baselineOffset)
                 } catch {
                     Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
