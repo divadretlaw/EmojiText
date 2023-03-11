@@ -14,6 +14,10 @@ enum Emojis {
         RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!)
     }
     
+    static var mastodonWithOffset: RemoteEmoji {
+        RemoteEmoji(shortcode: "mastodon_offset", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!, baselineOffset: -8)
+    }
+    
     static var iPhone: SFSymbolEmoji {
         SFSymbolEmoji(shortcode: "iphone")
     }

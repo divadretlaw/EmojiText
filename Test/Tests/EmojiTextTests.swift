@@ -37,6 +37,23 @@ final class TestTests: XCTestCase {
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
+    func test_Mastodon_Offset() async throws {
+        let view = EmojiText(verbatim: "Hello Mastodon :mastodon: and :mastodon_offset:", emojis: [Emojis.mastodon, Emojis.mastodonWithOffset])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
+    func test_Mastodon_Offset_Positive() async throws {
+        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+            .emojiBaselineOffset(8)
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
+    func test_Mastodon_Offset_Negative() async throws {
+        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+            .emojiBaselineOffset(-8)
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
     func test_Mastodon_Markdown() async throws {
         let view = EmojiText(markdown: "**Hello** _Mastodon_ :mastodon:", emojis: [Emojis.mastodon])
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
