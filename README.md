@@ -1,7 +1,8 @@
 # EmojiText
 
-![](https://img.shields.io/badge/Swift-5.7-orange?style=flat-square)
-![](https://img.shields.io/badge/Platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey?style=flat-square)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fdivadretlaw%2FEmojiText%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/divadretlaw/EmojiText)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fdivadretlaw%2FEmojiText%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/divadretlaw/EmojiText)
+
 
 Render Custom Emoji in `Text`. Supports local and remote emojis. Remote emojis are loaded and cached using [Nuke](https://github.com/kean/Nuke)
 
