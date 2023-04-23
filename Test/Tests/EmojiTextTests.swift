@@ -96,4 +96,15 @@ final class TestTests: XCTestCase {
             }
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 400, height: 100), delay: 1))
     }
+    
+    func test_Wide() async throws {
+        let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
+    func test_Wide_Custom_Scaled() async throws {
+        let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
+            .emojiSize(30)
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
 }

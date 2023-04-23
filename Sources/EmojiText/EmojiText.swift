@@ -57,18 +57,18 @@ public struct EmojiText: View {
     // MARK: - Load Emojis
     
     func loadPlaceholders() -> [String: RenderedEmoji] {
-        let targetSize = self.targetSize
+        let targetHeight = self.targetHeight
         
         var placeholders = [String: RenderedEmoji]()
         
         for emoji in emojis {
             switch emoji {
             case let localEmoji as LocalEmoji:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize)
+                placeholders[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight)
             case let sfSymbolEmoji as SFSymbolEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetSize: targetSize)
+                placeholders[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetHeight: targetHeight)
             }
         }
         
@@ -78,7 +78,7 @@ public struct EmojiText: View {
     func loadEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
-        let targetSize = self.targetSize
+        let targetHeight = self.targetHeight
         
         var renderedEmojis = [String: RenderedEmoji]()
         
@@ -87,25 +87,18 @@ public struct EmojiText: View {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let image = try await imagePipeline.image(for: remoteEmoji.url)
-                    let remoteEmojiTargetSize: CGSize
-                    if let remoteEmojiSize = remoteEmoji.size {
-                        let ratio: CGFloat = remoteEmojiSize.width /  remoteEmojiSize.height
-                        remoteEmojiTargetSize = .init(width: targetSize.width * ratio, height: targetSize.height)
-                    } else {
-                        remoteEmojiTargetSize = targetSize
-                    }
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetSize: remoteEmojiTargetSize, baselineOffset: baselineOffset)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetHeight: targetHeight, baselineOffset: baselineOffset)
                 } catch {
                     Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
             case let localEmoji as LocalEmoji:
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetSize: targetSize, baselineOffset: baselineOffset)
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight, baselineOffset: baselineOffset)
             case let sfSymbolEmoji as SFSymbolEmoji:
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
                 // Fallback to placeholder emoji
                 Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetSize: targetSize)
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetHeight: targetHeight)
             }
         }
         
@@ -169,13 +162,13 @@ public struct EmojiText: View {
         return hasher.finalize()
     }
     
-    var targetSize: CGSize {
+    var targetHeight: CGFloat {
         if let emojiSize = emojiSize {
-            return CGSize(width: emojiSize, height: emojiSize)
+            return emojiSize
         } else {
             let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
             let height = font.pointSize * scaleFactor
-            return CGSize(width: height, height: height)
+            return height
         }
     }
     
@@ -237,7 +230,7 @@ struct EmojiText_Previews: PreviewProvider {
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
-            RemoteEmoji(shortcode: "puppu_purin", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!, size: .init(width: 607, height: 92)),
+            RemoteEmoji(shortcode: "puppu_purin", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!),
             SFSymbolEmoji(shortcode: "iphone")
         ]
     }
