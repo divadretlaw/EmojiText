@@ -21,12 +21,8 @@ extension Image {
 import UIKit
 
 extension UIImage {
-    func scalePreservingAspectRatio(targetSize: CGSize) -> UIImage {
-        // Determine the scale factor that preserves aspect ratio
-        let widthRatio = targetSize.width / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        let scaleFactor = min(widthRatio, heightRatio)
+    func scalePreservingAspectRatio(targetHeight: CGFloat) -> UIImage {
+        let scaleFactor = targetHeight / size.height
         
         // Compute the new image size that preserves aspect ratio
         let scaledImageSize = CGSize(
@@ -72,12 +68,8 @@ extension NSImage {
         self.init(systemSymbolName: systemName, accessibilityDescription: systemName)
     }
     
-    func scalePreservingAspectRatio(targetSize: CGSize) -> NSImage {
-        // Determine the scale factor that preserves aspect ratio
-        let widthRatio = targetSize.width / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        let scaleFactor = min(widthRatio, heightRatio)
+    func scalePreservingAspectRatio(targetHeight: CGFloat) -> NSImage {
+        let scaleFactor = targetHeight / size.height
         
         // Compute the new image size that preserves aspect ratio
         let scaledImageSize = CGSize(
@@ -85,7 +77,7 @@ extension NSImage {
             height: size.height * scaleFactor
         )
         
-        let scaledImage = NSImage(size: targetSize, flipped: false) { rect in
+        let scaledImage = NSImage(size: scaledImageSize, flipped: false) { rect in
             self.draw(in: rect)
             return true
         }

@@ -32,4 +32,8 @@ enum Emojis {
             SFSymbolEmoji(shortcode: "face.dashed")
         ]
     }
+    
+    static var wide: RemoteEmoji {
+        RemoteEmoji(shortcode: "wide", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!)
+    }
 }

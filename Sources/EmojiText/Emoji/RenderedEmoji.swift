@@ -19,26 +19,18 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     private let _image: Image
     private let isPlaceholder: Bool
     
-    init(from emoji: RemoteEmoji, image: EmojiImage, targetSize: CGSize? = nil, baselineOffset: CGFloat? = nil) {
+    init(from emoji: RemoteEmoji, image: EmojiImage, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        if let targetSize = targetSize {
-            self._image = Image(emojiImage: image.scalePreservingAspectRatio(targetSize: targetSize))
-        } else {
-            self._image = Image(emojiImage: image)
-        }
+        self._image = Image(emojiImage: image.scalePreservingAspectRatio(targetHeight: targetHeight))
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.isPlaceholder = false
     }
     
-    init(from emoji: LocalEmoji, targetSize: CGSize? = nil, baselineOffset: CGFloat? = nil) {
+    init(from emoji: LocalEmoji, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        if let targetSize = targetSize {
-            self._image = Image(emojiImage: emoji.image.scalePreservingAspectRatio(targetSize: targetSize))
-        } else {
-            self._image = Image(emojiImage: emoji.image)
-        }
+        self._image = Image(emojiImage: emoji.image.scalePreservingAspectRatio(targetHeight: targetHeight))
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
@@ -54,7 +46,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.isPlaceholder = false
     }
     
-    init(placeholder emoji: any CustomEmoji, targetSize: CGSize) {
+    init(placeholder emoji: any CustomEmoji, targetHeight: CGFloat) {
         self.isPlaceholder = true
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
@@ -63,7 +55,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         
         switch emoji {
         case let localEmoji as LocalEmoji:
-            self._image = Image(emojiImage: localEmoji.image.scalePreservingAspectRatio(targetSize: targetSize))
+            self._image = Image(emojiImage: localEmoji.image.scalePreservingAspectRatio(targetHeight: targetHeight))
         case let sfSymbolEmoji as SFSymbolEmoji:
             self._image = Image(systemName: sfSymbolEmoji.shortcode)
         default:
