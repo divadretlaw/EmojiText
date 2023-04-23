@@ -74,7 +74,7 @@ public struct EmojiText: View {
         
         return placeholders
     }
-    
+
     func loadEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
@@ -87,7 +87,14 @@ public struct EmojiText: View {
             case let remoteEmoji as RemoteEmoji:
                 do {
                     let image = try await imagePipeline.image(for: remoteEmoji.url)
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetSize: targetSize, baselineOffset: baselineOffset)
+                    let remoteEmojiTargetSize: CGSize
+                    if let remoteEmojiSize = remoteEmoji.size {
+                        let ratio: CGFloat = remoteEmojiSize.width /  remoteEmojiSize.height
+                        remoteEmojiTargetSize = .init(width: targetSize.width * ratio, height: targetSize.height)
+                    } else {
+                        remoteEmojiTargetSize = targetSize
+                    }
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetSize: remoteEmojiTargetSize, baselineOffset: baselineOffset)
                 } catch {
                     Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
                 }
@@ -230,6 +237,7 @@ struct EmojiText_Previews: PreviewProvider {
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
+            RemoteEmoji(shortcode: "puppu_purin", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!, size: .init(width: 607, height: 92)),
             SFSymbolEmoji(shortcode: "iphone")
         ]
     }
@@ -255,7 +263,6 @@ struct EmojiText_Previews: PreviewProvider {
             } header: {
                 Text("Text")
             }
-            
             Section {
                 EmojiText(markdown: "**Hello** *World* :mastodon: with a remote emoji",
                           emojis: emojis)
@@ -278,6 +285,21 @@ struct EmojiText_Previews: PreviewProvider {
                 }
             } header: {
                 Text("Markdown")
+            }
+            Section {
+                EmojiText(verbatim: "Hello World :puppu_purin: with a remote emoji.",
+                          emojis: emojis)
+                EmojiText(verbatim: "Hello World :mastodon: :puppu_purin: with a remote emoji.",
+                          emojis: emojis)
+                .font(.title)
+                EmojiText(verbatim: "Hello World :mastodon: :puppu_purin: with a custom emoji.",
+                          emojis: emojis)
+                .emojiSize(34)
+                .emojiBaselineOffset(-8.5)
+                EmojiText(markdown: "**Hello** *World* :puppu_purin: with a remote emoji",
+                          emojis: emojis)
+            } header: {
+                Text("Wide width emoji")
             }
         }
         .environment(\.emojiImagePipeline, ImagePipeline { configuration in
