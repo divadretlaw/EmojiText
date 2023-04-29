@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6302EB1C29F55BAC0058BEA5 /* RemoteEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6302EB1B29F55BAC0058BEA5 /* RemoteEmojiView.swift */; };
+		6302EB1E29F55FC70058BEA5 /* SFSymbolEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6302EB1D29F55FC70058BEA5 /* SFSymbolEmojiView.swift */; };
+		6302EB2029F5677C0058BEA5 /* EmojiTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6302EB1F29F5677C0058BEA5 /* EmojiTestView.swift */; };
 		632BECAA29A0D3BA003E7AF7 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BECA929A0D3BA003E7AF7 /* TestApp.swift */; };
 		632BECAC29A0D3BA003E7AF7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BECAB29A0D3BA003E7AF7 /* ContentView.swift */; };
 		632BECAE29A0D3BB003E7AF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 632BECAD29A0D3BB003E7AF7 /* Assets.xcassets */; };
@@ -31,6 +34,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6302EB1B29F55BAC0058BEA5 /* RemoteEmojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteEmojiView.swift; sourceTree = "<group>"; };
+		6302EB1D29F55FC70058BEA5 /* SFSymbolEmojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolEmojiView.swift; sourceTree = "<group>"; };
+		6302EB1F29F5677C0058BEA5 /* EmojiTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiTestView.swift; sourceTree = "<group>"; };
 		632BECA629A0D3BA003E7AF7 /* EmojiTextTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmojiTextTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		632BECA929A0D3BA003E7AF7 /* TestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		632BECAB29A0D3BA003E7AF7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -91,6 +97,9 @@
 			children = (
 				632BECA929A0D3BA003E7AF7 /* TestApp.swift */,
 				632BECAB29A0D3BA003E7AF7 /* ContentView.swift */,
+				6302EB1F29F5677C0058BEA5 /* EmojiTestView.swift */,
+				6302EB1B29F55BAC0058BEA5 /* RemoteEmojiView.swift */,
+				6302EB1D29F55FC70058BEA5 /* SFSymbolEmojiView.swift */,
 				632BECAD29A0D3BB003E7AF7 /* Assets.xcassets */,
 				632BECAF29A0D3BB003E7AF7 /* Test.entitlements */,
 				632BECB029A0D3BB003E7AF7 /* Preview Content */,
@@ -243,8 +252,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6302EB1E29F55FC70058BEA5 /* SFSymbolEmojiView.swift in Sources */,
 				632BECAC29A0D3BA003E7AF7 /* ContentView.swift in Sources */,
+				6302EB1C29F55BAC0058BEA5 /* RemoteEmojiView.swift in Sources */,
 				632BECAA29A0D3BA003E7AF7 /* TestApp.swift in Sources */,
+				6302EB2029F5677C0058BEA5 /* EmojiTestView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
