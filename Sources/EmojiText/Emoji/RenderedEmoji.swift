@@ -17,7 +17,8 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     let symbolRenderingMode: SymbolRenderingMode?
     
     private let _image: Image
-    private let isPlaceholder: Bool
+    private let sourceHash: Int
+    private let placeholderId: UUID?
     
     init(from emoji: RemoteEmoji, image: EmojiImage, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
@@ -25,7 +26,8 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
-        self.isPlaceholder = false
+        self.placeholderId = nil
+        self.sourceHash = emoji.hashValue
     }
     
     init(from emoji: LocalEmoji, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
@@ -34,7 +36,8 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
-        self.isPlaceholder = false
+        self.placeholderId = nil
+        self.sourceHash = emoji.hashValue
     }
     
     init(from emoji: SFSymbolEmoji) {
@@ -43,15 +46,17 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
-        self.isPlaceholder = false
+        self.placeholderId = nil
+        self.sourceHash = emoji.hashValue
     }
     
     init(placeholder emoji: any CustomEmoji, targetHeight: CGFloat) {
-        self.isPlaceholder = true
+        self.placeholderId = UUID()
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
+        self.sourceHash = emoji.hashValue
         
         switch emoji {
         case let localEmoji as LocalEmoji:
@@ -64,21 +69,36 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         }
     }
     
+    var isPlaceholder: Bool {
+        placeholderId != nil
+    }
+    
     var image: Image {
         _image.renderingMode(renderingMode).symbolRenderingMode(symbolRenderingMode)
+    }
+    
+    func hasSameSource(as value: RenderedEmoji) -> Bool {
+        sourceHash == value.sourceHash
     }
     
     // MARK: - Hashable
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
-        hasher.combine(isPlaceholder)
+        hasher.combine(baselineOffset)
+        hasher.combine(renderingMode)
+        hasher.combine(placeholderId)
+        hasher.combine(sourceHash)
     }
     
     // MARK: - Equatable
     
     static func == (lhs: Self, rhs: Self) -> Bool {
-        guard lhs.shortcode == rhs.shortcode, lhs.isPlaceholder == rhs.isPlaceholder else { return false }
+        guard lhs.shortcode == rhs.shortcode,
+              lhs.baselineOffset == rhs.baselineOffset,
+              lhs.renderingMode == rhs.renderingMode,
+              lhs.sourceHash == rhs.sourceHash,
+              lhs.isPlaceholder == rhs.isPlaceholder else { return false }
         return lhs.image == rhs.image
     }
     

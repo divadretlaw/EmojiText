@@ -44,11 +44,26 @@ public struct EmojiText: View {
                     return
                 }
                 
-                // Set placeholders
-                self.renderedEmojis = loadPlaceholders()
+                // Hash of currently displayed emojis
+                let renderedHash = self.renderedEmojis.hashValue
                 
-                // Load actual emojis
-                self.renderedEmojis = await loadEmojis()
+                // Set placeholders
+                self.renderedEmojis.merge(loadPlaceholders()) { current, new in
+                    if current.hasSameSource(as: new) {
+                        if !new.isPlaceholder || current.isPlaceholder {
+                            return new
+                        } else {
+                            return current
+                        }
+                    } else {
+                        return new
+                    }
+                }
+                
+                // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
+                if renderedHash != renderedEmojis.hashValue {
+                    self.renderedEmojis = await loadEmojis()
+                }
             }
             .onChange(of: renderedEmojis) { emojis in
                 self.preRendered = preRender(with: emojis)
