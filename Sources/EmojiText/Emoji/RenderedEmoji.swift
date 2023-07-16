@@ -50,15 +50,15 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.sourceHash = emoji.hashValue
     }
     
-    init(placeholder emoji: any CustomEmoji, targetHeight: CGFloat) {
-        self.placeholderId = UUID()
+    init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, targetHeight: CGFloat) {
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
+        self.placeholderId = UUID()
         self.sourceHash = emoji.hashValue
         
-        switch emoji {
+        switch placeholder {
         case let localEmoji as LocalEmoji:
             self._image = Image(emojiImage: localEmoji.image.scalePreservingAspectRatio(targetHeight: targetHeight))
         case let sfSymbolEmoji as SFSymbolEmoji:
@@ -85,8 +85,6 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
-        hasher.combine(baselineOffset)
-        hasher.combine(renderingMode)
         hasher.combine(placeholderId)
         hasher.combine(sourceHash)
     }
@@ -95,9 +93,6 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     
     static func == (lhs: Self, rhs: Self) -> Bool {
         guard lhs.shortcode == rhs.shortcode,
-              lhs.baselineOffset == rhs.baselineOffset,
-              lhs.renderingMode == rhs.renderingMode,
-              lhs.sourceHash == rhs.sourceHash,
               lhs.isPlaceholder == rhs.isPlaceholder else { return false }
         return lhs.image == rhs.image
     }
