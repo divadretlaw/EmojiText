@@ -47,14 +47,12 @@ extension UIImage {
             size: scaledImageSize
         )
         
-        let scaledImage = renderer.image { _ in
+        return renderer.image { _ in
             self.draw(in: CGRect(
                 origin: .zero,
                 size: scaledImageSize
             ))
         }
-        
-        return scaledImage
         #endif
     }
 }
@@ -77,12 +75,10 @@ extension NSImage {
             height: size.height * scaleFactor
         )
         
-        let scaledImage = NSImage(size: scaledImageSize, flipped: false) { rect in
+        return NSImage(size: scaledImageSize, flipped: false) { rect in
             self.draw(in: rect)
             return true
         }
-        
-        return scaledImage
     }
 }
 #endif

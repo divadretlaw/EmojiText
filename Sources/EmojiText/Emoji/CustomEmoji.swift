@@ -18,12 +18,13 @@ public protocol CustomEmoji: Hashable, Equatable, Identifiable {
     var renderingMode: Image.TemplateRenderingMode? { get }
     /// The symbol rendering mode to use for this emoji
     var symbolRenderingMode: SymbolRenderingMode? { get }
-    ///The symbols baseline offset
+    /// The symbols baseline offset
     var baselineOffset: CGFloat? { get }
 }
 
 // MARK: - Default Implementations
 
+// swiftlint:disable missing_docs
 public extension CustomEmoji {
     var renderingMode: Image.TemplateRenderingMode? { nil }
     var symbolRenderingMode: SymbolRenderingMode? { nil }
@@ -45,3 +46,4 @@ public extension CustomEmoji {
     
     var id: String { shortcode }
 }
+// swiftlint:enable missing_docs

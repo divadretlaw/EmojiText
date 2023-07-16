@@ -10,6 +10,7 @@ import Foundation
 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
 import UIKit
 
+/// Platform indepdendent image alias. Will be `UIImage`.
 public typealias EmojiImage = UIImage
 typealias EmojiFont = UIFont
 #endif
@@ -17,6 +18,7 @@ typealias EmojiFont = UIFont
 #if os(macOS)
 import AppKit
 
+/// Platform indepdendent image alias. Will be `NSImage`.
 public typealias EmojiImage = NSImage
 typealias EmojiFont = NSFont
 #endif

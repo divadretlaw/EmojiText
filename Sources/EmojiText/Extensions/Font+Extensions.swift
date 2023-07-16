@@ -93,7 +93,7 @@ extension UIFont {
     }
     
     static func preferredFont(from font: Font?, for dynamicTypeSize: DynamicTypeSize) -> UIFont {
-        return UIFont.preferredFont(from: font)
+        UIFont.preferredFont(from: font)
     }
 }
 #endif

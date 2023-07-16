@@ -40,15 +40,15 @@ public struct EmojiText: View {
         rendered
             .task(id: hashValue, priority: .high) {
                 guard !emojis.isEmpty else {
-                    self.renderedEmojis = [:]
+                    renderedEmojis = [:]
                     return
                 }
                 
                 // Hash of currently displayed emojis
-                let renderedHash = self.renderedEmojis.hashValue
+                let renderedHash = renderedEmojis.hashValue
                 
                 // Set placeholders
-                self.renderedEmojis.merge(loadPlaceholders()) { current, new in
+                renderedEmojis.merge(loadPlaceholders()) { current, new in
                     if current.hasSameSource(as: new) {
                         if !new.isPlaceholder || current.isPlaceholder {
                             return new
@@ -62,11 +62,11 @@ public struct EmojiText: View {
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != renderedEmojis.hashValue {
-                    self.renderedEmojis = await loadEmojis()
+                    renderedEmojis = await loadEmojis()
                 }
             }
             .onChange(of: renderedEmojis) { emojis in
-                self.preRendered = preRender(with: emojis)
+                preRendered = preRender(with: emojis)
             }
     }
     
@@ -169,6 +169,7 @@ public struct EmojiText: View {
     
     // MARK: - Helper
     
+    // swiftlint:disable:next legacy_hashing
     var hashValue: Int {
         var hasher = Hasher()
         hasher.combine(raw)
@@ -183,8 +184,7 @@ public struct EmojiText: View {
             return emojiSize
         } else {
             let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
-            let height = font.pointSize * scaleFactor
-            return height
+            return font.pointSize * scaleFactor
         }
     }
     
@@ -242,6 +242,7 @@ public struct EmojiText: View {
     }
 }
 
+// swiftlint:disable force_unwrapping
 struct EmojiText_Previews: PreviewProvider {
     static var emojis: [any CustomEmoji] {
         [
@@ -317,3 +318,4 @@ struct EmojiText_Previews: PreviewProvider {
         })
     }
 }
+// swiftlint:enable force_unwrapping

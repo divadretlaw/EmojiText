@@ -31,6 +31,7 @@ struct EmojiBaselineOffsetKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+    /// The image pipeline used to fetch remote emojis.
     var emojiImagePipeline: ImagePipeline {
         get {
             self[ImagePipelineKey.self]
@@ -40,6 +41,7 @@ public extension EnvironmentValues {
         }
     }
     
+    /// The size of the inline custom emojis. Set `nil` to automatically determine the size based on the font size.
     var emojiSize: CGFloat? {
         get {
             self[EmojiSizeKey.self]
@@ -49,6 +51,7 @@ public extension EnvironmentValues {
         }
     }
     
+    /// The baseline for custom emojis. Set `nil` to not override the baseline offset and use the default value.
     var emojiBaselineOffset: CGFloat? {
         get {
             self[EmojiBaselineOffsetKey.self]
