@@ -20,6 +20,12 @@ struct ContentView: View {
                     }
                     
                     NavigationLink {
+                        ChangingRemoteEmojiView()
+                    } label: {
+                        Text("Changing Remote Emoji")
+                    }
+                    
+                    NavigationLink {
                         SFSymbolEmojiView()
                     } label: {
                         Text("SF Symbol Emoji")

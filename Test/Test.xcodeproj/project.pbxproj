@@ -21,6 +21,7 @@
 		632BECE029A0D618003E7AF7 /* Emojis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BECDF29A0D618003E7AF7 /* Emojis.swift */; };
 		632BECE229A0E539003E7AF7 /* Snapshotting+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BECE129A0E539003E7AF7 /* Snapshotting+Extensions.swift */; };
 		632BECE529A0E718003E7AF7 /* GraphicsRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 632BECE429A0E718003E7AF7 /* GraphicsRenderer */; };
+		63DEFF8C2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DEFF8B2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		632BECD529A0D3E8003E7AF7 /* EmojiText */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = EmojiText; path = ..; sourceTree = "<group>"; };
 		632BECDF29A0D618003E7AF7 /* Emojis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emojis.swift; sourceTree = "<group>"; };
 		632BECE129A0E539003E7AF7 /* Snapshotting+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Snapshotting+Extensions.swift"; sourceTree = "<group>"; };
+		63DEFF8B2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangingRemoteEmojiView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				632BECAB29A0D3BA003E7AF7 /* ContentView.swift */,
 				6302EB1F29F5677C0058BEA5 /* EmojiTestView.swift */,
 				6302EB1B29F55BAC0058BEA5 /* RemoteEmojiView.swift */,
+				63DEFF8B2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift */,
 				6302EB1D29F55FC70058BEA5 /* SFSymbolEmojiView.swift */,
 				632BECAD29A0D3BB003E7AF7 /* Assets.xcassets */,
 				632BECAF29A0D3BB003E7AF7 /* Test.entitlements */,
@@ -252,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63DEFF8C2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift in Sources */,
 				6302EB1E29F55FC70058BEA5 /* SFSymbolEmojiView.swift in Sources */,
 				632BECAC29A0D3BA003E7AF7 /* ContentView.swift in Sources */,
 				6302EB1C29F55BAC0058BEA5 /* RemoteEmojiView.swift in Sources */,
