@@ -62,7 +62,9 @@ public struct EmojiText: View {
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != renderedEmojis.hashValue {
-                    renderedEmojis = await loadEmojis()
+                    renderedEmojis.merge(await loadEmojis()) { _, new in
+                        new
+                    }
                 }
             }
             .onChange(of: renderedEmojis) { emojis in
@@ -84,7 +86,7 @@ public struct EmojiText: View {
             case let sfSymbolEmoji as SFSymbolEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: placeholderEmoji, targetHeight: targetHeight)
             }
         }
         
@@ -99,22 +101,24 @@ public struct EmojiText: View {
         var renderedEmojis = [String: RenderedEmoji]()
         
         for emoji in emojis {
-            switch emoji {
-            case let remoteEmoji as RemoteEmoji:
-                do {
+            do {
+                switch emoji {
+                case let remoteEmoji as RemoteEmoji:
                     let image = try await imagePipeline.image(for: remoteEmoji.url)
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetHeight: targetHeight, baselineOffset: baselineOffset)
-                } catch {
-                    Logger.emojiText.error("Unable to load remote emoji \(remoteEmoji.shortcode): \(error.localizedDescription)")
+                case let localEmoji as LocalEmoji:
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight, baselineOffset: baselineOffset)
+                case let sfSymbolEmoji as SFSymbolEmoji:
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+                default:
+                    // Fallback to placeholder emoji
+                    Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: placeholderEmoji, targetHeight: targetHeight)
                 }
-            case let localEmoji as LocalEmoji:
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight, baselineOffset: baselineOffset)
-            case let sfSymbolEmoji as SFSymbolEmoji:
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
-            default:
-                // Fallback to placeholder emoji
-                Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(placeholder: placeholderEmoji, targetHeight: targetHeight)
+            } catch is CancellationError {
+                return [:]
+            } catch  {
+                Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
             }
         }
         
