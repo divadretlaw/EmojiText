@@ -11,7 +11,7 @@ import OSLog
 
 /// A rendered custom emoji
 struct RenderedEmoji: Hashable, Equatable, Identifiable {
-    private let shortcode: String
+    let shortcode: String
     let baselineOffset: CGFloat?
     let renderingMode: Image.TemplateRenderingMode?
     let symbolRenderingMode: SymbolRenderingMode?
@@ -68,21 +68,21 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         _image.renderingMode(renderingMode).symbolRenderingMode(symbolRenderingMode)
     }
     
-    // MARK: Hashable
+    // MARK: - Hashable
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
         hasher.combine(isPlaceholder)
     }
     
-    // MARK: Equatable
+    // MARK: - Equatable
     
     static func == (lhs: Self, rhs: Self) -> Bool {
         guard lhs.shortcode == rhs.shortcode, lhs.isPlaceholder == rhs.isPlaceholder else { return false }
         return lhs.image == rhs.image
     }
     
-    // MARK: Identifiable
+    // MARK: - Identifiable
     
     var id: String { shortcode }
 }

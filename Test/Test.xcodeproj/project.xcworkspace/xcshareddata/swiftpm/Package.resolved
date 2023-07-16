@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke",
       "state" : {
-        "revision" : "f4d9b95788679d0654c032961f73e7e9c16ca6b4",
-        "version" : "12.1.0"
+        "revision" : "c3864b8882bc69f5edfe5c70e18786c91d228b28",
+        "version" : "12.1.3"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
         "branch" : "async",
-        "revision" : "28c1ed939b86e878f09b8b2203f5e4da91fb738d"
+        "revision" : "5e8025ce20b60ca2d3d087037249940db01ffd9d"
       }
     }
   ],

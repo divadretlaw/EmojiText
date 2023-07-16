@@ -18,7 +18,7 @@ public struct RemoteEmoji: CustomEmoji {
     public let renderingMode: Image.TemplateRenderingMode?
     public let baselineOffset: CGFloat?
     
-    /// Initialize a remote emoji
+    /// Initialize a remote custom emoji
     ///
     /// - Parameters:
     ///     - shortcode: The shortcode of the emoji
@@ -32,7 +32,7 @@ public struct RemoteEmoji: CustomEmoji {
         self.baselineOffset = baselineOffset
     }
     
-    // MARK: Hashable
+    // MARK: - Hashable
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)
@@ -41,7 +41,7 @@ public struct RemoteEmoji: CustomEmoji {
         hasher.combine(baselineOffset)
     }
     
-    // MARK: Equatable
+    // MARK: - Equatable
     
     public static func == (lhs: Self, rhs: Self) -> Bool {
         guard lhs.shortcode == rhs.shortcode else { return false }

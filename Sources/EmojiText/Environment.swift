@@ -31,16 +31,6 @@ struct EmojiBaselineOffsetKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
-    @available(*, deprecated, renamed: "emojiImagePipeline")
-    var imagePipeline: ImagePipeline {
-        get {
-            self[ImagePipelineKey.self]
-        }
-        set {
-            self[ImagePipelineKey.self] = newValue
-        }
-    }
-    
     var emojiImagePipeline: ImagePipeline {
         get {
             self[ImagePipelineKey.self]

@@ -22,7 +22,8 @@ public protocol CustomEmoji: Hashable, Equatable, Identifiable {
     var baselineOffset: CGFloat? { get }
 }
 
-// Default Implementations
+// MARK: - Default Implementations
+
 public extension CustomEmoji {
     var renderingMode: Image.TemplateRenderingMode? { nil }
     var symbolRenderingMode: SymbolRenderingMode? { nil }

@@ -24,7 +24,7 @@ extension Snapshotting where Value: View, Format == UIImage {
                 window.rootViewController = UIHostingController(rootView: view)
                 window.frame.size = size
                 window.makeKeyAndVisible()
-                try? await Task.sleep(nanoseconds: delay * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: delay * NSEC_PER_SEC)
                 let renderer = ImageRenderer(bounds: bounds)
                 return renderer.image { _ in
                     window.drawHierarchy(in: bounds, afterScreenUpdates: true)
@@ -45,7 +45,6 @@ extension UIApplication {
             .compactMap { $0 as? UIWindowScene }
     }
 }
-
 #elseif os(macOS)
 extension Snapshotting where Value: View, Format == NSImage {
     static func rendered(size: CGSize, delay: UInt64 = 0) -> Snapshotting {

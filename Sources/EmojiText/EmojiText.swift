@@ -9,10 +9,11 @@ import SwiftUI
 import Nuke
 import os
 
-/// Text with support for custom emojis
+/// A view that displays one or more lines of text with support for custom emojis.
 ///
 /// Custom Emojis are in the format `:emoji:`.
 /// Supports local and remote custom emojis.
+///
 /// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
 public struct EmojiText: View {
     @Environment(\.emojiImagePipeline) var imagePipeline
@@ -37,7 +38,7 @@ public struct EmojiText: View {
     
     public var body: some View {
         rendered
-            .task(id: hashValue) {
+            .task(id: hashValue, priority: .high) {
                 guard !emojis.isEmpty else {
                     self.renderedEmojis = [:]
                     return
@@ -74,7 +75,7 @@ public struct EmojiText: View {
         
         return placeholders
     }
-
+    
     func loadEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: self.font, for: self.dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
@@ -107,7 +108,7 @@ public struct EmojiText: View {
     
     // MARK: - Initializers
     
-    /// Initialize a Markdown formatted Text with support for custom emojis
+    /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - markdown: Markdown formatted text to render
@@ -118,7 +119,7 @@ public struct EmojiText: View {
         self.emojis = emojis
     }
     
-    /// Initialize a ``EmojiText`` with support for custom emojis
+    /// Initialize a ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - verbatim: A string to display without localization.
@@ -131,7 +132,7 @@ public struct EmojiText: View {
     
     // MARK: - Modifier
     
-    /// Prepend `Text` to the `EmojiText`
+    /// Prepend `Text` to the ``EmojiText`` view.
     ///
     /// - Parameter text: Callback generating the text to prepend
     /// - Returns: ``EmojiText`` with some text prepended
@@ -141,7 +142,7 @@ public struct EmojiText: View {
         return view
     }
     
-    /// Append `Text` to the `EmojiText`
+    /// Append `Text` to the ``EmojiText`` view.
     ///
     /// - Parameter text: Callback generating the text to append
     /// - Returns: ``EmojiText`` with some text appended

@@ -10,21 +10,38 @@ import EmojiText
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            List {
-                NavigationLink {
-                    RemoteEmojiView()
-                } label: {
-                    Text("Remote Emoji")
+        TabView {
+            NavigationStack {
+                List {
+                    NavigationLink {
+                        RemoteEmojiView()
+                    } label: {
+                        Text("Remote Emoji")
+                    }
+                    
+                    NavigationLink {
+                        SFSymbolEmojiView()
+                    } label: {
+                        Text("SF Symbol Emoji")
+                    }
                 }
-                
-                NavigationLink {
-                    SFSymbolEmojiView()
-                } label: {
-                    Text("SF Symbol Emoji")
-                }
+                .navigationTitle("EmojiText")
             }
-            .navigationTitle("EmojiText")
+            .tag(0)
+            .tabItem {
+                Label("Emojis", systemImage: "face.smiling")
+            }
+            
+            NavigationStack {
+                List {
+                    Text("Testing app for snapshot tests and quick debbugging")
+                }
+                .navigationTitle("About")
+            }
+            .tag(1)
+            .tabItem {
+                Label("About", systemImage: "info.circle")
+            }
         }
     }
 }

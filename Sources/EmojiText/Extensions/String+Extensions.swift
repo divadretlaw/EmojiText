@@ -9,6 +9,6 @@ import Foundation
 
 extension String {
     static var emojiSeparator: String {
-        "<custom_emoji/>"
+        "<custom_emoji_break/>"
     }
 }
