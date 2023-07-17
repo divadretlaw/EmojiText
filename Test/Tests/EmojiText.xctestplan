@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "0B29710A-39C7-41A0-84B6-798C99983647",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Test\/Test.xcodeproj",
+      "identifier" : "632BECA529A0D3BA003E7AF7",
+      "name" : "EmojiTextTest"
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Test\/Test.xcodeproj",
+        "identifier" : "632BECB629A0D3BB003E7AF7",
+        "name" : "Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

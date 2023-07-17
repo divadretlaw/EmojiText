@@ -49,6 +49,7 @@
 		632BECD529A0D3E8003E7AF7 /* EmojiText */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = EmojiText; path = ..; sourceTree = "<group>"; };
 		632BECDF29A0D618003E7AF7 /* Emojis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emojis.swift; sourceTree = "<group>"; };
 		632BECE129A0E539003E7AF7 /* Snapshotting+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Snapshotting+Extensions.swift"; sourceTree = "<group>"; };
+		63CC0E512A64DE2C00515C5F /* EmojiText.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EmojiText.xctestplan; sourceTree = "<group>"; };
 		63DEFF8B2A643E6E00E8C4AA /* ChangingRemoteEmojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangingRemoteEmojiView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,6 +121,7 @@
 		632BECBA29A0D3BB003E7AF7 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				63CC0E512A64DE2C00515C5F /* EmojiText.xctestplan */,
 				632BECBB29A0D3BB003E7AF7 /* EmojiTextTests.swift */,
 				632BECDF29A0D618003E7AF7 /* Emojis.swift */,
 				632BECE129A0E539003E7AF7 /* Snapshotting+Extensions.swift */,
