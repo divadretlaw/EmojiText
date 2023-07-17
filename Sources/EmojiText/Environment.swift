@@ -8,11 +8,11 @@
 import SwiftUI
 import Nuke
 
-struct ImagePipelineKey: EnvironmentKey {
+struct EmojiImagePipelineKey: EnvironmentKey {
     static var defaultValue: ImagePipeline { .shared }
 }
 
-struct PlaceholderEmojiKey: EnvironmentKey {
+struct EmojiPlaceholderKey: EnvironmentKey {
     static var defaultValue: any CustomEmoji {
         SFSymbolEmoji.placeholder
     }
@@ -34,10 +34,10 @@ public extension EnvironmentValues {
     /// The image pipeline used to fetch remote emojis.
     var emojiImagePipeline: ImagePipeline {
         get {
-            self[ImagePipelineKey.self]
+            self[EmojiImagePipelineKey.self]
         }
         set {
-            self[ImagePipelineKey.self] = newValue
+            self[EmojiImagePipelineKey.self] = newValue
         }
     }
     
@@ -63,12 +63,22 @@ public extension EnvironmentValues {
 }
 
 internal extension EnvironmentValues {
-    var placeholderEmoji: any CustomEmoji {
+    var emojiPlaceholder: any CustomEmoji {
         get {
-            self[PlaceholderEmojiKey.self]
+            self[EmojiPlaceholderKey.self]
         }
         set {
-            self[PlaceholderEmojiKey.self] = newValue
+            self[EmojiPlaceholderKey.self] = newValue
+        }
+    }
+    
+    @available(*, deprecated, renamed: "emojiPlaceholder")
+    var placeholderEmoji: any CustomEmoji {
+        get {
+            self[EmojiPlaceholderKey.self]
+        }
+        set {
+            self[EmojiPlaceholderKey.self] = newValue
         }
     }
 }
@@ -80,8 +90,8 @@ public extension View {
     ///     - systemName: The SF Symbol code of the emoji
     ///     - symbolRenderingMode: The symbol rendering mode to use for this emoji
     ///     - renderingMode: The mode SwiftUI uses to render this emoji
-    func placeholderEmoji(systemName: String, symbolRenderingMode: SymbolRenderingMode? = nil, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
-        environment(\.placeholderEmoji, SFSymbolEmoji(shortcode: systemName, symbolRenderingMode: symbolRenderingMode, renderingMode: renderingMode))
+    func emojiPlaceholder(systemName: String, symbolRenderingMode: SymbolRenderingMode? = nil, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
+        environment(\.emojiPlaceholder, SFSymbolEmoji(shortcode: systemName, symbolRenderingMode: symbolRenderingMode, renderingMode: renderingMode))
     }
     
     /// Set the placeholder emoji
@@ -89,8 +99,29 @@ public extension View {
     /// - Parameters:
     ///     - image: The image to use as placeholder
     ///     - renderingMode: The mode SwiftUI uses to render this emoji
+    func emojiPlaceholder(image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
+        environment(\.emojiPlaceholder, LocalEmoji(shortcode: "placeholder", image: image, renderingMode: renderingMode))
+    }
+    
+    /// Set the placeholder emoji
+    ///
+    /// - Parameters:
+    ///     - systemName: The SF Symbol code of the emoji
+    ///     - symbolRenderingMode: The symbol rendering mode to use for this emoji
+    ///     - renderingMode: The mode SwiftUI uses to render this emoji
+    @available(*, deprecated, renamed: "emojiPlaceholder(systemName:symbolRenderingMode:renderingMode:)")
+    func placeholderEmoji(systemName: String, symbolRenderingMode: SymbolRenderingMode? = nil, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
+        emojiPlaceholder(systemName: systemName, symbolRenderingMode: symbolRenderingMode, renderingMode: renderingMode)
+    }
+    
+    /// Set the placeholder emoji
+    ///
+    /// - Parameters:
+    ///     - image: The image to use as placeholder
+    ///     - renderingMode: The mode SwiftUI uses to render this emoji
+    @available(*, deprecated, renamed: "emojiPlaceholder(image:renderingMode:)")
     func placeholderEmoji(image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
-        environment(\.placeholderEmoji, LocalEmoji(shortcode: "placeholder", image: image, renderingMode: renderingMode))
+        emojiPlaceholder(image: image, renderingMode: renderingMode)
     }
     
     /// Set the size of the inline custom emojis

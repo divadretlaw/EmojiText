@@ -16,10 +16,11 @@ import os
 ///
 /// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
 public struct EmojiText: View {
-    @Environment(\.emojiImagePipeline) var imagePipeline
-    @Environment(\.placeholderEmoji) var placeholderEmoji
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    
+    @Environment(\.emojiImagePipeline) var imagePipeline
+    @Environment(\.emojiPlaceholder) var emojiPlaceholder
     @Environment(\.emojiSize) var emojiSize
     @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
     
@@ -86,7 +87,7 @@ public struct EmojiText: View {
             case let sfSymbolEmoji as SFSymbolEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: placeholderEmoji, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
             }
         }
         
@@ -113,7 +114,7 @@ public struct EmojiText: View {
                 default:
                     // Fallback to placeholder emoji
                     Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: placeholderEmoji, targetHeight: targetHeight)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
                 }
             } catch is CancellationError {
                 return [:]
