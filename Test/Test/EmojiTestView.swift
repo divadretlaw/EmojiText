@@ -54,10 +54,12 @@ struct EmojiTestView<Content>: View where Content: View {
         Group {
             content()
         }
+        
         Group {
             content()
         }
         .font(.title)
+        
         Group {
             content()
         }

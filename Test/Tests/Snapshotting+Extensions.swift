@@ -55,7 +55,7 @@ extension Snapshotting where Value: View, Format == NSImage {
                 let hostingView = NSHostingView(rootView: view)
                 let window = NSWindow(contentRect: bounds, styleMask: .borderless, backing: .buffered, defer: true)
                 window.contentView = hostingView
-                try? await Task.sleep(nanoseconds: delay * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: delay * NSEC_PER_SEC)
                 let renderer = ImageRenderer(bounds: bounds)
                 return renderer.image { _ in
                     hostingView.draw(bounds)

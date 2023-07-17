@@ -77,11 +77,10 @@
 		632BEC9D29A0D3BA003E7AF7 = {
 			isa = PBXGroup;
 			children = (
+				632BECD429A0D3E8003E7AF7 /* Packages */,
 				632BECA829A0D3BA003E7AF7 /* Test */,
 				632BECBA29A0D3BB003E7AF7 /* Tests */,
-				632BECD429A0D3E8003E7AF7 /* Packages */,
 				632BECA729A0D3BA003E7AF7 /* Products */,
-				632BECDC29A0D55C003E7AF7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -134,13 +133,6 @@
 				632BECD529A0D3E8003E7AF7 /* EmojiText */,
 			);
 			name = Packages;
-			sourceTree = "<group>";
-		};
-		632BECDC29A0D55C003E7AF7 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
