@@ -133,8 +133,8 @@ public struct EmojiText: View {
     /// - Parameters:
     ///     - markdown: Markdown formatted text to render
     ///     - emojis: Array of custom emojis to render
-    public init(markdown: String, emojis: [any CustomEmoji]) {
-        self.raw = markdown
+    public init(markdown content: String, emojis: [any CustomEmoji]) {
+        self.raw = content
         self.isMarkdown = true
         self.emojis = emojis
     }
@@ -144,8 +144,19 @@ public struct EmojiText: View {
     /// - Parameters:
     ///     - verbatim: A string to display without localization.
     ///     - emojis: Array of custom emojis to render
-    public init(verbatim: String, emojis: [any CustomEmoji]) {
-        self.raw = verbatim
+    public init(verbatim content: String, emojis: [any CustomEmoji]) {
+        self.raw = content
+        self.isMarkdown = false
+        self.emojis = emojis
+    }
+    
+    /// Initialize a ``EmojiText`` with support for custom emojis.
+    ///
+    /// - Parameters:
+    ///     - content: A string value to display without localization.
+    ///     - emojis: Array of custom emojis to render
+    public init<S>(_ content: S, emojis: [any CustomEmoji]) where S: StringProtocol {
+        self.raw = String(content)
         self.isMarkdown = false
         self.emojis = emojis
     }
