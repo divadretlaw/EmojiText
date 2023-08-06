@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Nuke
-import os
+import OSLog
 
 /// A view that displays one or more lines of text with support for custom emojis.
 ///
