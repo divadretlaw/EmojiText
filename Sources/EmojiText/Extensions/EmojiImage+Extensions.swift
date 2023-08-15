@@ -60,7 +60,7 @@ extension UIImage {
                 images.append(image)
             }
             
-            let delayInSeconds = max(source.delay(for: i, type: type), 0.1)
+            let delayInSeconds = source.delay(for: i, type: type)
             delays.append(Int(delayInSeconds * 1000.0))
         }
         
