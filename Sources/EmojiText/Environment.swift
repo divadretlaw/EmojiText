@@ -35,7 +35,7 @@ struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
     
     static var defaultValue: Publishers.Autoconnect<Timer.TimerPublisher> {
-        Timer.publish(every: 1 / 60, on: .main, in: .default).autoconnect()
+        Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
     }
 }
 
