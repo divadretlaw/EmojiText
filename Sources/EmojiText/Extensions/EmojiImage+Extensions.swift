@@ -60,7 +60,7 @@ extension UIImage {
                 images.append(image)
             }
             
-            let delayInSeconds = source.delay(for: i, type: type)
+            let delayInSeconds = max(source.delay(for: i, type: type), 0.1)
             delays.append(Int(delayInSeconds * 1000.0))
         }
         
@@ -101,13 +101,14 @@ extension CGImageSource {
         var delayObject: AnyObject = unsafeBitCast(CFDictionaryGetValue(properties, unclampedDelayTimeKey),
                                                    to: AnyObject.self)
         
-        if delayObject.doubleValue == 0 {
+        if let value = delayObject.doubleValue, value > 0 {
+            return value
+        } else {
             let delayTimeKey = Unmanaged.passUnretained(type.delayTimeKey).toOpaque()
             delayObject = unsafeBitCast(CFDictionaryGetValue(properties, delayTimeKey),
                                         to: AnyObject.self)
+            return delayObject.doubleValue ?? 0
         }
-        
-        return delayObject.doubleValue ?? 0
     }
     
     func containsAnimatedKeys(for type: AnimatedImageType) -> Bool {

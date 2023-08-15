@@ -83,8 +83,8 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
             .symbolRenderingMode(symbolRenderingMode)
     }
     
-    func frame(at date: Date) -> Image {
-        rawImage.frame(at: date)
+    func frame(at time: CFTimeInterval) -> Image {
+        rawImage.frame(at: time)
             .renderingMode(renderingMode)
             .symbolRenderingMode(symbolRenderingMode)
     }

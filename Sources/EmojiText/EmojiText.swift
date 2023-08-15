@@ -23,7 +23,9 @@ public struct EmojiText: View {
     @Environment(\.emojiPlaceholder) var emojiPlaceholder
     @Environment(\.emojiSize) var emojiSize
     @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
+    #if os(watchOS) || os(macOS)
     @Environment(\.emojiTimer) var emojiTimer
+    #endif
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -39,7 +41,7 @@ public struct EmojiText: View {
     
     @State private var preRendered: String?
     @State private var renderedEmojis: [String: RenderedEmoji] = [:]
-    @State private var renderTime: Date = .now
+    @State private var renderTime: CFTimeInterval = 0
     
     public var body: some View {
         rendered
@@ -74,9 +76,15 @@ public struct EmojiText: View {
                 
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
-                for await time in emojiTimer.values {
-                    renderTime = time
+                #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+                for await event in CADisplayLink.publish(mode: .common).values {
+                    renderTime = event.targetTimestamp
                 }
+                #else
+                for await time in emojiTimer.values {
+                    renderTime = time.timeIntervalSinceReferenceDate as CFTimeInterval
+                }
+                #endif
             }
             .onChange(of: renderedEmojis) { emojis in
                 preRendered = preRender(with: emojis)
@@ -316,6 +324,12 @@ struct EmojiText_Previews: PreviewProvider {
         ]
     }
     
+    static var animatedEmojis: [any CustomEmoji] {
+        [
+            RemoteEmoji(shortcode: "gif", url: URL(string: "https://ezgif.com/images/format-demo/butterfly.gif")!)
+        ]
+    }
+    
     static var previews: some View {
         List {
             Section {
@@ -380,6 +394,16 @@ struct EmojiText_Previews: PreviewProvider {
             configuration.imageCache = nil
             configuration.dataCache = nil
         })
+        
+        List {
+            Section {
+                EmojiText(markdown: "**Animated** *GIF* :gif:",
+                          emojis: animatedEmojis)
+                .animated()
+            } header: {
+                Text("Animated emoji")
+            }
+        }
     }
 }
 // swiftlint:enable force_unwrapping

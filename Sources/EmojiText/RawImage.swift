@@ -51,12 +51,12 @@ struct RawImage: Hashable, Equatable {
         return !animationImages.isEmpty && duration > 0
     }
     
-    func frame(at date: Date) -> Image {
+    func frame(at time: CFTimeInterval) -> Image {
         guard isAnimated, let rawImages = animationImages else { return image }
         
         let count = TimeInterval(rawImages.count)
         let fps = count / duration
-        let totalFps = date.timeIntervalSinceReferenceDate * fps
+        let totalFps = time * fps
         
         let frame = totalFps.truncatingRemainder(dividingBy: count)
         let index = Int(frame)
