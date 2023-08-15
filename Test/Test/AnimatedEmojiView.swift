@@ -17,16 +17,32 @@ struct AnimatedEmojiView: View {
         ]
     }
     
+    @State private var isAnimating = true
+    
     var body: some View {
         EmojiTestView {
             EmojiText(verbatim: "WebP :webp:", emojis: emojis)
-                .animated()
+                .animated(isAnimating)
             EmojiText(verbatim: "APNG :apng:", emojis: emojis)
-                .animated()
+                .animated(isAnimating)
             EmojiText(verbatim: "GIF :gif:", emojis: emojis)
-                .animated()
+                .animated(isAnimating)
         }
         .navigationTitle("Animated Emoji")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    isAnimating.toggle()
+                } label: {
+                    if isAnimating {
+                        Image(systemName: "pause")
+                    } else {
+                        Image(systemName: "play")
+                    }
+                }
+
+            }
+        }
     }
 }
 

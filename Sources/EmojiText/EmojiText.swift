@@ -221,6 +221,7 @@ public struct EmojiText: View {
         for emoji in emojis {
             hasher.combine(emoji)
         }
+        hasher.combine(shouldAnimateIfNeeded)
         return hasher.finalize()
     }
     
