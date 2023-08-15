@@ -34,6 +34,27 @@ EmojiText(markdown: "**Hello** *World* :my_emoji:",
           emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
 ```
 
+### Animated Emoji
+
+> Warning:
+> This feature is in beta and therefore is opt-in only. Performance may vary.
+
+Currently only UIKit platforms support animated emoji.
+
+Enable animation by setting adding the `.animated()` modifier to `EmojiText`.
+
+```swift
+EmojiText(verbatim: "GIF :my_gif:",
+          emojis: [RemoteEmoji(shortcode: "my_gif", url: /* URL to gif */)])
+    .animated()
+```
+
+Supported formats:
+
+- APNG
+- GIF
+- WebP
+
 ## Topics
 
 ### Configuration

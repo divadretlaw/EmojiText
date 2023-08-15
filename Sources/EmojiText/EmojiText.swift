@@ -23,6 +23,7 @@ public struct EmojiText: View {
     @Environment(\.emojiPlaceholder) var emojiPlaceholder
     @Environment(\.emojiSize) var emojiSize
     @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
+    @Environment(\.emojiTimer) var emojiTimer
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -34,8 +35,11 @@ public struct EmojiText: View {
     var prepend: (() -> Text)?
     var append: (() -> Text)?
     
+    var shouldAnimateIfNeeded: Bool = false
+    
     @State private var preRendered: String?
-    @State private var renderedEmojis = [String: RenderedEmoji]()
+    @State private var renderedEmojis: [String: RenderedEmoji] = [:]
+    @State private var renderTime: Date = .now
     
     public var body: some View {
         rendered
@@ -66,6 +70,12 @@ public struct EmojiText: View {
                     renderedEmojis.merge(await loadEmojis()) { _, new in
                         new
                     }
+                }
+                
+                guard shouldAnimateIfNeeded, needsAnimation else { return }
+                
+                for await time in emojiTimer.values {
+                    renderTime = time
                 }
             }
             .onChange(of: renderedEmojis) { emojis in
@@ -105,10 +115,21 @@ public struct EmojiText: View {
             do {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
-                    let image = try await imagePipeline.image(for: remoteEmoji.url)
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetHeight: targetHeight, baselineOffset: baselineOffset)
+                    let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
+                    let image = try EmojiImage.from(data: data)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: remoteEmoji,
+                        image: image,
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset)
                 case let localEmoji as LocalEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight, baselineOffset: baselineOffset)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: localEmoji,
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
                 case let sfSymbolEmoji as SFSymbolEmoji:
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
                 default:
@@ -183,6 +204,14 @@ public struct EmojiText: View {
         return view
     }
     
+    // MARK: - Modifier
+    
+    public func animated(_ value: Bool = true) -> Self {
+        var view = self
+        view.shouldAnimateIfNeeded = value
+        return view
+    }
+    
     // MARK: - Helper
     
     // swiftlint:disable:next legacy_hashing
@@ -238,9 +267,9 @@ public struct EmojiText: View {
             splits.forEach { substring in
                 if let image = renderedEmojis[substring] {
                     if let baselineOffset = image.baselineOffset {
-                        result = result + Text("\(image.image)").baselineOffset(baselineOffset)
+                        result = result + Text("\(image.frame(at: renderTime))").baselineOffset(baselineOffset)
                     } else {
-                        result = result + Text("\(image.image)")
+                        result = result + Text("\(image.frame(at: renderTime))")
                     }
                 } else if isMarkdown {
                     result = result + Text(markdown: substring)
@@ -255,6 +284,10 @@ public struct EmojiText: View {
         }
         
         return result
+    }
+    
+    var needsAnimation: Bool {
+        renderedEmojis.contains { $1.isAnimated }
     }
 }
 

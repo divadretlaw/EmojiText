@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Nuke
+import Combine
 
 struct EmojiImagePipelineKey: EnvironmentKey {
     static var defaultValue: ImagePipeline { .shared }
@@ -27,6 +28,14 @@ struct EmojiSizeKey: EnvironmentKey {
 struct EmojiBaselineOffsetKey: EnvironmentKey {
     static var defaultValue: CGFloat? {
         nil
+    }
+}
+
+struct EmojiTimerKey: EnvironmentKey {
+    typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
+    
+    static var defaultValue: Publishers.Autoconnect<Timer.TimerPublisher> {
+        Timer.publish(every: 1 / 60, on: .main, in: .default).autoconnect()
     }
 }
 
@@ -58,6 +67,15 @@ public extension EnvironmentValues {
         }
         set {
             self[EmojiBaselineOffsetKey.self] = newValue
+        }
+    }
+    
+    var emojiTimer: Publishers.Autoconnect<Timer.TimerPublisher> {
+        get {
+            self[EmojiTimerKey.self]
+        }
+        set {
+            self[EmojiTimerKey.self] = newValue
         }
     }
 }

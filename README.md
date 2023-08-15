@@ -38,6 +38,27 @@ EmojiText(markdown: "**Hello** *World* :my_emoji:",
           emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
 ```
 
+### Animated Emoji
+
+> [!WARNING]
+> This feature is in beta and therefore is opt-in only. Performance may vary.
+
+Currently only UIKit platforms support animated emoji.
+
+Enable animation by setting adding the `.animated()` modifier to `EmojiText`.
+
+```swift
+EmojiText(verbatim: "GIF :my_gif:",
+          emojis: [RemoteEmoji(shortcode: "my_gif", url: /* URL to gif */)])
+    .animated()
+```
+
+Supported formats:
+
+- APNG
+- GIF
+- WebP
+
 ## Configuration
 
 Remote emojis are replaced by a placeholder image when loading. Default is the SF Symbol `square.dashed` but you can overide the placeholder image with
