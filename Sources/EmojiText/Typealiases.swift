@@ -21,9 +21,4 @@ import AppKit
 /// Platform indepdendent image alias. Will be `NSImage`.
 public typealias EmojiImage = NSImage
 typealias EmojiFont = NSFont
-
-extension NSImage {
-    var duration: TimeInterval { 0.0 }
-    var images: [NSImage]? { nil }
-}
 #endif

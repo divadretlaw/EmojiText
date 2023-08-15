@@ -8,12 +8,6 @@
 import Foundation
 import ImageIO
 
-enum EmojiError: Error {
-    case data
-    case `internal`
-    case unknownAnimatedImageType
-}
-
 extension EmojiImage {
     static func from(data: Data) throws -> EmojiImage {
         #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
@@ -39,7 +33,11 @@ extension EmojiImage {
             }
         }
         #else
-        return EmojiImage(data: data)!
+        if let image = EmojiImage(data: data) {
+            return image
+        } else {
+            throw EmojiError.data
+        }
         #endif
     }
     

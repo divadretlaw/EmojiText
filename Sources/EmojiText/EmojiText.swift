@@ -93,11 +93,19 @@ public struct EmojiText: View {
         for emoji in emojis {
             switch emoji {
             case let localEmoji as LocalEmoji:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: localEmoji,
+                    targetHeight: targetHeight)
             case let sfSymbolEmoji as SFSymbolEmoji:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: sfSymbolEmoji
+                )
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: emoji,
+                    placeholder: emojiPlaceholder,
+                    targetHeight: targetHeight
+                )
             }
         }
         
@@ -131,11 +139,17 @@ public struct EmojiText: View {
                         baselineOffset: baselineOffset
                     )
                 case let sfSymbolEmoji as SFSymbolEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: sfSymbolEmoji
+                    )
                 default:
                     // Fallback to placeholder emoji
                     Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        placeholder: emojiPlaceholder,
+                        targetHeight: targetHeight
+                    )
                 }
             } catch is CancellationError {
                 return [:]

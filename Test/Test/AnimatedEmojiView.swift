@@ -30,7 +30,7 @@ struct AnimatedEmojiView: View {
         }
         .navigationTitle("Animated Emoji")
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Button {
                     isAnimating.toggle()
                 } label: {
