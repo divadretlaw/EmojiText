@@ -1,5 +1,5 @@
 //
-//  CADisplayLink+Extensions.swift
+//  CADisplayLinkPublisher.swift
 //  EmojiText
 //
 //  Created by David Walter on 15.08.23.

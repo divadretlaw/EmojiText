@@ -12,6 +12,6 @@ enum EmojiError: Error {
     case data
     /// An internal error occured.
     case `internal`
-    /// The given animated image type is unknown.
-    case unknownAnimatedImageType
+    /// The given image type is either not animated or in an unknown format.
+    case notAnimated
 }

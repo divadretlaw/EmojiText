@@ -55,6 +55,36 @@ extension UIImage {
         }
         #endif
     }
+    
+    static func animatedImage(from source: CGImageSource, type: AnimatedImageType) -> UIImage? {
+        typealias CGImageWrapper = (source: CGImage, delay: Int)
+        var images: [CGImageWrapper] = []
+        for index in 0..<CGImageSourceGetCount(source) {
+            if let image = CGImageSourceCreateImageAtIndex(source, index, nil) {
+                let delayInSeconds = source.delay(for: index, type: type)
+                images.append((image, Int(delayInSeconds * 1000.0)))
+            }
+        }
+        
+        let delays = images.map { $0.delay }
+        
+        let duration = delays.reduce(0) { partialResult, value in
+            partialResult + value
+        }
+        
+        let divisor = delays.reduce(0) { gcd($0, $1) }
+        
+        let frames = images.flatMap { image in
+            let frame = UIImage(cgImage: image.source)
+            let count = image.delay / divisor
+            return Array(repeating: frame, count: count)
+        }
+        
+        let animation = UIImage.animatedImage(with: frames,
+                                              duration: TimeInterval(duration) / 1000.0)
+        
+        return animation
+    }
 }
 #endif
 
@@ -79,6 +109,15 @@ extension NSImage {
             self.draw(in: rect)
             return true
         }
+    }
+    
+    convenience init(cgImage: CGImage) {
+        self.init(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
+    }
+    
+    static func animatedImage(from source: CGImageSource, type: AnimatedImageType) -> NSImage? {
+        // Not yet implemented
+        return nil
     }
 }
 #endif
