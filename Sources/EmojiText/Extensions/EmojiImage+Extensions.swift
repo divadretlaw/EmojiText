@@ -9,7 +9,7 @@ import Foundation
 import ImageIO
 
 extension EmojiImage {
-    static func from(data: Data) throws -> EmojiImage {
+    static func from(data: Data) throws -> RawImage {
         do {
             guard let type = AnimatedImageType(from: data) else {
                 throw EmojiError.notAnimated
@@ -28,7 +28,7 @@ extension EmojiImage {
             // In case an error occurs while loading the animated image
             // we fall back to a static image
             if let image = EmojiImage(data: data) {
-                return image
+                return RawImage(image: image)
             } else {
                 throw EmojiError.data
             }

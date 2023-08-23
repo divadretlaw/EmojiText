@@ -1,5 +1,5 @@
 //
-//  RawImage.swift
+//  RenderedImage.swift
 //  EmojiImage
 //
 //  Created by David Walter on 15.08.23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RawImage: Hashable, Equatable {
+struct RenderedImage: Hashable, Equatable {
     private var systemName: String?
     private var platformImage: EmojiImage?
     private var animationImages: [EmojiImage]?
@@ -27,6 +27,17 @@ struct RawImage: Hashable, Equatable {
         self.animationImages = nil
         self.duration = 0
         #endif
+    }
+    
+    init(image: RawImage, animated: Bool, targetHeight: CGFloat) {
+        self.systemName = nil
+        self.platformImage = image.static.scalePreservingAspectRatio(targetHeight: targetHeight)
+        if animated {
+            self.animationImages = image.frames?.map { $0.scalePreservingAspectRatio(targetHeight: targetHeight) }
+        } else {
+            self.animationImages = nil
+        }
+        self.duration = image.duration
     }
     
     init(systemName: String) {

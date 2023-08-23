@@ -43,9 +43,6 @@ EmojiText(markdown: "**Hello** *World* :my_emoji:",
 > [!WARNING]
 > This feature is in beta and therefore is opt-in only. Performance may vary.
 
-> [!INFO]
-> macOS is currently not supported and will always display static emojis.
-
 Currently only UIKit platforms support animated emoji.
 
 Enable animation by setting adding the `.animated()` modifier to `EmojiText`.
