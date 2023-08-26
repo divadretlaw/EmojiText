@@ -59,6 +59,16 @@ Supported formats:
 - GIF
 - WebP
 
+> [!INFO]
+> The animation will automatically pause when using low-power mode. To always play animations, even in low-power mode set the animation mode to `AnimatedEmojiMode.always`
+> 
+> ```swift
+> EmojiText(verbatim: "GIF :my_gif:",
+>           emojis: [RemoteEmoji(shortcode: "my_gif", url:  ? URL to gif */)])
+>   .animated()
+>   .environment(\.emojiAnimatedMode, .always)
+> ```
+
 ## Configuration
 
 Remote emojis are replaced by a placeholder image when loading. Default is the SF Symbol `square.dashed` but you can overide the placeholder image with

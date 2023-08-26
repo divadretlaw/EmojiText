@@ -31,6 +31,12 @@ struct EmojiBaselineOffsetKey: EnvironmentKey {
     }
 }
 
+struct EmojiAnimatedModeKey: EnvironmentKey {
+    static var defaultValue: AnimatedEmojiMode {
+        .disabledOnLowPower
+    }
+}
+
 #if os(watchOS) || os(macOS)
 struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
@@ -73,6 +79,15 @@ public extension EnvironmentValues {
         }
         set {
             self[EmojiBaselineOffsetKey.self] = newValue
+        }
+    }
+    
+    var emojiAnimatedMode: AnimatedEmojiMode {
+        get {
+            self[EmojiAnimatedModeKey.self]
+        }
+        set {
+            self[EmojiAnimatedModeKey.self] = newValue
         }
     }
 }

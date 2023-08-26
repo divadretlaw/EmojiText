@@ -26,6 +26,7 @@ public struct EmojiText: View {
     #if os(watchOS) || os(macOS)
     @Environment(\.emojiTimer) var emojiTimer
     #endif
+    @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -77,11 +78,11 @@ public struct EmojiText: View {
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
-                for await event in CADisplayLink.publish(mode: .common).values {
+                for await event in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values {
                     renderTime = event.targetTimestamp
                 }
                 #else
-                for await time in emojiTimer.values {
+                for await time in emojiTimer.values(stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower) {
                     renderTime = time.timeIntervalSinceReferenceDate as CFTimeInterval
                 }
                 #endif
@@ -131,8 +132,14 @@ public struct EmojiText: View {
             do {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
-                    let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
-                    let image = try EmojiImage.from(data: data)
+                    let image: RawImage
+                    if shouldAnimateIfNeeded {
+                        let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
+                        image = try EmojiImage.from(data: data)
+                    } else  {
+                        let data = try await imagePipeline.image(for: remoteEmoji.url)
+                        image = RawImage(image: data)
+                    }
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(
                         from: remoteEmoji,
                         image: image,

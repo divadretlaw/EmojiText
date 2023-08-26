@@ -12,15 +12,21 @@ extension CADisplayLink {
     @MainActor
     struct CADisplayLinkPublisher {
         var mode: RunLoop.Mode
+        var stopOnLowPowerMode: Bool
         
-        init(mode: RunLoop.Mode) {
+        init(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) {
             self.mode = mode
+            self.stopOnLowPowerMode = stopOnLowPowerMode
         }
         
         var values: AsyncStream<CADisplayLink> {
             AsyncStream { continuation in
                 let displayLink = DisplayLink(mode: mode) { displayLink in
-                    continuation.yield(displayLink)
+                    if stopOnLowPowerMode && ProcessInfo.processInfo.isLowPowerModeEnabled {
+                        // Do not yielding information on low-power mode
+                    } else {
+                        continuation.yield(displayLink)
+                    }
                 }
                 
                 continuation.onTermination = { _ in
@@ -31,8 +37,8 @@ extension CADisplayLink {
     }
     
     @MainActor
-    static func publish(mode: RunLoop.Mode) -> CADisplayLinkPublisher {
-        CADisplayLinkPublisher(mode: mode)
+    static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
+        CADisplayLinkPublisher(mode: mode, stopOnLowPowerMode: stopOnLowPowerMode)
     }
 }
 

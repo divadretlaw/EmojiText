@@ -7,6 +7,7 @@
 
 import Foundation
 import ImageIO
+import OSLog
 
 extension EmojiImage {
     static func from(data: Data) throws -> RawImage {
@@ -16,13 +17,13 @@ extension EmojiImage {
             }
             
             guard let source = CGImageSourceCreateWithData(data as CFData, nil), source.containsAnimatedKeys(for: type) else {
-                throw EmojiError.internal
+                throw EmojiError.animatedData
             }
             
             if let image = animatedImage(from: source, type: type) {
                 return image
             } else {
-                throw EmojiError.internal
+                throw EmojiError.animatedData
             }
         } catch {
             // In case an error occurs while loading the animated image
@@ -30,7 +31,8 @@ extension EmojiImage {
             if let image = EmojiImage(data: data) {
                 return RawImage(image: image)
             } else {
-                throw EmojiError.data
+                Logger.animatedImage.warning("Unable to decode animated image: \(error.localizedDescription).")
+                throw EmojiError.staticData
             }
         }
     }
