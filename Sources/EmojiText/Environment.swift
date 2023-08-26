@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Nuke
+import Combine
 
 struct EmojiImagePipelineKey: EnvironmentKey {
     static var defaultValue: ImagePipeline { .shared }
@@ -29,6 +30,26 @@ struct EmojiBaselineOffsetKey: EnvironmentKey {
         nil
     }
 }
+
+struct EmojiAnimatedModeKey: EnvironmentKey {
+    static var defaultValue: AnimatedEmojiMode {
+        .disabledOnLowPower
+    }
+}
+
+#if os(watchOS) || os(macOS)
+struct EmojiTimerKey: EnvironmentKey {
+    typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
+    
+    static var defaultValue: Publishers.Autoconnect<Timer.TimerPublisher> {
+        #if os(watchOS)
+        Timer.publish(every: 1 / 24, on: .main, in: .common).autoconnect()
+        #else
+        Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
+        #endif
+    }
+}
+#endif
 
 public extension EnvironmentValues {
     /// The image pipeline used to fetch remote emojis.
@@ -60,6 +81,15 @@ public extension EnvironmentValues {
             self[EmojiBaselineOffsetKey.self] = newValue
         }
     }
+    
+    var emojiAnimatedMode: AnimatedEmojiMode {
+        get {
+            self[EmojiAnimatedModeKey.self]
+        }
+        set {
+            self[EmojiAnimatedModeKey.self] = newValue
+        }
+    }
 }
 
 internal extension EnvironmentValues {
@@ -81,6 +111,17 @@ internal extension EnvironmentValues {
             self[EmojiPlaceholderKey.self] = newValue
         }
     }
+    
+    #if os(watchOS) || os(macOS)
+    var emojiTimer: Publishers.Autoconnect<Timer.TimerPublisher> {
+        get {
+            self[EmojiTimerKey.self]
+        }
+        set {
+            self[EmojiTimerKey.self] = newValue
+        }
+    }
+    #endif
 }
 
 public extension View {

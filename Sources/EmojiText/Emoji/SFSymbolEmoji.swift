@@ -40,3 +40,11 @@ public struct SFSymbolEmoji: CustomEmoji {
         hasher.combine(renderingMode)
     }
 }
+
+extension EmojiImage {
+    static func from(emoji: SFSymbolEmoji) -> EmojiImage {
+        EmojiImage(systemName: emoji.shortcode)
+        ?? EmojiImage(systemName: SFSymbolEmoji.placeholder.shortcode)
+        ?? EmojiImage()
+    }
+}

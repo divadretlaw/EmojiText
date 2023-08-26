@@ -16,13 +16,15 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     let renderingMode: Image.TemplateRenderingMode?
     let symbolRenderingMode: SymbolRenderingMode?
     
-    private let _image: Image
+    private let rawImage: RenderedImage
     private let sourceHash: Int
     private let placeholderId: UUID?
     
-    init(from emoji: RemoteEmoji, image: EmojiImage, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
+    init(from emoji: RemoteEmoji, image: RawImage, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        self._image = Image(emojiImage: image.scalePreservingAspectRatio(targetHeight: targetHeight))
+        self.rawImage = RenderedImage(image: image,
+                                 animated: animated,
+                                 targetHeight: targetHeight)
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
@@ -30,9 +32,9 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.sourceHash = emoji.hashValue
     }
     
-    init(from emoji: LocalEmoji, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
+    init(from emoji: LocalEmoji, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        self._image = Image(emojiImage: emoji.image.scalePreservingAspectRatio(targetHeight: targetHeight))
+        self.rawImage = RenderedImage(image: emoji.image, animated: animated, targetHeight: targetHeight)
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
@@ -42,7 +44,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     
     init(from emoji: SFSymbolEmoji) {
         self.shortcode = emoji.shortcode
-        self._image = Image(systemName: emoji.shortcode)
+        self.rawImage = RenderedImage(systemName: emoji.shortcode)
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
@@ -50,7 +52,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.sourceHash = emoji.hashValue
     }
     
-    init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, targetHeight: CGFloat) {
+    init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, animated: Bool = false, targetHeight: CGFloat) {
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset
@@ -60,11 +62,11 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         
         switch placeholder {
         case let localEmoji as LocalEmoji:
-            self._image = Image(emojiImage: localEmoji.image.scalePreservingAspectRatio(targetHeight: targetHeight))
+            self.rawImage = RenderedImage(image: localEmoji.image, animated: animated, targetHeight: targetHeight)
         case let sfSymbolEmoji as SFSymbolEmoji:
-            self._image = Image(systemName: sfSymbolEmoji.shortcode)
+            self.rawImage = RenderedImage(systemName: sfSymbolEmoji.shortcode)
         default:
-            self._image = Image(systemName: SFSymbolEmoji.placeholder.shortcode)
+            self.rawImage = RenderedImage(systemName: SFSymbolEmoji.placeholder.shortcode)
             Logger.emojiText.error("Unsupported CustomEmoji was used as placeholder. Only LocalEmoji and SFSymbolEmoji are supported. This is a bug. Please file a report at https://github.com/divadretlaw/EmojiText")
         }
     }
@@ -73,8 +75,20 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         placeholderId != nil
     }
     
+    var isAnimated: Bool {
+        rawImage.isAnimated
+    }
+    
     var image: Image {
-        _image.renderingMode(renderingMode).symbolRenderingMode(symbolRenderingMode)
+        rawImage.image
+            .renderingMode(renderingMode)
+            .symbolRenderingMode(symbolRenderingMode)
+    }
+    
+    func frame(at time: CFTimeInterval) -> Image {
+        rawImage.frame(at: time)
+            .renderingMode(renderingMode)
+            .symbolRenderingMode(symbolRenderingMode)
     }
     
     func hasSameSource(as value: RenderedEmoji) -> Bool {
@@ -94,7 +108,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         guard lhs.shortcode == rhs.shortcode,
               lhs.isPlaceholder == rhs.isPlaceholder else { return false }
-        return lhs.image == rhs.image
+        return lhs.rawImage == rhs.rawImage
     }
     
     // MARK: - Identifiable

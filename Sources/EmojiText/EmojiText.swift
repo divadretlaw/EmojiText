@@ -23,6 +23,10 @@ public struct EmojiText: View {
     @Environment(\.emojiPlaceholder) var emojiPlaceholder
     @Environment(\.emojiSize) var emojiSize
     @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
+    #if os(watchOS) || os(macOS)
+    @Environment(\.emojiTimer) var emojiTimer
+    #endif
+    @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -34,8 +38,11 @@ public struct EmojiText: View {
     var prepend: (() -> Text)?
     var append: (() -> Text)?
     
+    var shouldAnimateIfNeeded: Bool = false
+    
     @State private var preRendered: String?
-    @State private var renderedEmojis = [String: RenderedEmoji]()
+    @State private var renderedEmojis: [String: RenderedEmoji] = [:]
+    @State private var renderTime: CFTimeInterval = 0
     
     public var body: some View {
         rendered
@@ -67,6 +74,18 @@ public struct EmojiText: View {
                         new
                     }
                 }
+                
+                guard shouldAnimateIfNeeded, needsAnimation else { return }
+                
+                #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+                for await event in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values {
+                    renderTime = event.targetTimestamp
+                }
+                #else
+                for await time in emojiTimer.values(stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower) {
+                    renderTime = time.timeIntervalSinceReferenceDate as CFTimeInterval
+                }
+                #endif
             }
             .onChange(of: renderedEmojis) { emojis in
                 preRendered = preRender(with: emojis)
@@ -83,11 +102,19 @@ public struct EmojiText: View {
         for emoji in emojis {
             switch emoji {
             case let localEmoji as LocalEmoji:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: localEmoji,
+                    targetHeight: targetHeight)
             case let sfSymbolEmoji as SFSymbolEmoji:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: sfSymbolEmoji
+                )
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
+                placeholders[emoji.shortcode] = RenderedEmoji(
+                    from: emoji,
+                    placeholder: emojiPlaceholder,
+                    targetHeight: targetHeight
+                )
             }
         }
         
@@ -105,16 +132,39 @@ public struct EmojiText: View {
             do {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
-                    let image = try await imagePipeline.image(for: remoteEmoji.url)
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: remoteEmoji, image: image, targetHeight: targetHeight, baselineOffset: baselineOffset)
+                    let image: RawImage
+                    if shouldAnimateIfNeeded {
+                        let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
+                        image = try EmojiImage.from(data: data)
+                    } else  {
+                        let data = try await imagePipeline.image(for: remoteEmoji.url)
+                        image = RawImage(image: data)
+                    }
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: remoteEmoji,
+                        image: image,
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset)
                 case let localEmoji as LocalEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: localEmoji, targetHeight: targetHeight, baselineOffset: baselineOffset)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: localEmoji,
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
                 case let sfSymbolEmoji as SFSymbolEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: sfSymbolEmoji)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: sfSymbolEmoji
+                    )
                 default:
                     // Fallback to placeholder emoji
                     Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(from: emoji, placeholder: emojiPlaceholder, targetHeight: targetHeight)
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        placeholder: emojiPlaceholder,
+                        targetHeight: targetHeight
+                    )
                 }
             } catch is CancellationError {
                 return [:]
@@ -183,6 +233,14 @@ public struct EmojiText: View {
         return view
     }
     
+    // MARK: - Modifier
+    
+    public func animated(_ value: Bool = true) -> Self {
+        var view = self
+        view.shouldAnimateIfNeeded = value
+        return view
+    }
+    
     // MARK: - Helper
     
     // swiftlint:disable:next legacy_hashing
@@ -192,6 +250,7 @@ public struct EmojiText: View {
         for emoji in emojis {
             hasher.combine(emoji)
         }
+        hasher.combine(shouldAnimateIfNeeded)
         return hasher.finalize()
     }
     
@@ -238,9 +297,9 @@ public struct EmojiText: View {
             splits.forEach { substring in
                 if let image = renderedEmojis[substring] {
                     if let baselineOffset = image.baselineOffset {
-                        result = result + Text("\(image.image)").baselineOffset(baselineOffset)
+                        result = result + Text("\(image.frame(at: renderTime))").baselineOffset(baselineOffset)
                     } else {
-                        result = result + Text("\(image.image)")
+                        result = result + Text("\(image.frame(at: renderTime))")
                     }
                 } else if isMarkdown {
                     result = result + Text(markdown: substring)
@@ -256,6 +315,10 @@ public struct EmojiText: View {
         
         return result
     }
+    
+    var needsAnimation: Bool {
+        renderedEmojis.contains { $1.isAnimated }
+    }
 }
 
 // swiftlint:disable force_unwrapping
@@ -265,6 +328,12 @@ struct EmojiText_Previews: PreviewProvider {
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
             RemoteEmoji(shortcode: "puppu_purin", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!),
             SFSymbolEmoji(shortcode: "iphone")
+        ]
+    }
+    
+    static var animatedEmojis: [any CustomEmoji] {
+        [
+            RemoteEmoji(shortcode: "gif", url: URL(string: "https://ezgif.com/images/format-demo/butterfly.gif")!)
         ]
     }
     
@@ -332,6 +401,16 @@ struct EmojiText_Previews: PreviewProvider {
             configuration.imageCache = nil
             configuration.dataCache = nil
         })
+        
+        List {
+            Section {
+                EmojiText(markdown: "**Animated** *GIF* :gif:",
+                          emojis: animatedEmojis)
+                .animated()
+            } header: {
+                Text("Animated emoji")
+            }
+        }
     }
 }
 // swiftlint:enable force_unwrapping

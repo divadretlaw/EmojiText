@@ -30,6 +30,12 @@ struct ContentView: View {
                     } label: {
                         Text("SF Symbol Emoji")
                     }
+                    
+                    NavigationLink {
+                        AnimatedEmojiView()
+                    } label: {
+                        Text("Animated Emoji")
+                    }
                 }
                 .navigationTitle("EmojiText")
             }
