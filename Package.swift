@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.6
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -9,13 +9,13 @@ let package = Package(
         .iOS(.v15),
         .macOS(.v12),
         .tvOS(.v15),
-        .watchOS(.v9)
+        .watchOS(.v8)
     ],
     products: [
         .library(
             name: "EmojiText",
             targets: ["EmojiText"]
-        ),
+        )
     ],
     dependencies: [
          .package(url: "https://github.com/kean/Nuke", from: "12.0.0")
@@ -26,6 +26,6 @@ let package = Package(
             dependencies: [
                 .product(name: "Nuke", package: "Nuke")
             ]
-        ),
+        )
     ]
 )

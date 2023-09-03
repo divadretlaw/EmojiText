@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ImageIO
 
 extension Image {
     init(emojiImage: EmojiImage) {

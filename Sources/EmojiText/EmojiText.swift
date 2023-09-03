@@ -286,7 +286,7 @@ public struct EmojiText: View {
             }
         } else {
             let splits: [String]
-            if #available(iOS 16, macOS 13, tvOS 16, *) {
+            if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
                 splits = preRendered
                     .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
                     .map { String($0) }
