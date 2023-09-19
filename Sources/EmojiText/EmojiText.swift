@@ -317,7 +317,10 @@ public struct EmojiText: View {
     }
     
     var needsAnimation: Bool {
-        renderedEmojis.contains { $1.isAnimated }
+        guard case .never = emojiAnimatedMode else {
+            return renderedEmojis.contains { $1.isAnimated }
+        }
+        return false
     }
 }
 
@@ -407,6 +410,10 @@ struct EmojiText_Previews: PreviewProvider {
                 EmojiText(markdown: "**Animated** *GIF* :gif:",
                           emojis: animatedEmojis)
                 .animated()
+                EmojiText(markdown: "**Never Animated** *GIF* :gif:",
+                          emojis: animatedEmojis)
+                .animated()
+                .environment(\.emojiAnimatedMode, .never)
             } header: {
                 Text("Animated emoji")
             }
