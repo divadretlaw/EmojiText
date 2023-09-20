@@ -29,7 +29,10 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.placeholderId = nil
-        self.sourceHash = emoji.hashValue
+        var hasher = Hasher()
+        hasher.combine(emoji)
+        hasher.combine(targetHeight)
+        self.sourceHash = hasher.finalize()
     }
     
     init(from emoji: LocalEmoji, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
@@ -39,7 +42,10 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.placeholderId = nil
-        self.sourceHash = emoji.hashValue
+        var hasher = Hasher()
+        hasher.combine(emoji)
+        hasher.combine(targetHeight)
+        self.sourceHash = hasher.finalize()
     }
     
     init(from emoji: SFSymbolEmoji) {
@@ -58,7 +64,10 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
         self.placeholderId = UUID()
-        self.sourceHash = emoji.hashValue
+        var hasher = Hasher()
+        hasher.combine(emoji)
+        hasher.combine(targetHeight)
+        self.sourceHash = hasher.finalize()
         
         switch placeholder {
         case let localEmoji as LocalEmoji:
