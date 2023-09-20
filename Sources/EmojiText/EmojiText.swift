@@ -251,6 +251,7 @@ public struct EmojiText: View {
             hasher.combine(emoji)
         }
         hasher.combine(shouldAnimateIfNeeded)
+        hasher.combine(emojiSize)
         return hasher.finalize()
     }
     
@@ -326,6 +327,18 @@ public struct EmojiText: View {
 
 // swiftlint:disable force_unwrapping
 struct EmojiText_Previews: PreviewProvider {
+
+    struct EmojiTextWithSlider: View {
+        @State private var emojiSize: CGFloat = 20
+
+        var body: some View {
+            EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
+                      emojis: emojis)
+            .emojiSize(emojiSize)
+            Slider(value: $emojiSize, in: 1...50)
+        }
+    }
+
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
@@ -416,6 +429,14 @@ struct EmojiText_Previews: PreviewProvider {
                 .environment(\.emojiAnimatedMode, .never)
             } header: {
                 Text("Animated emoji")
+            }
+        }
+
+        List {
+            Section {
+                EmojiTextWithSlider()
+            } header: {
+                Text("EmojiSize")
             }
         }
     }
