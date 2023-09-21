@@ -69,7 +69,7 @@ public struct EmojiText: View {
                 }
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
-                if renderedHash != renderedEmojis.hashValue {
+                if renderedHash != renderedEmojis.hashValue || renderedEmojis.values.contains(where: { $0.isPlaceholder }){
                     renderedEmojis.merge(await loadEmojis()) { _, new in
                         new
                     }
