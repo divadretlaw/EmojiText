@@ -9,43 +9,34 @@ import Foundation
 import ImageIO
 
 extension CGImageSource {
-    func properties(for index: Int, key: CFString) -> CFDictionary? {
-        guard let properties = CGImageSourceCopyPropertiesAtIndex(self, index, nil) else {
+    func properties(for index: Int, key: CFString) -> [String: Any]? {
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(self, index, nil) as? [String: Any] else {
             return nil
         }
-        
-        let key = Unmanaged.passUnretained(key).toOpaque()
-        return unsafeBitCast(CFDictionaryGetValue(properties, key), to: CFDictionary.self)
+
+        return properties[key as String] as? [String: Any]
     }
-    
+
     func delay(for index: Int, type: AnimatedImageType) -> Double {
         guard let properties = properties(for: index, key: type.propertiesKey) else {
             return 0
         }
-        
-        let unclampedDelayTimeKey = Unmanaged.passUnretained(type.unclampedDelayTimeKey).toOpaque()
-        var delayObject: AnyObject = unsafeBitCast(CFDictionaryGetValue(properties, unclampedDelayTimeKey),
-                                                   to: AnyObject.self)
-        
-        if let value = delayObject.doubleValue, value > 0 {
-            return value
-        } else {
-            let delayTimeKey = Unmanaged.passUnretained(type.delayTimeKey).toOpaque()
-            delayObject = unsafeBitCast(CFDictionaryGetValue(properties, delayTimeKey),
-                                        to: AnyObject.self)
-            return delayObject.doubleValue ?? 0
+
+        guard let delayObject: AnyObject = properties[type.unclampedDelayTimeKey as String] as? AnyObject ,
+              let value = delayObject.doubleValue,
+              value > 0 else {
+            return (properties[type.delayTimeKey as String] as? AnyObject)?.doubleValue ?? 0
         }
+
+        return value
     }
-    
+
     func containsAnimatedKeys(for type: AnimatedImageType) -> Bool {
         guard let properties = properties(for: 0, key: type.propertiesKey) else {
             return false
         }
-        
-        let unclampedDelayTimeKey = Unmanaged.passUnretained(type.unclampedDelayTimeKey).toOpaque()
-        let delayTimeKey = Unmanaged.passUnretained(type.delayTimeKey).toOpaque()
-        
-        return CFDictionaryContainsKey(properties, unclampedDelayTimeKey)
-        || CFDictionaryContainsKey(properties, delayTimeKey)
+
+        return properties.keys.contains(type.unclampedDelayTimeKey as String)
+        || properties.keys.contains(type.delayTimeKey as String)
     }
 }
