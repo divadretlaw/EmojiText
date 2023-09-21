@@ -13,7 +13,7 @@ extension Text {
         do {
             let options = AttributedString.MarkdownParsingOptions(allowsExtendedAttributes: true,
                                                                   interpretedSyntax: .inlineOnlyPreservingWhitespace)
-            self.init(try AttributedString(markdown: string, options: options))
+            try self.init(AttributedString(markdown: string, options: options))
         } catch {
             Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
             self.init(AttributedString(stringLiteral: string))

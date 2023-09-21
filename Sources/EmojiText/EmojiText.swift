@@ -69,7 +69,7 @@ public struct EmojiText: View {
                 }
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
-                if renderedHash != renderedEmojis.hashValue || renderedEmojis.values.contains(where: { $0.isPlaceholder }){
+                if renderedHash != renderedEmojis.hashValue || renderedEmojis.contains(where: \.value.isPlaceholder) {
                     renderedEmojis.merge(await loadEmojis()) { _, new in
                         new
                     }
@@ -104,7 +104,8 @@ public struct EmojiText: View {
             case let localEmoji as LocalEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: localEmoji,
-                    targetHeight: targetHeight)
+                    targetHeight: targetHeight
+                )
             case let sfSymbolEmoji as SFSymbolEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
@@ -136,7 +137,7 @@ public struct EmojiText: View {
                     if shouldAnimateIfNeeded {
                         let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
                         image = try EmojiImage.from(data: data)
-                    } else  {
+                    } else {
                         let data = try await imagePipeline.image(for: remoteEmoji.url)
                         image = RawImage(image: data)
                     }
@@ -145,7 +146,8 @@ public struct EmojiText: View {
                         image: image,
                         animated: shouldAnimateIfNeeded,
                         targetHeight: targetHeight,
-                        baselineOffset: baselineOffset)
+                        baselineOffset: baselineOffset
+                    )
                 case let localEmoji as LocalEmoji:
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(
                         from: localEmoji,
@@ -168,7 +170,7 @@ public struct EmojiText: View {
                 }
             } catch is CancellationError {
                 return [:]
-            } catch  {
+            } catch {
                 Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
             }
         }
@@ -328,30 +330,6 @@ public struct EmojiText: View {
 
 // swiftlint:disable force_unwrapping
 struct EmojiText_Previews: PreviewProvider {
-
-    struct EmojiTextWithSlider: View {
-        @State private var emojiSize: CGFloat = 20
-
-        var body: some View {
-            EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
-                      emojis: emojis)
-            .emojiSize(emojiSize)
-            Slider(value: $emojiSize, in: 1...50)
-        }
-    }
-
-    struct AnimatedEmojiTextWithToggle: View {
-        @State private var enableAnimation: Bool = false
-
-        var body: some View {
-            EmojiText(markdown: "**Animated** *GIF* :gif:",
-                      emojis: animatedEmojis)
-            .animated()
-            .environment(\.emojiAnimatedMode, enableAnimation ? .always : .never)
-            Toggle("Enable animation", isOn: $enableAnimation)
-        }
-    }
-
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
@@ -367,7 +345,47 @@ struct EmojiText_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        List {
+        Group {
+            List {
+                TextEmoji()
+                
+                MarkdownEmoji()
+                
+                WideWidthEmoji()
+            }
+            .previewDisplayName("Default Emoji")
+            
+            List {
+                Section {
+                    EmojiText(markdown: "**Animated** *GIF* :gif:",
+                              emojis: animatedEmojis)
+                    .animated()
+                    EmojiText(markdown: "**Never Animated** *GIF* :gif:",
+                              emojis: animatedEmojis)
+                    .animated()
+                    .environment(\.emojiAnimatedMode, .never)
+                    
+                } header: {
+                    Text("Default")
+                }
+                
+                AnimatedEmojiToggle()
+            }
+            .previewDisplayName("Animated Emoji")
+            
+            List {
+                EmojiTextWithSlider()
+            }
+            .previewDisplayName("Emoji Size")
+        }
+        .environment(\.emojiImagePipeline, ImagePipeline { configuration in
+            configuration.imageCache = nil
+            configuration.dataCache = nil
+        })
+    }
+    
+    struct TextEmoji: View {
+        var body: some View {
             Section {
                 EmojiText(verbatim: "Hello Moon & Stars :moon.stars:",
                           emojis: [SFSymbolEmoji(shortcode: "moon.stars")])
@@ -387,6 +405,11 @@ struct EmojiText_Previews: PreviewProvider {
             } header: {
                 Text("Text")
             }
+        }
+    }
+    
+    struct MarkdownEmoji: View {
+        var body: some View {
             Section {
                 EmojiText(markdown: "**Hello** *World* :mastodon: with a remote emoji",
                           emojis: emojis)
@@ -410,6 +433,11 @@ struct EmojiText_Previews: PreviewProvider {
             } header: {
                 Text("Markdown")
             }
+        }
+    }
+    
+    struct WideWidthEmoji: View {
+        var body: some View {
             Section {
                 EmojiText(verbatim: "Hello World :puppu_purin: with a remote emoji.",
                           emojis: emojis)
@@ -426,31 +454,40 @@ struct EmojiText_Previews: PreviewProvider {
                 Text("Wide width emoji")
             }
         }
-        .environment(\.emojiImagePipeline, ImagePipeline { configuration in
-            configuration.imageCache = nil
-            configuration.dataCache = nil
-        })
+    }
+    
+    struct EmojiTextWithSlider: View {
+        @State private var emojiSize: CGFloat = 20
         
-        List {
+        var body: some View {
+            Section {
+                EmojiText(verbatim: "Hello World :mastodon: with a remote emoji",
+                          emojis: emojis)
+                .emojiSize(emojiSize)
+                
+                Slider(value: $emojiSize, in: 1...50)
+            }
+        }
+    }
+    
+    struct AnimatedEmojiToggle: View {
+        @State private var enableAnimation: Bool = false
+        
+        var body: some View {
             Section {
                 EmojiText(markdown: "**Animated** *GIF* :gif:",
                           emojis: animatedEmojis)
                 .animated()
+                .environment(\.emojiAnimatedMode, enableAnimation ? .always : .never)
+                
                 EmojiText(markdown: "**Never Animated** *GIF* :gif:",
                           emojis: animatedEmojis)
                 .animated()
                 .environment(\.emojiAnimatedMode, .never)
-                AnimatedEmojiTextWithToggle()
+                
+                Toggle("Enable animation", isOn: $enableAnimation)
             } header: {
-                Text("Animated emoji")
-            }
-        }
-
-        List {
-            Section {
-                EmojiTextWithSlider()
-            } header: {
-                Text("EmojiSize")
+                Text("Toggle")
             }
         }
     }

@@ -22,7 +22,7 @@ extension CGImageSource {
             return 0
         }
 
-        guard let delayObject: AnyObject = properties[type.unclampedDelayTimeKey as String] as? AnyObject ,
+        guard let delayObject: AnyObject = properties[type.unclampedDelayTimeKey as String] as? AnyObject,
               let value = delayObject.doubleValue,
               value > 0 else {
             return (properties[type.delayTimeKey as String] as? AnyObject)?.doubleValue ?? 0

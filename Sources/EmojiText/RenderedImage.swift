@@ -1,5 +1,5 @@
 //
-//  RawImage.swift
+//  RenderedImage.swift
 //  EmojiText
 //
 //  Created by David Walter on 23.08.23.
