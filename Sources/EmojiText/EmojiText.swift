@@ -252,6 +252,7 @@ public struct EmojiText: View {
         }
         hasher.combine(shouldAnimateIfNeeded)
         hasher.combine(emojiSize)
+        hasher.combine(emojiAnimatedMode)
         return hasher.finalize()
     }
     
@@ -336,6 +337,18 @@ struct EmojiText_Previews: PreviewProvider {
                       emojis: emojis)
             .emojiSize(emojiSize)
             Slider(value: $emojiSize, in: 1...50)
+        }
+    }
+
+    struct AnimatedEmojiTextWithToggle: View {
+        @State private var enableAnimation: Bool = false
+
+        var body: some View {
+            EmojiText(markdown: "**Animated** *GIF* :gif:",
+                      emojis: animatedEmojis)
+            .animated()
+            .environment(\.emojiAnimatedMode, enableAnimation ? .always : .never)
+            Toggle("Enable animation", isOn: $enableAnimation)
         }
     }
 
@@ -427,6 +440,7 @@ struct EmojiText_Previews: PreviewProvider {
                           emojis: animatedEmojis)
                 .animated()
                 .environment(\.emojiAnimatedMode, .never)
+                AnimatedEmojiTextWithToggle()
             } header: {
                 Text("Animated emoji")
             }
