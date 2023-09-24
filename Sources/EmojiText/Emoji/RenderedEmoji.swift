@@ -22,13 +22,12 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     
     init(from emoji: RemoteEmoji, image: RawImage, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        self.rawImage = RenderedImage(image: image,
-                                 animated: animated,
-                                 targetHeight: targetHeight)
+        self.rawImage = RenderedImage(image: image, animated: animated, targetHeight: targetHeight)
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.placeholderId = nil
+        // The source hash is the cominbed value of the emoji & target height
         var hasher = Hasher()
         hasher.combine(emoji)
         hasher.combine(targetHeight)
@@ -42,6 +41,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
         self.placeholderId = nil
+        // The source hash is the cominbed value of the emoji & target height
         var hasher = Hasher()
         hasher.combine(emoji)
         hasher.combine(targetHeight)
@@ -64,6 +64,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.baselineOffset = emoji.baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
         self.placeholderId = UUID()
+        // The source hash is the cominbed value of the emoji & target height
         var hasher = Hasher()
         hasher.combine(emoji)
         hasher.combine(targetHeight)

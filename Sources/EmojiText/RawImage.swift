@@ -1,86 +1,67 @@
 //
-//  RenderedImage.swift
-//  EmojiImage
+//  RawImage.swift
+//  EmojiText
 //
-//  Created by David Walter on 15.08.23.
+//  Created by David Walter on 23.08.23.
 //
 
-import SwiftUI
+import Foundation
+import ImageIO
+import OSLog
 
-struct RenderedImage: Hashable, Equatable {
-    private var systemName: String?
-    private var platformImage: EmojiImage?
-    private var animationImages: [EmojiImage]?
-    private var duration: TimeInterval
+/// A wrapper arround ``EmojiImage`` to support animated images on all platforms.
+struct RawImage {
+    /// A static representation of the animated image
+    var `static`: EmojiImage
+    /// The complete array of image objects that compose the animation of an animated object.
+    ///
+    /// For a non-animated image, the value of this property is nil.
+    var frames: [EmojiImage]?
+    /// The time interval for displaying an animated image.
+    ///
+    /// For a non-animated image, the value of this property is 0.0.
+    var duration: TimeInterval
     
-    init(image: EmojiImage, animated: Bool, targetHeight: CGFloat) {
-        self.systemName = nil
-        self.platformImage = image.scalePreservingAspectRatio(targetHeight: targetHeight)
-        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
-        if animated {
-            self.animationImages = image.images?.map { $0.scalePreservingAspectRatio(targetHeight: targetHeight) }
-        } else {
-            self.animationImages = nil
-        }
-        self.duration = image.duration
-        #else
-        self.animationImages = nil
-        self.duration = 0
-        #endif
+    init?(frames: [EmojiImage], duration: TimeInterval) {
+        guard let image = frames.first else { return nil }
+        
+        self.static = image
+        self.frames = frames
+        self.duration = duration
     }
     
-    init(image: RawImage, animated: Bool, targetHeight: CGFloat) {
-        self.systemName = nil
-        self.platformImage = image.static.scalePreservingAspectRatio(targetHeight: targetHeight)
-        if animated {
-            self.animationImages = image.frames?.map { $0.scalePreservingAspectRatio(targetHeight: targetHeight) }
-        } else {
-            self.animationImages = nil
-        }
-        self.duration = image.duration
-    }
-    
-    init(systemName: String) {
-        self.systemName = systemName
-        self.platformImage = nil
-        self.animationImages = nil
+    init(image: EmojiImage) {
+        self.static = image
+        self.frames = nil
         self.duration = 0
     }
-    
-    var image: Image {
-        if let systemName = systemName {
-            return Image(systemName: systemName)
-        } else if let image = platformImage {
-            return Image(emojiImage: image)
-        } else {
-            return Image(emojiImage: EmojiImage())
+}
+
+extension RawImage {
+    init(data: Data) throws {
+        do {
+            guard let type = AnimatedImageType(from: data) else {
+                throw EmojiError.notAnimated
+            }
+            
+            guard let source = CGImageSourceCreateWithData(data as CFData, nil), source.containsAnimatedKeys(for: type) else {
+                throw EmojiError.animatedData
+            }
+            
+            if let image = EmojiImage.animatedImage(from: source, type: type) {
+                self = image
+            } else {
+                throw EmojiError.animatedData
+            }
+        } catch {
+            // In case an error occurs while loading the animated image
+            // we fall back to a static image
+            if let image = EmojiImage(data: data) {
+                self = RawImage(image: image)
+            } else {
+                Logger.animatedImage.warning("Unable to decode animated image: \(error.localizedDescription).")
+                throw EmojiError.staticData
+            }
         }
-    }
-    
-    var isAnimated: Bool {
-        guard let animationImages = animationImages else { return false }
-        return !animationImages.isEmpty && duration > 0
-    }
-    
-    func frame(at time: CFTimeInterval) -> Image {
-        guard isAnimated, let rawImages = animationImages else { return image }
-        
-        let count = TimeInterval(rawImages.count)
-        let fps = count / duration
-        let totalFps = time * fps
-        
-        let frame = totalFps.truncatingRemainder(dividingBy: count)
-        let index = Int(frame)
-        
-        return Image(emojiImage: rawImages[index])
-    }
-    
-    // MARK: - Hashable
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(systemName)
-        hasher.combine(platformImage)
-        hasher.combine(animationImages)
-        hasher.combine(duration)
     }
 }

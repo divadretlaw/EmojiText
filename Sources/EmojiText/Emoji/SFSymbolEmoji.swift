@@ -29,6 +29,7 @@ public struct SFSymbolEmoji: CustomEmoji {
         self.renderingMode = renderingMode
     }
     
+    /// The default placeholder
     static var placeholder: Self {
         SFSymbolEmoji(shortcode: "square.dashed", symbolRenderingMode: .monochrome, renderingMode: .template)
     }

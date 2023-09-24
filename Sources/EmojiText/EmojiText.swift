@@ -136,7 +136,7 @@ public struct EmojiText: View {
                     let image: RawImage
                     if shouldAnimateIfNeeded {
                         let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
-                        image = try EmojiImage.from(data: data)
+                        image = try RawImage(data: data)
                     } else {
                         let data = try await imagePipeline.image(for: remoteEmoji.url)
                         image = RawImage(image: data)
@@ -237,6 +237,10 @@ public struct EmojiText: View {
     
     // MARK: - Modifier
     
+    /// Enable animated emoji
+    ///
+    /// - Parameter value: Enable or disable the animated emoji
+    /// - Returns: ``EmojiText`` with animated emoji enabled or disabled.
     public func animated(_ value: Bool = true) -> Self {
         var view = self
         view.shouldAnimateIfNeeded = value

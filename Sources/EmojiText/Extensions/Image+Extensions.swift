@@ -81,8 +81,7 @@ extension UIImage {
             return Array(repeating: frame, count: count)
         }
         
-        return RawImage(frames: frames,
-                             duration: TimeInterval(duration) / 1000.0)
+        return RawImage(frames: frames, duration: TimeInterval(duration) / 1000.0)
     }
 }
 #endif
@@ -138,8 +137,7 @@ extension NSImage {
             return Array(repeating: frame, count: count)
         }
         
-        return RawImage(frames: frames,
-                             duration: TimeInterval(duration) / 1000.0)
+        return RawImage(frames: frames, duration: TimeInterval(duration) / 1000.0)
     }
 }
 #endif
