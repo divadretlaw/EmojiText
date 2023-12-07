@@ -77,7 +77,7 @@ public struct EmojiText: View {
                 
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
-                #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+                #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
                 for await event in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values {
                     renderTime = event.targetTimestamp
                 }

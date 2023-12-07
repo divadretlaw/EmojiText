@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
 import UIKit
 
 /// Platform indepdendent image alias. Will be `UIImage`.

@@ -16,7 +16,7 @@ struct RenderedImage: Hashable, Equatable {
     init(image: EmojiImage, animated: Bool, targetHeight: CGFloat) {
         self.systemName = nil
         self.platformImage = image.scalePreservingAspectRatio(targetHeight: targetHeight)
-        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
+        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
         if animated {
             self.animationImages = image.images?.map { $0.scalePreservingAspectRatio(targetHeight: targetHeight) }
         } else {
