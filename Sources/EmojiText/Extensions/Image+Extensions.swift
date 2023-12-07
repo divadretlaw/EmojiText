@@ -10,7 +10,7 @@ import ImageIO
 
 extension Image {
     init(emojiImage: EmojiImage) {
-        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
+        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
         self.init(uiImage: emojiImage)
         #else
         self.init(nsImage: emojiImage)
@@ -18,7 +18,7 @@ extension Image {
     }
 }
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
 import UIKit
 
 extension UIImage {

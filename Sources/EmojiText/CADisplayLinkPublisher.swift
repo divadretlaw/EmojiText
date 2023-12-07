@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 extension CADisplayLink {
     @MainActor
     struct CADisplayLinkPublisher {

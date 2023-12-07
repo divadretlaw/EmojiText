@@ -10,7 +10,7 @@ import SnapshotTesting
 import SwiftUI
 import GraphicsRenderer
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 extension Snapshotting where Value: View, Format == UIImage {
     static func rendered(size: CGSize, delay: UInt64 = 0) -> Snapshotting {
         SimplySnapshotting
