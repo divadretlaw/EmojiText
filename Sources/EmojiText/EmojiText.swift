@@ -134,11 +134,15 @@ public struct EmojiText: View {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
                     let image: RawImage
+                    let request = ImageRequest(
+                        url: remoteEmoji.url,
+                        processors: [.resize(height: targetHeight)]
+                    )
                     if shouldAnimateIfNeeded {
-                        let (data, _) = try await imagePipeline.data(for: remoteEmoji.url)
+                        let (data, _) = try await imagePipeline.data(for: request)
                         image = try RawImage(data: data)
                     } else {
-                        let data = try await imagePipeline.image(for: remoteEmoji.url)
+                        let data = try await imagePipeline.image(for: request)
                         image = RawImage(image: data)
                     }
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(

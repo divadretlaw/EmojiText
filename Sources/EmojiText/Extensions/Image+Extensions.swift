@@ -23,6 +23,10 @@ import UIKit
 
 extension UIImage {
     func scalePreservingAspectRatio(targetHeight: CGFloat) -> UIImage {
+        guard !targetHeight.isAlmostEqual(to: size.height) else {
+            return self
+        }
+        
         let scaleFactor = targetHeight / size.height
         
         // Compute the new image size that preserves aspect ratio
@@ -95,6 +99,8 @@ extension NSImage {
     }
     
     func scalePreservingAspectRatio(targetHeight: CGFloat) -> NSImage {
+        guard !targetHeight.isAlmostEqual(to: size.height) else { return self }
+        
         let scaleFactor = targetHeight / size.height
         
         // Compute the new image size that preserves aspect ratio
