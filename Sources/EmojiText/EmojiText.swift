@@ -55,10 +55,6 @@ public struct EmojiText: View {
                 let renderedHash = renderedEmojis.hashValue
                 let emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
                 
-                if #available(iOS 16.0, *) {
-                    try? await Task.sleep(for: .seconds(2))
-                }
-                
                 // Set placeholders
                 renderedEmojis = emojis.merging(loadPlaceholders()) { current, new in
                     if current.hasSameSource(as: new) {
@@ -70,10 +66,6 @@ public struct EmojiText: View {
                     } else {
                         return new
                     }
-                }
-                
-                if #available(iOS 16.0, *) {
-                    try? await Task.sleep(for: .seconds(2))
                 }
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
