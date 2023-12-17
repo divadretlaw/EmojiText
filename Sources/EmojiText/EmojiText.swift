@@ -40,7 +40,6 @@ public struct EmojiText: View {
     
     var shouldAnimateIfNeeded: Bool = false
     
-    @State private var preRendered: String?
     @State private var renderedEmojis: [String: RenderedEmoji] = [:]
     @State private var renderTime: CFTimeInterval = 0
     
@@ -86,9 +85,6 @@ public struct EmojiText: View {
                     renderTime = time.timeIntervalSinceReferenceDate as CFTimeInterval
                 }
                 #endif
-            }
-            .onChange(of: renderedEmojis) { emojis in
-                preRendered = preRender(with: emojis)
             }
     }
     
@@ -286,9 +282,13 @@ public struct EmojiText: View {
     }
     
     var rendered: Text {
-        var result = prepend?() ?? Text(verbatim: "")
+        let preRendered = preRender(with: emojis)
         
-        let preRendered = self.preRendered ?? raw
+        var result = Text(verbatim: "")
+        
+        if let prepend = self.prepend {
+            result = result + prepend()
+        }
         
         if renderedEmojis.isEmpty {
             if isMarkdown {
@@ -300,14 +300,15 @@ public struct EmojiText: View {
             let splits: [String]
             if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
                 splits = preRendered
-                    .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
+                    .split(separator: String.emojiSeparator)
                     .map { String($0) }
             } else {
                 splits = preRendered
                     .components(separatedBy: String.emojiSeparator)
             }
-            splits.forEach { substring in
                 if let image = renderedEmojis[substring] {
+            
+            for substring in splits where !substring.trimmingCharacters(in: .whitespaces).isEmpty {
                     if let baselineOffset = image.baselineOffset {
                         result = result + Text("\(image.frame(at: renderTime))").baselineOffset(baselineOffset)
                     } else {
