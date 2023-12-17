@@ -40,7 +40,7 @@ public struct EmojiText: View {
     
     var shouldAnimateIfNeeded: Bool = false
     
-    @State private var renderedEmojis: [String: RenderedEmoji] = [:]
+    @State private var renderedEmojis: [String: RenderedEmoji]?
     @State private var renderTime: CFTimeInterval = 0
     
     public var body: some View {
@@ -53,9 +53,14 @@ public struct EmojiText: View {
                 
                 // Hash of currently displayed emojis
                 let renderedHash = renderedEmojis.hashValue
+                let emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
+                
+                if #available(iOS 16.0, *) {
+                    try? await Task.sleep(for: .seconds(2))
+                }
                 
                 // Set placeholders
-                renderedEmojis.merge(loadPlaceholders()) { current, new in
+                renderedEmojis = emojis.merging(loadPlaceholders()) { current, new in
                     if current.hasSameSource(as: new) {
                         if !new.isPlaceholder || current.isPlaceholder {
                             return new
@@ -67,9 +72,13 @@ public struct EmojiText: View {
                     }
                 }
                 
+                if #available(iOS 16.0, *) {
+                    try? await Task.sleep(for: .seconds(2))
+                }
+                
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
-                if renderedHash != renderedEmojis.hashValue || renderedEmojis.contains(where: \.value.isPlaceholder) {
-                    renderedEmojis.merge(await loadEmojis()) { _, new in
+                if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
+                    renderedEmojis = emojis.merging(await loadEmojis()) { _, new in
                         new
                     }
                 }
@@ -282,6 +291,7 @@ public struct EmojiText: View {
     }
     
     var rendered: Text {
+        let emojis = renderedEmojis ?? loadPlaceholders()
         let preRendered = preRender(with: emojis)
         
         var result = Text(verbatim: "")
@@ -290,7 +300,7 @@ public struct EmojiText: View {
             result = result + prepend()
         }
         
-        if renderedEmojis.isEmpty {
+        if emojis.isEmpty {
             if isMarkdown {
                 result = result + Text(markdown: preRendered)
             } else {
@@ -306,9 +316,9 @@ public struct EmojiText: View {
                 splits = preRendered
                     .components(separatedBy: String.emojiSeparator)
             }
-                if let image = renderedEmojis[substring] {
             
             for substring in splits where !substring.trimmingCharacters(in: .whitespaces).isEmpty {
+                if let image = emojis[substring] {
                     if let baselineOffset = image.baselineOffset {
                         result = result + Text("\(image.frame(at: renderTime))").baselineOffset(baselineOffset)
                     } else {
@@ -330,6 +340,8 @@ public struct EmojiText: View {
     }
     
     var needsAnimation: Bool {
+        guard let renderedEmojis else { return false }
+        
         guard case .never = emojiAnimatedMode else {
             return renderedEmojis.contains { $1.isAnimated }
         }
