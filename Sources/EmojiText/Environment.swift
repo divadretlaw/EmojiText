@@ -159,27 +159,6 @@ public extension View {
         environment(\.emojiPlaceholder, LocalEmoji(shortcode: "placeholder", image: image, renderingMode: renderingMode))
     }
     
-    /// Set the placeholder emoji
-    ///
-    /// - Parameters:
-    ///     - systemName: The SF Symbol code of the emoji
-    ///     - symbolRenderingMode: The symbol rendering mode to use for this emoji
-    ///     - renderingMode: The mode SwiftUI uses to render this emoji
-    @available(*, deprecated, renamed: "emojiPlaceholder(systemName:symbolRenderingMode:renderingMode:)")
-    func placeholderEmoji(systemName: String, symbolRenderingMode: SymbolRenderingMode? = nil, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
-        emojiPlaceholder(systemName: systemName, symbolRenderingMode: symbolRenderingMode, renderingMode: renderingMode)
-    }
-    
-    /// Set the placeholder emoji
-    ///
-    /// - Parameters:
-    ///     - image: The image to use as placeholder
-    ///     - renderingMode: The mode SwiftUI uses to render this emoji
-    @available(*, deprecated, renamed: "emojiPlaceholder(image:renderingMode:)")
-    func placeholderEmoji(image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil) -> some View {
-        emojiPlaceholder(image: image, renderingMode: renderingMode)
-    }
-    
     /// Set the size of the inline custom emojis
     ///
     /// - Parameter size: The size to render the custom emojis in
