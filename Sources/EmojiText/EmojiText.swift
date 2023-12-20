@@ -27,6 +27,7 @@ public struct EmojiText: View {
     @Environment(\.emojiTimer) var emojiTimer
     #endif
     @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
+    @Environment(\.emojiOmitSpacesBetweenEmojis) var emojiOmitSpacesBetweenEmojis
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -272,7 +273,7 @@ public struct EmojiText: View {
         }
     }
     
-    func preRender(with emojis: [String: RenderedEmoji]) -> String {
+    private func renderString(with emojis: [String: RenderedEmoji]) -> String {
         var text = raw
         
         for shortcode in emojis.keys {
@@ -282,9 +283,67 @@ public struct EmojiText: View {
         return text
     }
     
+    private func renderAttributedString(with emojis: [String: RenderedEmoji]) -> AttributedString {
+        do {
+            var text = raw
+            
+            let options = AttributedString.MarkdownParsingOptions(allowsExtendedAttributes: true,
+                                                                  interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            
+            for shortcode in emojis.keys {
+                text = text.replacingOccurrences(of: ":\(shortcode):", with: "\(String.emojiSeparator)![\(shortcode)](emoji://\(shortcode))\(String.emojiSeparator)")
+            }
+            
+            text = text.splitOnEmoji(omittingSpacesBetweenEmojis: emojiOmitSpacesBetweenEmojis).joined()
+            
+            return try AttributedString(markdown: text, options: options)
+        } catch {
+            Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
+            return AttributedString(stringLiteral: raw)
+        }
+    }
+    
     var rendered: Text {
+        if isMarkdown {
+            return renderedMarkdown
+        } else {
+            return renderedVerbatim
+        }
+    }
+    
+    private var renderedMarkdown: Text {
         let emojis = renderedEmojis ?? loadPlaceholders()
-        let preRendered = preRender(with: emojis)
+        let attributedString = renderAttributedString(with: emojis)
+        
+        var result = Text(verbatim: "")
+        
+        if let prepend = self.prepend {
+            result = result + prepend()
+        }
+        
+        for run in attributedString.runs {
+            if let emoji = run.emoji(from: emojis) {
+                if let baselineOffset = emoji.baselineOffset {
+                    result = result + Text("\(emoji.frame(at: renderTime))").baselineOffset(baselineOffset)
+                } else {
+                    result = result + Text("\(emoji.frame(at: renderTime))")
+                }
+            } else {
+                let part = attributedString[run.range]
+                result = result + Text(AttributedString(part))
+            }
+        }
+        
+        if let append = self.append {
+            result = result + append()
+        }
+        
+        return result
+    }
+    
+    private var renderedVerbatim: Text {
+        let emojis = renderedEmojis ?? loadPlaceholders()
+        let preRendered = renderString(with: emojis)
         
         var result = Text(verbatim: "")
         
@@ -293,31 +352,16 @@ public struct EmojiText: View {
         }
         
         if emojis.isEmpty {
-            if isMarkdown {
-                result = result + Text(markdown: preRendered)
-            } else {
-                result = result + Text(verbatim: preRendered)
-            }
+            result = result + Text(verbatim: preRendered)
         } else {
-            let splits: [String]
-            if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
-                splits = preRendered
-                    .split(separator: String.emojiSeparator)
-                    .map { String($0) }
-            } else {
-                splits = preRendered
-                    .components(separatedBy: String.emojiSeparator)
-            }
-            
-            for substring in splits where !substring.trimmingCharacters(in: .whitespaces).isEmpty {
+            let splits: [String] = preRendered.splitOnEmoji(omittingSpacesBetweenEmojis: emojiOmitSpacesBetweenEmojis)
+            for substring in splits {
                 if let image = emojis[substring] {
                     if let baselineOffset = image.baselineOffset {
                         result = result + Text("\(image.frame(at: renderTime))").baselineOffset(baselineOffset)
                     } else {
                         result = result + Text("\(image.frame(at: renderTime))")
                     }
-                } else if isMarkdown {
-                    result = result + Text(markdown: substring)
                 } else {
                     result = result + Text(verbatim: substring)
                 }
@@ -424,6 +468,8 @@ struct EmojiText_Previews: PreviewProvider {
     struct MarkdownEmoji: View {
         var body: some View {
             Section {
+                EmojiText(markdown: "**Hello :mastodon:** the **World :mastodon:**", emojis: emojis)
+                EmojiText(markdown: "**Hello :mastodon:** the _World :mastodon:_", emojis: emojis)
                 EmojiText(markdown: "**Hello** *World* :mastodon: with a remote emoji",
                           emojis: emojis)
                 EmojiText(markdown: "**Hello** *World* :mastodon: :test: with a remote emoji and a fake emoji",

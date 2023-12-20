@@ -37,6 +37,12 @@ struct EmojiAnimatedModeKey: EnvironmentKey {
     }
 }
 
+struct EmojiOmitSpacesBetweenEmojisKey: EnvironmentKey {
+    static var defaultValue: Bool {
+        true
+    }
+}
+
 #if os(watchOS) || os(macOS)
 struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
@@ -88,6 +94,15 @@ public extension EnvironmentValues {
         }
         set {
             self[EmojiAnimatedModeKey.self] = newValue
+        }
+    }
+    
+    var emojiOmitSpacesBetweenEmojis: Bool {
+        get {
+            self[EmojiOmitSpacesBetweenEmojisKey.self]
+        }
+        set {
+            self[EmojiOmitSpacesBetweenEmojisKey.self] = newValue
         }
     }
 }
@@ -187,5 +202,17 @@ public extension View {
     /// you can provide a emoji baseline offset
     func emojiBaselineOffset(_ offset: CGFloat?) -> some View {
         environment(\.emojiBaselineOffset, offset)
+    }
+    
+    /// Overrides whether spaces are omitted between emojis
+    ///
+    /// - Parameter value: Whether to omit spaces between emojis
+    ///
+    /// Consider removing spaces between emojis as this will often drastically reduce
+    /// the amount of text contactenations needed to render the emojis.
+    ///
+    /// There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
+    func emojiOmitSpacesBetweenEmojis(_ value: Bool) -> some View {
+        environment(\.emojiOmitSpacesBetweenEmojis, value)
     }
 }
