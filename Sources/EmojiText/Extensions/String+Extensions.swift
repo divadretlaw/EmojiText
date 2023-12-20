@@ -8,18 +8,18 @@
 import Foundation
 
 extension String {
+    static var emojiScheme: String {
+        "custom-emoji"
+    }
+    
     static var emojiSeparator: String {
         "<custom_emoji_break/>"
     }
     
-    /// Split the text on the inserted emoji separator
+    /// Split the text on the injected emoji separator
+    ///
     /// - Parameter omittingSpacesBetweenEmojis: Remove any spaces between emojis. Defaults to `true`,
     /// - Returns: The split text with every emoji separated
-    ///
-    /// Consider removing spaces between emojis as this will often drastically reduce
-    /// the amount of text contactenations needed to render the emojis.
-    ///
-    /// There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     func splitOnEmoji(omittingSpacesBetweenEmojis: Bool = true) -> [String] {
         let splits: [String]
         if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
