@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "1997B000-AB88-4613-BCE6-964ECFB59962",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Test.xcodeproj",
+      "identifier" : "6334D1E12B33B4B500E9D8DE",
+      "name" : "Test"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Test.xcodeproj",
+        "identifier" : "6334D1F22B33B4B600E9D8DE",
+        "name" : "SnapshotTests"
+      }
+    }
+  ],
+  "version" : 1
+}
