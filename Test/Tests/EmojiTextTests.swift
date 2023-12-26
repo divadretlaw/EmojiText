@@ -112,4 +112,10 @@ final class EmojiTextTests: XCTestCase {
         let view = EmojiText(markdown: "**Hello :mastodon:** _Mastodon :mastodon:_ :mastodon:", emojis: [Emojis.mastodon])
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
+    
+    func test_EmojiInMarkdownNested() async throws {
+        let view = EmojiText(markdown: "**Hello :mastodon: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.mastodon])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
 }

@@ -364,23 +364,27 @@ public struct EmojiText: View {
         let attributedString = renderAttributedString(with: emojis)
         
         var result = Text(verbatim: "")
+        var partialString = AttributedPartialstring()
         
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an inline image
-                if let baselineOffset = emoji.baselineOffset {
-                    result = result + Text("\(emoji.frame(at: renderTime))").baselineOffset(baselineOffset)
-                } else {
-                    result = result + Text("\(emoji.frame(at: renderTime))")
-                }
+                result = [
+                    result,
+                    Text(&partialString),
+                    Text(emoji: emoji, renderTime: renderTime)
+                ]
+                .compactMap { $0 }
+                .joined()
             } else {
-                // Otherwise we just render the run as AttributedString
-                let part = attributedString[run.range]
-                result = result + Text(AttributedString(part))
+                // Otherwise we just append the run to AttributedPartialstring
+                partialString.append(attributedString[run.range])
             }
         }
         
-        return result
+        return [result, Text(&partialString)]
+            .compactMap { $0 }
+            .joined()
     }
 }
 

@@ -7,13 +7,44 @@
 
 import SwiftUI
 
+extension Text {
+    init?(_ attributedPartialstring: inout AttributedPartialstring) {
+        self.init(attributedSubstrings: attributedPartialstring.consume())
+    }
+    
+    init?(attributedSubstrings: [AttributedSubstring]) {
+        guard !attributedSubstrings.isEmpty else {
+            return nil
+        }
+        
+        let string = attributedSubstrings.reduce(AttributedString()) { partialResult, substring in
+            partialResult + substring
+        }
+        
+        self.init(string)
+    }
+    
+    init(emoji: RenderedEmoji, renderTime: CFTimeInterval) {
+        var text = Text("\(emoji.frame(at: renderTime))")
+        
+        if let baselineOffset = emoji.baselineOffset {
+            text = text.baselineOffset(baselineOffset)
+        }
+        
+        self = text
+    }
+}
+
 extension Array where Element == Text {
     func joined() -> Text {
-        guard let first = first else { return Text(verbatim: "") }
-        var result = first
+        guard var result = first else {
+            return Text(verbatim: "")
+        }
+        
         for element in dropFirst() {
             result = result + element
         }
+        
         return result
     }
 }
