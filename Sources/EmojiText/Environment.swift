@@ -9,6 +9,8 @@ import SwiftUI
 import Nuke
 import Combine
 
+// MARK: - Environment Keys
+
 struct EmojiImagePipelineKey: EnvironmentKey {
     static var defaultValue: ImagePipeline { .shared }
 }
@@ -43,6 +45,12 @@ struct EmojiOmitSpacesBetweenEmojisKey: EnvironmentKey {
     }
 }
 
+struct EmojiMarkdownInterpretedSyntaxKey: EnvironmentKey {
+    static var defaultValue: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
+        .inlineOnlyPreservingWhitespace
+    }
+}
+
 #if os(watchOS) || os(macOS)
 struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
@@ -57,53 +65,40 @@ struct EmojiTimerKey: EnvironmentKey {
 }
 #endif
 
+// MARK: - Environment Values
+
 public extension EnvironmentValues {
     /// The image pipeline used to fetch remote emojis.
     var emojiImagePipeline: ImagePipeline {
-        get {
-            self[EmojiImagePipelineKey.self]
-        }
-        set {
-            self[EmojiImagePipelineKey.self] = newValue
-        }
+        get { self[EmojiImagePipelineKey.self] }
+        set { self[EmojiImagePipelineKey.self] = newValue }
     }
     
     /// The size of the inline custom emojis. Set `nil` to automatically determine the size based on the font size.
     var emojiSize: CGFloat? {
-        get {
-            self[EmojiSizeKey.self]
-        }
-        set {
-            self[EmojiSizeKey.self] = newValue
-        }
+        get { self[EmojiSizeKey.self] }
+        set { self[EmojiSizeKey.self] = newValue }
     }
     
     /// The baseline for custom emojis. Set `nil` to not override the baseline offset and use the default value.
     var emojiBaselineOffset: CGFloat? {
-        get {
-            self[EmojiBaselineOffsetKey.self]
-        }
-        set {
-            self[EmojiBaselineOffsetKey.self] = newValue
-        }
+        get { self[EmojiBaselineOffsetKey.self] }
+        set { self[EmojiBaselineOffsetKey.self] = newValue }
     }
     
     var emojiAnimatedMode: AnimatedEmojiMode {
-        get {
-            self[EmojiAnimatedModeKey.self]
-        }
-        set {
-            self[EmojiAnimatedModeKey.self] = newValue
-        }
+        get { self[EmojiAnimatedModeKey.self] }
+        set { self[EmojiAnimatedModeKey.self] = newValue }
     }
     
     var emojiOmitSpacesBetweenEmojis: Bool {
-        get {
-            self[EmojiOmitSpacesBetweenEmojisKey.self]
-        }
-        set {
-            self[EmojiOmitSpacesBetweenEmojisKey.self] = newValue
-        }
+        get { self[EmojiOmitSpacesBetweenEmojisKey.self] }
+        set { self[EmojiOmitSpacesBetweenEmojisKey.self] = newValue }
+    }
+    
+    var emojiMarkdownInterpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
+        get { self[EmojiMarkdownInterpretedSyntaxKey.self] }
+        set { self[EmojiMarkdownInterpretedSyntaxKey.self] = newValue }
     }
 }
 
@@ -138,6 +133,8 @@ internal extension EnvironmentValues {
     }
     #endif
 }
+
+// MARK: - Environment View Helpers
 
 public extension View {
     /// Set the placeholder emoji
@@ -193,5 +190,12 @@ public extension View {
     /// There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     func emojiOmitSpacesBetweenEmojis(_ value: Bool) -> some View {
         environment(\.emojiOmitSpacesBetweenEmojis, value)
+    }
+    
+    /// Sets the syntax for interpreting a Markdown string.
+    ///
+    /// - Parameter value: The syntax for interpreting a Markdown string.
+    func emojiMarkdownInterpretedSyntax(_ value: AttributedString.MarkdownParsingOptions.InterpretedSyntax) -> some View {
+        environment(\.emojiMarkdownInterpretedSyntax, value)
     }
 }

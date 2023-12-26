@@ -118,4 +118,65 @@ final class EmojiTextTests: XCTestCase {
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
+    func test_Markdown_InlineOnlyPreservingWhitespace() async throws {
+        let markdown = """
+        # Title 1
+        
+        ## Title 2
+        
+        ### Title 3
+        
+        **Bold**
+        
+        *Italic*
+        
+        1. List
+        2. List
+        
+        * List
+        * List
+        
+        `inline code`
+        
+        ```swift
+        code block
+        ```
+        
+        > quote
+        """
+        let view = EmojiText(markdown: markdown, emojis: [])
+            .emojiMarkdownInterpretedSyntax(.inlineOnlyPreservingWhitespace)
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
+    }
+    
+    func test_Markdown_Full() async throws {
+        let markdown = """
+        # Title 1
+        
+        ## Title 2
+        
+        ### Title 3
+        
+        **Bold**
+        
+        *Italic*
+        
+        1. List
+        2. List
+        
+        * List
+        * List
+        
+        `inline code`
+        
+        ```swift
+        code block
+        ```
+        
+        > quote
+        """
+        let view = EmojiText.init(markdown: markdown, interpretedSyntax: .full, emojis: [])
+            .emojiMarkdownInterpretedSyntax(.full)
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
+    }
 }

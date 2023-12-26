@@ -28,6 +28,7 @@ public struct EmojiText: View {
     #endif
     @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
     @Environment(\.emojiOmitSpacesBetweenEmojis) var emojiOmitSpacesBetweenEmojis
+    @Environment(\.emojiMarkdownInterpretedSyntax) var emojiMarkdownInterpretedSyntax
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -182,9 +183,14 @@ public struct EmojiText: View {
     /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
-    ///     - markdown: Markdown formatted text to render
-    ///     - emojis: Array of custom emojis to render
-    public init(markdown content: String, emojis: [any CustomEmoji]) {
+    ///     - markdown: The string that contains the Markdown formatting.
+    ///      - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - emojis: The custom emojis to render.
+    public init(
+        markdown content: String,
+        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
+        emojis: [any CustomEmoji]
+    ) {
         self.raw = content
         self.isMarkdown = true
         self.emojis = emojis
@@ -194,7 +200,7 @@ public struct EmojiText: View {
     ///
     /// - Parameters:
     ///     - verbatim: A string to display without localization.
-    ///     - emojis: Array of custom emojis to render
+    ///     - emojis: The custom emojis to render.
     public init(verbatim content: String, emojis: [any CustomEmoji]) {
         self.raw = content
         self.isMarkdown = false
@@ -205,7 +211,7 @@ public struct EmojiText: View {
     ///
     /// - Parameters:
     ///     - content: A string value to display without localization.
-    ///     - emojis: Array of custom emojis to render
+    ///     - emojis: The custom emojis to render.
     public init<S>(_ content: S, emojis: [any CustomEmoji]) where S: StringProtocol {
         self.raw = String(content)
         self.isMarkdown = false
@@ -337,8 +343,11 @@ public struct EmojiText: View {
         do {
             var text = raw
             
-            let options = AttributedString.MarkdownParsingOptions(allowsExtendedAttributes: true,
-                                                                  interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            let options = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: emojiMarkdownInterpretedSyntax,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
             
             for shortcode in emojis.keys {
                 // Replace emojis with a Markdown image with a custom URL Scheme
