@@ -1,6 +1,6 @@
 //
 //  AnimatedImageType.swift
-//  EmojiImage
+//  EmojiText
 //
 //  Created by David Walter on 15.08.23.
 //
@@ -14,8 +14,8 @@ enum AnimatedImageType: CaseIterable, Sendable {
     case webp
     
     init?(from data: Data) {
-        let magicType = Self.allCases.first {
-            let magicBytes = $0.magicBytes
+        let magicType = Self.allCases.first { type in
+            let magicBytes = type.magicBytes
             return data.readBytes(count: magicBytes.count) == magicBytes
         }
         guard let type = magicType else { return nil }

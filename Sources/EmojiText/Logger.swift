@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 extension Logger {
-    static var text = Logger(subsystem: "at.davidwalter.EmojiText", category: "Text")
-    static var emojiText = Logger(subsystem: "at.davidwalter.EmojiText", category: "EmojiText")
-    static var animatedImage = Logger(subsystem: "at.davidwalter.EmojiText", category: "Animated Image")
+    static let text = Logger(subsystem: "at.davidwalter.EmojiText", category: "Text")
+    static let emojiText = Logger(subsystem: "at.davidwalter.EmojiText", category: "EmojiText")
+    static let animatedImage = Logger(subsystem: "at.davidwalter.EmojiText", category: "Animated Image")
 }

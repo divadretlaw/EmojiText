@@ -29,6 +29,7 @@ extension String {
         } else {
             splits = self
                 .components(separatedBy: String.emojiSeparator)
+                .filter { !$0.isEmpty }
         }
         
         if omittingSpacesBetweenEmojis {
@@ -36,7 +37,7 @@ extension String {
             // This will often drastically reduce the amount of text contactenations
             // needed when rendering the emojis. If we reach around ~500 or more the render would crash
             return splits.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-        } else{
+        } else {
             return splits
         }
     }

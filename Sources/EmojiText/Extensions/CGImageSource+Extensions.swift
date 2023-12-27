@@ -37,6 +37,6 @@ extension CGImageSource {
         }
         
         return properties.keys.contains(type.unclampedDelayTimeKey as String)
-        || properties.keys.contains(type.delayTimeKey as String)
+            || properties.keys.contains(type.delayTimeKey as String)
     }
 }

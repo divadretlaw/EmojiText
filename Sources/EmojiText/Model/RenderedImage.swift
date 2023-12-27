@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RenderedImage: Hashable, Equatable {
-    private var systemName: String?
-    private var platformImage: EmojiImage?
-    private var animationImages: [EmojiImage]?
-    private var duration: TimeInterval
+    private let systemName: String?
+    private let platformImage: EmojiImage?
+    private let animationImages: [EmojiImage]?
+    private let duration: TimeInterval
     
     init(image: EmojiImage, animated: Bool, targetHeight: CGFloat) {
         self.systemName = nil

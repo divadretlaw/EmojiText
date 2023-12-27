@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+/// The mode of animated emojis
 public enum AnimatedEmojiMode {
     /// Never play animated emoji
     case never

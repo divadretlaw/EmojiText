@@ -86,16 +86,19 @@ public extension EnvironmentValues {
         set { self[EmojiBaselineOffsetKey.self] = newValue }
     }
     
+    /// The ``AnimatedEmojiMode`` that animated emojis should use
     var emojiAnimatedMode: AnimatedEmojiMode {
         get { self[EmojiAnimatedModeKey.self] }
         set { self[EmojiAnimatedModeKey.self] = newValue }
     }
     
+    /// Whether to omit spaces between emojis
     var emojiOmitSpacesBetweenEmojis: Bool {
         get { self[EmojiOmitSpacesBetweenEmojisKey.self] }
         set { self[EmojiOmitSpacesBetweenEmojisKey.self] = newValue }
     }
     
+    /// The syntax for interpreting a Markdown string
     var emojiMarkdownInterpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
         get { self[EmojiMarkdownInterpretedSyntaxKey.self] }
         set { self[EmojiMarkdownInterpretedSyntaxKey.self] = newValue }

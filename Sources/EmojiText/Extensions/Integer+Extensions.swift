@@ -13,11 +13,11 @@ import Foundation
 ///     - x: A signed number.
 ///     - y: A signed number.
 /// - Returns: The greatest common divisor between `x` and `y`.
-@inlinable func gcd<T>(_ x: T, _ y: T) -> T where T: Comparable, T: SignedInteger {
-    let remainder = abs(x) % abs(y)
+@inlinable func gcd<T>(_ rhs: T, _ lhs: T) -> T where T: Comparable, T: SignedInteger {
+    let remainder = abs(rhs) % abs(lhs)
     if remainder != 0 {
-        return gcd(abs(y), remainder)
+        return gcd(abs(lhs), remainder)
     } else {
-        return abs(y)
+        return abs(lhs)
     }
 }

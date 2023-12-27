@@ -12,15 +12,15 @@ import OSLog
 /// A wrapper arround ``EmojiImage`` to support animated images on all platforms.
 struct RawImage {
     /// A static representation of the animated image
-    var `static`: EmojiImage
+    let `static`: EmojiImage
     /// The complete array of image objects that compose the animation of an animated object.
     ///
     /// For a non-animated image, the value of this property is nil.
-    var frames: [EmojiImage]?
+    let frames: [EmojiImage]?
     /// The time interval for displaying an animated image.
     ///
     /// For a non-animated image, the value of this property is 0.0.
-    var duration: TimeInterval
+    let duration: TimeInterval
     
     init?(frames: [EmojiImage], duration: TimeInterval) {
         guard let image = frames.first else { return nil }
@@ -35,9 +35,7 @@ struct RawImage {
         self.frames = nil
         self.duration = 0
     }
-}
-
-extension RawImage {
+    
     init(data: Data) throws {
         do {
             guard let type = AnimatedImageType(from: data) else {

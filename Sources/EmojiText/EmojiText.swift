@@ -9,6 +9,8 @@ import SwiftUI
 import Nuke
 import OSLog
 
+// swiftlint:disable file_length type_body_length
+
 /// A view that displays one or more lines of text with support for custom emojis.
 ///
 /// Custom Emojis are in the format `:emoji:`.
@@ -80,8 +82,8 @@ public struct EmojiText: View {
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
-                for await event in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values {
-                    renderTime = event.targetTimestamp
+                for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values.map(\.targetTimestamp) {
+                    renderTime = targetTimestamp
                 }
                 #else
                 for await time in emojiTimer.values(stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower) {
@@ -433,7 +435,6 @@ struct EmojiText_Previews: PreviewProvider {
                               emojis: animatedEmojis)
                     .animated()
                     .environment(\.emojiAnimatedMode, .never)
-                    
                 } header: {
                     Text("Default")
                 }
@@ -542,7 +543,7 @@ struct EmojiText_Previews: PreviewProvider {
     }
     
     struct AnimatedEmojiToggle: View {
-        @State private var enableAnimation: Bool = false
+        @State private var enableAnimation = false
         
         var body: some View {
             Section {
@@ -563,4 +564,4 @@ struct EmojiText_Previews: PreviewProvider {
         }
     }
 }
-// swiftlint:enable force_unwrapping
+// swiftlint:enable force_unwrapping file_length type_body_length

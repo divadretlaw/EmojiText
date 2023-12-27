@@ -47,7 +47,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         AttributedString(self).unicodeScalars
     }
     
-    subscript<K>(_ value: K.Type) -> K.Value? where K : AttributedStringKey, K.Value : Sendable {
+    subscript<K>(_ value: K.Type) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
         get {
             AttributedString(self)[value]
         }
@@ -60,7 +60,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<K>(dynamicMember keyPath: KeyPath<AttributeDynamicLookup, K>) -> K.Value? where K : AttributedStringKey, K.Value : Sendable {
+    subscript<K>(dynamicMember keyPath: KeyPath<AttributeDynamicLookup, K>) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
         get {
             AttributedString(self)[dynamicMember: keyPath]
         }
@@ -73,7 +73,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<S>(dynamicMember keyPath: KeyPath<AttributeScopes, S.Type>) -> ScopedAttributeContainer<S> where S : AttributeScope {
+    subscript<S>(dynamicMember keyPath: KeyPath<AttributeScopes, S.Type>) -> ScopedAttributeContainer<S> where S: AttributeScope {
         get {
             AttributedString(self)[dynamicMember: keyPath]
         }
@@ -86,7 +86,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<R>(bounds: R) -> AttributedSubstring where R : RangeExpression, R.Bound == AttributedString.Index {
+    subscript<R>(bounds: R) -> AttributedSubstring where R: RangeExpression, R.Bound == AttributedString.Index {
         AttributedString(self)[bounds]
     }
     
@@ -121,10 +121,10 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
     }
 }
 
-extension AttributedString {
+private extension AttributedString {
     init(_ value: AttributedPartialstring) {
         self = value.substrings.reduce(AttributedString()) { partialResult, substring in
-            return partialResult + substring
+            partialResult + substring
         }
     }
 }
