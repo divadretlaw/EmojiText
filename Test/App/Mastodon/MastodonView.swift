@@ -21,6 +21,7 @@ struct MastodonView: View {
     
     @State private var instanceEmojis: [Emoji] = []
     @State private var status: Status?
+    @State private var uuid = UUID()
     
     @Environment(\.displayScale) private var displayScale
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -32,20 +33,29 @@ struct MastodonView: View {
                     EmojiText(markdown: "\(status.account.displayName)", emojis: status.customEmojis + customEmojis)
                         .font(.largeTitle)
                         .foregroundStyle(.primary)
+                        .id(uuid)
                     Text("@\(status.account.username)")
                         .font(.title)
                         .foregroundStyle(.secondary)
                 }
                 EmojiText(markdown: status.text, emojis: status.customEmojis)
                     .animated()
+                    .id(uuid)
             } else {
                 ProgressView()
             }
             
             Section {
                 LabeledContent("Display Scale", value: displayScale.description)
+                
+                Button {
+                    uuid = UUID()
+                } label: {
+                    Text("Force re-render")
+                }
+
             } header: {
-                Text("Debug Information")
+                Text("Debug")
             }
         }
         .formStyle(.grouped)
