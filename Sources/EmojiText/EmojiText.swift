@@ -97,6 +97,9 @@ public struct EmojiText: View {
     // MARK: - Load Emojis
     
     func loadPlaceholders() -> [String: RenderedEmoji] {
+        let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
+        let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
+        
         var placeholders = [String: RenderedEmoji]()
         
         for emoji in emojis {
@@ -104,7 +107,8 @@ public struct EmojiText: View {
             case let localEmoji as LocalEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: localEmoji,
-                    targetHeight: targetHeight
+                    targetHeight: targetHeight,
+                    baselineOffset: baselineOffset
                 )
             case let sfSymbolEmoji as SFSymbolEmoji:
                 placeholders[emoji.shortcode] = RenderedEmoji(
@@ -114,7 +118,8 @@ public struct EmojiText: View {
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: emoji,
                     placeholder: emojiPlaceholder,
-                    targetHeight: targetHeight
+                    targetHeight: targetHeight,
+                    baselineOffset: baselineOffset
                 )
             }
         }

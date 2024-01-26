@@ -58,10 +58,10 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         self.sourceHash = emoji.hashValue
     }
     
-    init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, animated: Bool = false, targetHeight: CGFloat) {
+    init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = "placeholder"
         self.renderingMode = emoji.renderingMode
-        self.baselineOffset = emoji.baselineOffset
+        self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode
         self.placeholderId = UUID()
         // The source hash is the cominbed value of the emoji & target height
@@ -76,7 +76,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
         case let sfSymbolEmoji as SFSymbolEmoji:
             self.rawImage = RenderedImage(systemName: sfSymbolEmoji.shortcode)
         default:
-            self.rawImage = RenderedImage(systemName: SFSymbolEmoji.placeholder.shortcode)
+            self.rawImage = RenderedImage(systemName: SFSymbolEmoji.fallback.shortcode)
             Logger.emojiText.error("Unsupported CustomEmoji was used as placeholder. Only LocalEmoji and SFSymbolEmoji are supported. This is a bug. Please file a report at https://github.com/divadretlaw/EmojiText")
         }
     }

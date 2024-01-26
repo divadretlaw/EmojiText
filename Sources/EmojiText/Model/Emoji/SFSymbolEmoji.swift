@@ -29,8 +29,7 @@ public struct SFSymbolEmoji: CustomEmoji {
         self.renderingMode = renderingMode
     }
     
-    /// The default placeholder
-    static var placeholder: Self {
+    static var fallback: Self {
         SFSymbolEmoji(shortcode: "square.dashed", symbolRenderingMode: .monochrome, renderingMode: .template)
     }
     
@@ -45,7 +44,7 @@ public struct SFSymbolEmoji: CustomEmoji {
 extension EmojiImage {
     static func from(emoji: SFSymbolEmoji) -> EmojiImage {
         EmojiImage(systemName: emoji.shortcode)
-        ?? EmojiImage(systemName: SFSymbolEmoji.placeholder.shortcode)
+        ?? EmojiImage(systemName: SFSymbolEmoji.fallback.shortcode)
         ?? EmojiImage()
     }
 }
