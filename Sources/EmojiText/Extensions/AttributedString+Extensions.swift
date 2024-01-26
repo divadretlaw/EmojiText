@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+extension AttributedString {
+    func distance(from start: AttributedString.Index, to end: AttributedString.Index) -> Int {
+        characters.distance(from: start, to: end)
+    }
+}
+
 extension AttributedString.Runs.Element {
     func emoji(from values: [String: RenderedEmoji]) -> RenderedEmoji? {
         guard let imageURL = attributes[AttributeScopes.FoundationAttributes.ImageURLAttribute.self] else { return nil }

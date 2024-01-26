@@ -59,7 +59,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable {
     }
     
     init(from emoji: any CustomEmoji, placeholder: any CustomEmoji, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
-        self.shortcode = "placeholder"
+        self.shortcode = emoji.shortcode
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = emoji.symbolRenderingMode

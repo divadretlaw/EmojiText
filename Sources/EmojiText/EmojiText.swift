@@ -385,14 +385,34 @@ public struct EmojiText: View {
         
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
-                // If the run is an emoji we render it as an inline image
-                result = [
-                    result,
-                    Text(&partialString),
-                    Text(emoji: emoji, renderTime: renderTime)
-                ]
-                .compactMap { $0 }
-                .joined()
+                // If the run is an emoji we render it as an interpolated image in a Text view
+                let text = Text(emoji: emoji, renderTime: renderTime)
+                
+                // If the same emoji is added multiple times in a row the run gets merged into one
+                // with their shortcodes joined. Therefore we simply divide distance of the range by
+                // the character count of the emojo to calculate how often the emoji needs to be displayed
+                let distance = attributedString.distance(from: run.range.lowerBound, to: run.range.upperBound)
+                let count = emoji.shortcode.count
+                
+                if distance == count {
+                    // Emoji is only displayed once
+                    result = [
+                        result,
+                        Text(&partialString),
+                        text
+                    ]
+                    .compactMap { $0 }
+                    .joined()
+                } else {
+                    // Emojis is displayed multiple times
+                    result = [
+                        result,
+                        Text(&partialString),
+                        Text(repating: text, count: distance / count)
+                    ]
+                    .compactMap { $0 }
+                    .joined()
+                }
             } else {
                 // Otherwise we just append the run to AttributedPartialstring
                 partialString.append(attributedString[run.range])

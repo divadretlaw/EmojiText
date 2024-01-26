@@ -33,6 +33,10 @@ extension Text {
         
         self = text
     }
+    
+    init(repating text: Text, count: Int) {
+        self = Array(repeating: text, count: max(count, 1)).joined()
+    }
 }
 
 extension Array where Element == Text {
