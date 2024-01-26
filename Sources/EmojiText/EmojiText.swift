@@ -20,6 +20,7 @@ import OSLog
 public struct EmojiText: View {
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.displayScale) var displayScale
     
     @Environment(\.emojiImagePipeline) var imagePipeline
     @Environment(\.emojiPlaceholder) var emojiPlaceholder
@@ -134,7 +135,7 @@ public struct EmojiText: View {
                     let image: RawImage
                     let request = ImageRequest(
                         url: remoteEmoji.url,
-                        processors: [.resize(height: targetHeight)]
+                        processors: [.resize(height: targetHeight * displayScale)]
                     )
                     if shouldAnimateIfNeeded {
                         let (data, _) = try await imagePipeline.data(for: request)
