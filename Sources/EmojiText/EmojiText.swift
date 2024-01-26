@@ -272,6 +272,7 @@ public struct EmojiText: View {
         hasher.combine(shouldAnimateIfNeeded)
         hasher.combine(emojiSize)
         hasher.combine(emojiAnimatedMode)
+        hasher.combine(displayScale)
         return hasher.finalize()
     }
     
