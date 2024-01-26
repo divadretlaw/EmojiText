@@ -22,6 +22,9 @@
 		6334D2342B33B6DC00E9D8DE /* Emojis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2302B33B6DC00E9D8DE /* Emojis.swift */; };
 		6334D2362B33B78D00E9D8DE /* Snapshotting+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */; };
 		6334D2392B33B7AC00E9D8DE /* GraphicsRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 6334D2382B33B7AC00E9D8DE /* GraphicsRenderer */; };
+		639F664C2B63ED4D00B7F747 /* DTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F66492B63ED4D00B7F747 /* DTOs.swift */; };
+		639F664D2B63ED4D00B7F747 /* MastodonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */; };
+		639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664B2B63ED4D00B7F747 /* MastodonView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +54,9 @@
 		6334D2302B33B6DC00E9D8DE /* Emojis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emojis.swift; sourceTree = "<group>"; };
 		6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Snapshotting+Extensions.swift"; sourceTree = "<group>"; };
 		6334D23B2B33BD5800E9D8DE /* SnapshotTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = SnapshotTests.xctestplan; path = Tests/SnapshotTests.xctestplan; sourceTree = "<group>"; };
+		639F66492B63ED4D00B7F747 /* DTOs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DTOs.swift; path = App/Mastodon/DTOs.swift; sourceTree = SOURCE_ROOT; };
+		639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonAPI.swift; path = App/Mastodon/MastodonAPI.swift; sourceTree = SOURCE_ROOT; };
+		639F664B2B63ED4D00B7F747 /* MastodonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonView.swift; path = App/Mastodon/MastodonView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +102,7 @@
 		6334D1E42B33B4B500E9D8DE /* App */ = {
 			isa = PBXGroup;
 			children = (
+				63932D9A2B64377200E193FB /* Mastodon */,
 				6334D1E52B33B4B500E9D8DE /* TestApp.swift */,
 				6334D1E72B33B4B500E9D8DE /* ContentView.swift */,
 				6334D21C2B33B64F00E9D8DE /* AnimatedEmojiView.swift */,
@@ -121,12 +128,21 @@
 		6334D1F62B33B4B600E9D8DE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				6334D23A2B33B8DB00E9D8DE /* SnapshotTests.xctestplan */,
 				6334D2302B33B6DC00E9D8DE /* Emojis.swift */,
 				6334D22D2B33B6DC00E9D8DE /* EmojiTextTests.swift */,
 				6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */,
 			);
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		63932D9A2B64377200E193FB /* Mastodon */ = {
+			isa = PBXGroup;
+			children = (
+				639F66492B63ED4D00B7F747 /* DTOs.swift */,
+				639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */,
+				639F664B2B63ED4D00B7F747 /* MastodonView.swift */,
+			);
+			path = Mastodon;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,12 +259,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				6334D2272B33B64F00E9D8DE /* SFSymbolEmojiView.swift in Sources */,
+				639F664D2B63ED4D00B7F747 /* MastodonAPI.swift in Sources */,
 				6334D1E82B33B4B500E9D8DE /* ContentView.swift in Sources */,
+				639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */,
 				6334D2252B33B64F00E9D8DE /* RemoteEmojiView.swift in Sources */,
 				6334D2232B33B64F00E9D8DE /* EmojiTestView.swift in Sources */,
 				6334D2222B33B64F00E9D8DE /* AnimatedEmojiView.swift in Sources */,
 				6334D1E62B33B4B500E9D8DE /* TestApp.swift in Sources */,
 				6334D2262B33B64F00E9D8DE /* ChangingRemoteEmojiView.swift in Sources */,
+				639F664C2B63ED4D00B7F747 /* DTOs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,10 +427,10 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = at.davidwalter.EmojiText.Test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -444,10 +463,10 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = at.davidwalter.EmojiText.Test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
