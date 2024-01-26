@@ -105,12 +105,14 @@ public struct EmojiText: View {
         for emoji in emojis {
             switch emoji {
             case let localEmoji as LocalEmoji:
+                // Local emoji don't require a placeholder as they can be loaded instantly
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: localEmoji,
                     targetHeight: targetHeight,
                     baselineOffset: baselineOffset
                 )
             case let sfSymbolEmoji as SFSymbolEmoji:
+                // SF Symbol emoji don't require a placeholder as they can be loaded instantly
                 placeholders[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
                 )
@@ -156,25 +158,8 @@ public struct EmojiText: View {
                         targetHeight: targetHeight,
                         baselineOffset: baselineOffset
                     )
-                case let localEmoji as LocalEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: localEmoji,
-                        animated: shouldAnimateIfNeeded,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
-                case let sfSymbolEmoji as SFSymbolEmoji:
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: sfSymbolEmoji
-                    )
                 default:
-                    // Fallback to placeholder emoji
-                    Logger.emojiText.warning("Tried to load unknown emoji. Falling back to placeholder emoji")
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: emoji,
-                        placeholder: emojiPlaceholder,
-                        targetHeight: targetHeight
-                    )
+                    continue
                 }
             } catch is CancellationError {
                 return [:]
@@ -201,7 +186,7 @@ public struct EmojiText: View {
     ) {
         self.raw = content
         self.isMarkdown = true
-        self.emojis = emojis
+        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
     }
     
     /// Initialize a ``EmojiText`` with support for custom emojis.
@@ -212,7 +197,7 @@ public struct EmojiText: View {
     public init(verbatim content: String, emojis: [any CustomEmoji]) {
         self.raw = content
         self.isMarkdown = false
-        self.emojis = emojis
+        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
     }
     
     /// Initialize a ``EmojiText`` with support for custom emojis.
@@ -223,7 +208,7 @@ public struct EmojiText: View {
     public init<S>(_ content: S, emojis: [any CustomEmoji]) where S: StringProtocol {
         self.raw = String(content)
         self.isMarkdown = false
-        self.emojis = emojis
+        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
     }
     
     // MARK: - Modifier
