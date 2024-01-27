@@ -139,7 +139,7 @@ public struct EmojiText: View {
             for emoji in emojis {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
-                    group.addTaskUnlessCancelled {
+                    _ = group.addTaskUnlessCancelled {
                         do {
                             let image: RawImage
                             let request = ImageRequest(
