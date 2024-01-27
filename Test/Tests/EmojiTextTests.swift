@@ -31,6 +31,16 @@ final class EmojiTextTests: XCTestCase {
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
+    func test_Mastodon_Verbatim_Double() async throws {
+        let view = EmojiText(verbatim: "Hello Mastodon :mastodon: :mastodon:", emojis: [Emojis.mastodon])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
+    func test_Mastodon_Markdown_Double() async throws {
+        let view = EmojiText(markdown: "Hello Mastodon :mastodon: :mastodon:", emojis: [Emojis.mastodon])
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    }
+    
     func test_Mastodon_Scaled() async throws {
         let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
             .font(.largeTitle)
