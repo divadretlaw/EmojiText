@@ -58,10 +58,10 @@ public struct EmojiText: View {
                 
                 // Hash of currently displayed emojis
                 let renderedHash = renderedEmojis.hashValue
-                let emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
+                var emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
                 
                 // Set placeholders
-                renderedEmojis = emojis.merging(loadPlaceholders()) { current, new in
+                emojis = emojis.merging(loadEmojis()) { current, new in
                     if current.hasSameSource(as: new) {
                         if !new.isPlaceholder || current.isPlaceholder {
                             return new
@@ -72,12 +72,14 @@ public struct EmojiText: View {
                         return new
                     }
                 }
+                self.renderedEmojis = emojis
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
-                    renderedEmojis = emojis.merging(await loadEmojis()) { _, new in
-                        new
+                    emojis = emojis.merging(await loadRemoteEmojis()) { _, new in
+                        return new
                     }
+                    self.renderedEmojis = emojis
                 }
                 
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
@@ -96,28 +98,29 @@ public struct EmojiText: View {
     
     // MARK: - Load Emojis
     
-    func loadPlaceholders() -> [String: RenderedEmoji] {
+    func loadEmojis() -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
         
-        var placeholders = [String: RenderedEmoji]()
+        var renderedEmojis = [String: RenderedEmoji]()
         
         for emoji in emojis {
             switch emoji {
             case let localEmoji as LocalEmoji:
                 // Local emoji don't require a placeholder as they can be loaded instantly
-                placeholders[emoji.shortcode] = RenderedEmoji(
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: localEmoji,
                     targetHeight: targetHeight,
                     baselineOffset: baselineOffset
                 )
             case let sfSymbolEmoji as SFSymbolEmoji:
                 // SF Symbol emoji don't require a placeholder as they can be loaded instantly
-                placeholders[emoji.shortcode] = RenderedEmoji(
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
                 )
             default:
-                placeholders[emoji.shortcode] = RenderedEmoji(
+                // Set a placeholder for all other emoji
+                renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: emoji,
                     placeholder: emojiPlaceholder,
                     targetHeight: targetHeight,
@@ -126,10 +129,10 @@ public struct EmojiText: View {
             }
         }
         
-        return placeholders
+        return renderedEmojis
     }
     
-    func loadEmojis() async -> [String: RenderedEmoji] {
+    func loadRemoteEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
         
