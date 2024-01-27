@@ -135,43 +135,49 @@ public struct EmojiText: View {
     func loadRemoteEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
+        let resizeHeight = targetHeight * displayScale
         
-        var renderedEmojis = [String: RenderedEmoji]()
-        
-        for emoji in emojis {
-            do {
+        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [targetHeight, shouldAnimateIfNeeded] group in
+            for emoji in emojis {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:
-                    let image: RawImage
-                    let request = ImageRequest(
-                        url: remoteEmoji.url,
-                        processors: [.resize(height: targetHeight * displayScale)]
-                    )
-                    if shouldAnimateIfNeeded {
-                        let (data, _) = try await imagePipeline.data(for: request)
-                        image = try RawImage(data: data)
-                    } else {
-                        let data = try await imagePipeline.image(for: request)
-                        image = RawImage(image: data)
+                    group.addTaskUnlessCancelled {
+                        do {
+                            let image: RawImage
+                            let request = ImageRequest(
+                                url: remoteEmoji.url,
+                                processors: [.resize(height: resizeHeight)]
+                            )
+                            if shouldAnimateIfNeeded {
+                                let (data, _) = try await imagePipeline.data(for: request)
+                                image = try RawImage(data: data)
+                            } else {
+                                let data = try await imagePipeline.image(for: request)
+                                image = RawImage(image: data)
+                            }
+                            return RenderedEmoji(
+                                from: remoteEmoji,
+                                image: image,
+                                animated: shouldAnimateIfNeeded,
+                                targetHeight: targetHeight,
+                                baselineOffset: baselineOffset
+                            )
+                        } catch {
+                            Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
+                            return nil
+                        }
                     }
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: remoteEmoji,
-                        image: image,
-                        animated: shouldAnimateIfNeeded,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
                 default:
                     continue
                 }
-            } catch is CancellationError {
-                return [:]
-            } catch {
-                Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
+            }
+            // Collect TaskGroup results
+            return await group.reduce(into: [:]) { partialResult, emoji in
+                if let emoji {
+                    partialResult[emoji.shortcode] = emoji
+                }
             }
         }
-        
-        return renderedEmojis
     }
     
     // MARK: - Initializers
