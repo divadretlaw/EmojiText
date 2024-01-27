@@ -105,6 +105,7 @@ extension EmojiText {
 }
 
 #if DEBUG
+// swiftlint:disable force_unwrapping
 #Preview {
     List {
         Section {
@@ -134,4 +135,5 @@ extension EmojiText {
         }
     }
 }
+// swiftlint:enable force_unwrapping
 #endif

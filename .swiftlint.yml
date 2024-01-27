@@ -191,7 +191,7 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - private_action
   - private_outlet
   - private_subject
-  - private_swiftui_state
+  # - private_swiftui_state
   - prohibited_interface_builder
   - prohibited_super_call
   - quick_discouraged_call

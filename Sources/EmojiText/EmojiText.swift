@@ -9,8 +9,6 @@ import SwiftUI
 import Nuke
 import OSLog
 
-// swiftlint:disable file_length type_body_length
-
 /// A view that displays one or more lines of text with support for custom emojis.
 ///
 /// Custom Emojis are in the format `:emoji:`.
@@ -72,14 +70,14 @@ public struct EmojiText: View {
                         return new
                     }
                 }
-                self.renderedEmojis = emojis
+                renderedEmojis = emojis
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
                     emojis = emojis.merging(await loadRemoteEmojis()) { _, new in
-                        return new
+                        new
                     }
-                    self.renderedEmojis = emojis
+                    renderedEmojis = emojis
                 }
                 
                 guard shouldAnimateIfNeeded, needsAnimation else { return }

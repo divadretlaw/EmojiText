@@ -33,19 +33,5 @@ extension EmojiText {
         ]
     }
 }
-
-struct Preview<Content>: View where Content: View {
-    var content: Content
-    
-    var body: some View {
-        List {
-            content
-            
-            Section {
-                
-            }
-        }
-    }
-}
 // swiftlint:enable force_unwrapping
 #endif

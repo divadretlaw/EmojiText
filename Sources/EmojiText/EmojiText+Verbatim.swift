@@ -57,6 +57,7 @@ extension EmojiText {
 }
 
 #if DEBUG
+// swiftlint:disable force_unwrapping
 #Preview {
     List {
         Section {
@@ -79,12 +80,14 @@ extension EmojiText {
             .font(.title)
             EmojiText(
                 verbatim: "Large Image as Emoji :large:",
-                emojis: [RemoteEmoji(
-                    shortcode: "large",
-                    url: URL(
-                        string: "https://sample-videos.com/img/Sample-jpg-image-15mb.jpeg"
-                    )!
-                )]
+                emojis: [
+                    RemoteEmoji(
+                        shortcode: "large",
+                        url: URL(
+                            string: "https://sample-videos.com/img/Sample-jpg-image-15mb.jpeg"
+                        )!
+                    )
+                ]
             )
             EmojiText(
                 verbatim: "Hello World :mastodon: with a custom emoji size",
@@ -97,4 +100,5 @@ extension EmojiText {
         }
     }
 }
+// swiftlint:enable force_unwrapping
 #endif

@@ -53,7 +53,6 @@ struct MastodonView: View {
                 } label: {
                     Text("Force re-render")
                 }
-
             } header: {
                 Text("Debug")
             }
