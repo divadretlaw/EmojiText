@@ -116,6 +116,26 @@ public struct EmojiText: View {
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
                 )
+            case let remoteEmoji as RemoteEmoji:
+                // Try to load remote emoji from cache
+                let resizeHeight = targetHeight * displayScale
+                let request = ImageRequest(
+                    url: remoteEmoji.url,
+                    processors: [.resize(height: resizeHeight)]
+                )
+                if let imageContainer = imagePipeline.cache[request] {
+                    // Remote emoji is available in cache and can be loaded instantly
+                    renderedEmojis[remoteEmoji.shortcode] = RenderedEmoji(
+                        from: remoteEmoji,
+                        image: RawImage(image: imageContainer.image),
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
+                } else {
+                    // Remote emoji wasn't found in cache and a placholder will be used instead
+                    fallthrough
+                }
             default:
                 // Set a placeholder for all other emoji
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(
