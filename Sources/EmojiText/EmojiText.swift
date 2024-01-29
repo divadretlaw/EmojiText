@@ -28,15 +28,13 @@ public struct EmojiText: View {
     @Environment(\.emojiTimer) var emojiTimer
     #endif
     @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
-    @Environment(\.emojiOmitSpacesBetweenEmojis) var emojiOmitSpacesBetweenEmojis
-    @Environment(\.emojiMarkdownInterpretedSyntax) var emojiMarkdownInterpretedSyntax
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
     
     let raw: String
-    let isMarkdown: Bool
     let emojis: [any CustomEmoji]
+    let renderer: EmojiRenderer
     
     var prepend: (() -> Text)?
     var append: (() -> Text)?
@@ -47,7 +45,7 @@ public struct EmojiText: View {
     @State var renderTime: CFTimeInterval = 0
     
     public var body: some View {
-        rendered
+        makeContent
             .task(id: hashValue, priority: .high) {
                 guard !emojis.isEmpty else {
                     renderedEmojis = [:]
@@ -94,6 +92,20 @@ public struct EmojiText: View {
             }
     }
     
+    var makeContent: Text {
+        let result: Text
+        
+        if needsAnimation {
+            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? loadEmojis(), at: renderTime)
+        } else {
+            result = renderer.render(string: raw, emojis: renderedEmojis ?? loadEmojis())
+        }
+        
+        return [prepend?(), result, append?()]
+            .compactMap { $0 }
+            .joined()
+    }
+
     // MARK: - Load Emojis
     
     func loadEmojis() -> [String: RenderedEmoji] {
@@ -200,16 +212,71 @@ public struct EmojiText: View {
     
     // MARK: - Initializers
     
+    /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
+    ///
+    /// - Parameters:
+    ///     - markdown: The string that contains the Markdown formatting.
+    ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - emojis: The custom emojis to render.
+    ///     - shoulOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
+    ///
+    /// > Info:
+    /// > Consider removing spaces between emojis as this will often drastically reduce
+    /// the amount of text contactenations needed to render the emojis.
+    /// >
+    /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
+    public init(
+        markdown content: String,
+        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
+        emojis: [any CustomEmoji],
+        shouldOmitSpacesBetweenEmojis: Bool = true
+    ) {
+        self.renderer = MarkdownEmojiRenderer(shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis, interpretedSyntax: interpretedSyntax)
+        self.raw = content
+        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
+    }
+    
+    /// Initialize a ``EmojiText`` with support for custom emojis.
+    ///
+    /// - Parameters:
+    ///     - verbatim: A string to display without localization.
+    ///     - emojis: The custom emojis to render.
+    ///     - shoulOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
+    ///
+    /// > Info:
+    /// > Consider removing spaces between emojis as this will often drastically reduce
+    /// the amount of text contactenations needed to render the emojis.
+    /// >
+    /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
+    public init(
+        verbatim content: String,
+        emojis: [any CustomEmoji],
+        shouldOmitSpacesBetweenEmojis: Bool = true
+    ) {
+        self.renderer = VerbatimEmojiRenderer(shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
+        self.raw = content
+        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
+    }
+    
     /// Initialize a ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string value to display without localization.
     ///     - emojis: The custom emojis to render.
-    public init<S>(_ content: S, emojis: [any CustomEmoji]) where S: StringProtocol {
-        self.raw = String(content)
-        self.isMarkdown = false
-        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
+    ///
+    /// > Info:
+    /// > Consider removing spaces between emojis as this will often drastically reduce
+    /// the amount of text contactenations needed to render the emojis.
+    /// >
+    /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
+    public init<S>(
+        _ content: S,
+        emojis: [any CustomEmoji],
+        shouldOmitSpacesBetweenEmojis: Bool = true
+    ) where S: StringProtocol {
+        self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
     }
+
     
     // MARK: - Modifier
     
@@ -276,23 +343,8 @@ public struct EmojiText: View {
         guard case .never = emojiAnimatedMode else {
             return renderedEmojis.contains { $1.isAnimated }
         }
+        
         return false
-    }
-    
-    // MARK: - Render
-    
-    var rendered: Text {
-        let result: Text
-        
-        if isMarkdown {
-            result = renderedMarkdown
-        } else {
-            result = renderedVerbatim
-        }
-        
-        return [prepend?(), result, append?()]
-            .compactMap { $0 }
-            .joined()
     }
 }
 

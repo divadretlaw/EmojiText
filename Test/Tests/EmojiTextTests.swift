@@ -154,8 +154,7 @@ final class EmojiTextTests: XCTestCase {
         
         > quote
         """
-        let view = EmojiText(markdown: markdown, emojis: [])
-            .emojiMarkdownInterpretedSyntax(.inlineOnlyPreservingWhitespace)
+        let view = EmojiText(markdown: markdown, interpretedSyntax: .inlineOnlyPreservingWhitespace, emojis: [])
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
     }
     
@@ -186,7 +185,6 @@ final class EmojiTextTests: XCTestCase {
         > quote
         """
         let view = EmojiText.init(markdown: markdown, interpretedSyntax: .full, emojis: [])
-            .emojiMarkdownInterpretedSyntax(.full)
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
     }
 }

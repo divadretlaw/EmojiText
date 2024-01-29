@@ -49,18 +49,6 @@ struct EmojiAnimatedModeKey: EnvironmentKey {
     }
 }
 
-struct EmojiOmitSpacesBetweenEmojisKey: EnvironmentKey {
-    static var defaultValue: Bool {
-        true
-    }
-}
-
-struct EmojiMarkdownInterpretedSyntaxKey: EnvironmentKey {
-    static var defaultValue: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
-        .inlineOnlyPreservingWhitespace
-    }
-}
-
 #if os(watchOS) || os(macOS)
 struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
@@ -103,30 +91,22 @@ public extension EnvironmentValues {
     }
     
     /// Whether to omit spaces between emojis
+    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
     var emojiOmitSpacesBetweenEmojis: Bool {
-        get { self[EmojiOmitSpacesBetweenEmojisKey.self] }
-        set { self[EmojiOmitSpacesBetweenEmojisKey.self] = newValue }
+        get { true }
+        set { }
     }
     
     /// The syntax for interpreting a Markdown string
+    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
     var emojiMarkdownInterpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
-        get { self[EmojiMarkdownInterpretedSyntaxKey.self] }
-        set { self[EmojiMarkdownInterpretedSyntaxKey.self] = newValue }
+        get { .inlineOnlyPreservingWhitespace }
+        set { }
     }
 }
 
 internal extension EnvironmentValues {
     var emojiPlaceholder: any CustomEmoji {
-        get {
-            self[EmojiPlaceholderKey.self]
-        }
-        set {
-            self[EmojiPlaceholderKey.self] = newValue
-        }
-    }
-    
-    @available(*, deprecated, renamed: "emojiPlaceholder")
-    var placeholderEmoji: any CustomEmoji {
         get {
             self[EmojiPlaceholderKey.self]
         }
@@ -201,14 +181,16 @@ public extension View {
     /// the amount of text contactenations needed to render the emojis.
     ///
     /// There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
+    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
     func emojiOmitSpacesBetweenEmojis(_ value: Bool) -> some View {
-        environment(\.emojiOmitSpacesBetweenEmojis, value)
+        self
     }
     
     /// Sets the syntax for interpreting a Markdown string.
     ///
     /// - Parameter value: The syntax for interpreting a Markdown string.
+    @available(*, deprecated, message: "Provide the syntax on the `EmojiText.init` instead")
     func emojiMarkdownInterpretedSyntax(_ value: AttributedString.MarkdownParsingOptions.InterpretedSyntax) -> some View {
-        environment(\.emojiMarkdownInterpretedSyntax, value)
+        self
     }
 }

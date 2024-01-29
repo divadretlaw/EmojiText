@@ -6,29 +6,18 @@
 //
 
 import SwiftUI
-import Nuke
 import OSLog
 
-extension EmojiText {
-    /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - markdown: The string that contains the Markdown formatting.
-    ///      - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
-    ///     - emojis: The custom emojis to render.
-    public init(
-        markdown content: String,
-        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
-        emojis: [any CustomEmoji]
-    ) {
-        self.raw = content
-        self.isMarkdown = true
-        self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
+struct MarkdownEmojiRenderer: EmojiRenderer {
+    let shouldOmitSpacesBetweenEmojis: Bool
+    let interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
+    
+    func render(string: String, emojis: [String: RenderedEmoji]) -> Text {
+        renderAnimated(string: string, emojis: emojis, at: 0)
     }
     
-    var renderedMarkdown: Text {
-        let emojis = renderedEmojis ?? loadEmojis()
-        let attributedString = renderAttributedString(with: emojis)
+    func renderAnimated(string: String, emojis: [String: RenderedEmoji], at time: CFTimeInterval) -> Text {
+        let attributedString = renderAttributedString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
         var partialString = AttributedPartialstring()
@@ -36,7 +25,7 @@ extension EmojiText {
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an interpolated image in a Text view
-                let text = Text(emoji: emoji, renderTime: renderTime)
+                let text = Text(emoji: emoji, renderTime: time)
                 
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by
@@ -74,13 +63,13 @@ extension EmojiText {
             .joined()
     }
     
-    private func renderAttributedString(with emojis: [String: RenderedEmoji]) -> AttributedString {
+    private func renderAttributedString(from string: String, with emojis: [String: RenderedEmoji]) -> AttributedString {
         do {
-            var text = raw
+            var text = string
             
             let options = AttributedString.MarkdownParsingOptions(
                 allowsExtendedAttributes: true,
-                interpretedSyntax: emojiMarkdownInterpretedSyntax,
+                interpretedSyntax: interpretedSyntax,
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
             
@@ -94,46 +83,12 @@ extension EmojiText {
             }
             
             // Remove the injected `String.emojiSeparator`
-            text = text.splitOnEmoji(omittingSpacesBetweenEmojis: emojiOmitSpacesBetweenEmojis).joined()
+            text = text.splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis).joined()
             
             return try AttributedString(markdown: text, options: options)
         } catch {
             Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
-            return AttributedString(stringLiteral: raw)
+            return AttributedString(stringLiteral: string)
         }
     }
 }
-
-#if DEBUG
-// swiftlint:disable force_unwrapping
-#Preview {
-    List {
-        Section {
-            EmojiText(markdown: "**Hello :mastodon:** the **World :mastodon:**", emojis: EmojiText.emojis)
-            EmojiText(markdown: "**Hello :mastodon:** the _World :mastodon:_", emojis: EmojiText.emojis)
-            EmojiText(markdown: "**Hello** *World* :mastodon: with a remote emoji",
-                      emojis: EmojiText.emojis)
-            EmojiText(markdown: "**Hello** *World* :mastodon: :test: with a remote emoji and a fake emoji",
-                      emojis: EmojiText.emojis)
-            EmojiText(markdown: "**Hello** *World* :mastodon: :iphone: with a remote and a local emoji",
-                      emojis: EmojiText.emojis)
-            EmojiText(markdown: "**Hello** *World* :test: with a remote emoji that will not respond properly",
-                      emojis: [RemoteEmoji(shortcode: "test", url: URL(string: "about:blank")!)])
-            EmojiText(markdown: "**Hello** *World* :notAnEmoji: with no emojis",
-                      emojis: [])
-            
-            EmojiText(markdown: "**Hello** *World* :mastodon:",
-                      emojis: EmojiText.emojis)
-            .prepend {
-                Text("Prepended - ")
-            }
-            .append {
-                Text(" - Appended")
-            }
-        } header: {
-            Text("Markdown")
-        }
-    }
-}
-// swiftlint:enable force_unwrapping
-#endif
