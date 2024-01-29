@@ -351,9 +351,21 @@ public struct EmojiText: View {
 #if DEBUG
 #Preview {
     List {
-        EmojiText(verbatim: "Hello World :mastodon:", emojis: EmojiText.emojis)
-        EmojiText(verbatim: "Hello iPhone :iphone:", emojis: EmojiText.emojis)
-        EmojiText(markdown: "**Hello** _World_ :mastodon:", emojis: EmojiText.emojis)
+        Section {
+            EmojiText(verbatim: "Hello Emoji :a:", emojis: EmojiText.emojis)
+            EmojiText(verbatim: "Hello iPhone :iphone:", emojis: EmojiText.emojis)
+            EmojiText(verbatim: "Hello :a: :a: Double", emojis: EmojiText.emojis)
+            EmojiText(verbatim: "Hello Wide :wide:", emojis: EmojiText.emojis)
+        } header: {
+            Text("Verbatim")
+        }
+        
+        Section {
+            EmojiText(markdown: "**Hello** _Emoji_ :a:", emojis: EmojiText.emojis)
+            EmojiText(markdown: "**Hello :a: :a: _Double_**", emojis: EmojiText.emojis)
+        } header: {
+            Text("Markdown")
+        }
     }
 }
 #endif

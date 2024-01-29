@@ -11,15 +11,22 @@ import EmojiText
 struct RemoteEmojiView: View {
     var emojis: [any CustomEmoji] {
         [
-            RemoteEmoji(shortcode: "placeholder", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!),
-            RemoteEmoji(shortcode: "wide", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!)
+            RemoteEmoji(
+                shortcode: "a",
+                url: URL(string: "https://dummyimage.com/64x64/0A6FFF/fff&text=A")!
+            ),
+            RemoteEmoji(
+                shortcode: "wide",
+                url: URL(string: "https://dummyimage.com/256x64/DE3A3B/fff&text=wide")!
+            ),
+            SFSymbolEmoji(shortcode: "iphone")
         ]
     }
     
     var body: some View {
         EmojiTestView {
-            EmojiText(markdown: "Mastodon :placeholder: :placeholder:", emojis: emojis)
-            EmojiText(verbatim: "Wide :wide:", emojis: emojis)
+            EmojiText(verbatim: "Hello Emoji :a:", emojis: emojis)
+            EmojiText(verbatim: "Hello Wide :wide:", emojis: emojis)
         }
         .navigationTitle("Remote Emoji")
     }

@@ -13,12 +13,12 @@ extension EmojiText {
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(
-                shortcode: "mastodon",
-                url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!
+                shortcode: "a",
+                url: URL(string: "https://dummyimage.com/64x64/0A6FFF/fff&text=A")!
             ),
             RemoteEmoji(
-                shortcode: "puppu_purin",
-                url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!
+                shortcode: "wide",
+                url: URL(string: "https://dummyimage.com/256x64/DE3A3B/fff&text=wide")!
             ),
             SFSymbolEmoji(shortcode: "iphone")
         ]
