@@ -65,6 +65,13 @@ struct ContentView: View {
                     } label: {
                         Text("Lots of Emoji-Test")
                     }
+                    
+                    NavigationLink {
+                        MastodonView(statusId: "111324359951561858")
+                            .environment(MastodonAPI(host: "https://tapbots.social"))
+                    } label: {
+                        Text("Emoji & Link")
+                    }
                 } header: {
                     Text("Mastodon")
                 }

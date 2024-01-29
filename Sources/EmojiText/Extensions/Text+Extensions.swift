@@ -25,13 +25,14 @@ extension Text {
     }
     
     init(emoji: RenderedEmoji, renderTime: CFTimeInterval) {
-        var text = Text("\(emoji.frame(at: renderTime))")
+        // Surround the image with zero-width spaces to give the emoji a default height
+        var text = Text("\u{200B}\(emoji.frame(at: renderTime))\u{200B}")
         
         if let baselineOffset = emoji.baselineOffset {
             text = text.baselineOffset(baselineOffset)
         }
         
-        self = text
+        self = text.accessibilityLabel(emoji.shortcode)
     }
     
     init(repating text: Text, count: Int) {

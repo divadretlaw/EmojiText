@@ -8,6 +8,7 @@
 import SwiftUI
 import EmojiText
 import Nuke
+import HTML2Markdown
 
 struct MastodonView: View {
     @Environment(MastodonAPI.self) private var api
@@ -38,9 +39,10 @@ struct MastodonView: View {
                         .font(.title)
                         .foregroundStyle(.secondary)
                 }
-                EmojiText(markdown: status.text, emojis: status.customEmojis)
-                    .animated()
-                    .id(uuid)
+                Group {
+                    EmojiText(markdown: status.text, emojis: status.customEmojis)
+                }
+                .id(uuid)
             } else {
                 ProgressView()
             }
@@ -68,6 +70,7 @@ struct MastodonView: View {
                 print(error.localizedDescription)
             }
         }
+        .textSelection(.enabled)
     }
     
     var customEmojis: [any CustomEmoji] {
@@ -79,11 +82,12 @@ struct MastodonView: View {
 
 extension Status {
     var text: String {
-        content
-            .replacingOccurrences(of: "<p>", with: "")
-            .replacingOccurrences(of: "</p>", with: "")
-            .replacingOccurrences(of: "<strong>", with: "**")
-            .replacingOccurrences(of: "</strong>", with: "**")
+        do {
+            let dom = try HTMLParser().parse(html: content)
+            return dom.markdownFormatted(options: .mastodon)
+        } catch {
+            return content
+        }
     }
     
     var customEmojis: [any CustomEmoji] {

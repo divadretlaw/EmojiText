@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "html2markdown",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:divadretlaw/HTML2Markdown.git",
+      "state" : {
+        "revision" : "fe37711094b261d9fceeaf021143002ba37e563e",
+        "version" : "3.0.2"
+      }
+    },
+    {
       "identity" : "nuke",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke",
@@ -34,6 +43,15 @@
       "state" : {
         "revision" : "64889f0c732f210a935a0ad7cda38f77f876262d",
         "version" : "509.1.1"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup",
+      "state" : {
+        "revision" : "f83c097597094a04124eb6e0d1e894d24129af87",
+        "version" : "2.7.0"
       }
     }
   ],
