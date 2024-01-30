@@ -1,22 +1,37 @@
 //
-//  EmojiText+Markdown.swift
+//  MarkdownEmojiRenderer.swift
 //  EmojiText
 //
 //  Created by David Walter on 26.01.24.
 //
 
 import SwiftUI
+import Markdown
 import OSLog
 
 struct MarkdownEmojiRenderer: EmojiRenderer {
     let shouldOmitSpacesBetweenEmojis: Bool
     let interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
+    private let formatterOptions: MarkupFormatter.Options
     
-    func render(string: String, emojis: [String: RenderedEmoji]) -> Text {
+    init(
+        shouldOmitSpacesBetweenEmojis: Bool,
+        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
+    ) {
+        self.shouldOmitSpacesBetweenEmojis = shouldOmitSpacesBetweenEmojis
+        self.interpretedSyntax = interpretedSyntax
+        
+        self.formatterOptions = MarkupFormatter.Options(
+            unorderedListMarker: .star,
+            orderedListNumerals: .incrementing(start: 1)
+        )
+    }
+    
+    func render(string: String, emojis: [String: RenderedEmoji]) -> SwiftUI.Text {
         renderAnimated(string: string, emojis: emojis, at: 0)
     }
     
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], at time: CFTimeInterval) -> Text {
+    func renderAnimated(string: String, emojis: [String: RenderedEmoji], at time: CFTimeInterval) -> SwiftUI.Text {
         let attributedString = renderAttributedString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -65,27 +80,21 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
     
     private func renderAttributedString(from string: String, with emojis: [String: RenderedEmoji]) -> AttributedString {
         do {
-            var text = string
-            
             let options = AttributedString.MarkdownParsingOptions(
                 allowsExtendedAttributes: true,
                 interpretedSyntax: interpretedSyntax,
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
             
-            for shortcode in emojis.keys {
-                // Replace emojis with a Markdown image with a custom URL Scheme
-                text = text.replacingOccurrences(
-                    of: ":\(shortcode):",
-                    // Inject `String.emojiSeparator` in order to be able to remove spaces between emojis
-                    with: "\(String.emojiSeparator)![\(shortcode)](\(String.emojiScheme)://\(shortcode))\(String.emojiSeparator)"
-                )
-            }
+            let originalDocument = Document(parsing: string)
+            var emojiReplacer = EmojiReplacer(emojis: emojis)
+            let emojiDocument = emojiReplacer.visitDocument(originalDocument) ?? originalDocument
             
-            // Remove the injected `String.emojiSeparator`
-            text = text.splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis).joined()
+            let markdown = emojiDocument.format(options: formatterOptions)
+                .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
+                .joined()
             
-            return try AttributedString(markdown: text, options: options)
+            return try AttributedString(markdown: markdown, options: options)
         } catch {
             Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
             return AttributedString(stringLiteral: string)

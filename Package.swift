@@ -18,13 +18,15 @@ let package = Package(
         )
     ],
     dependencies: [
-         .package(url: "https://github.com/kean/Nuke", from: "12.0.0")
+         .package(url: "https://github.com/kean/Nuke", from: "12.0.0"),
+         .package(url: "https://github.com/apple/swift-markdown", from: "0.3.0")
     ],
     targets: [
         .target(
             name: "EmojiText",
             dependencies: [
-                .product(name: "Nuke", package: "Nuke")
+                .product(name: "Nuke", package: "Nuke"),
+                .product(name: "Markdown", package: "swift-markdown")
             ]
         )
     ]
