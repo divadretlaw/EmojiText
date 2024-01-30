@@ -9,7 +9,7 @@ import SwiftUI
 
 #if DEBUG
 // swiftlint:disable force_unwrapping
-extension EmojiText {
+extension [CustomEmoji] {
     static var emojis: [any CustomEmoji] {
         [
             RemoteEmoji(

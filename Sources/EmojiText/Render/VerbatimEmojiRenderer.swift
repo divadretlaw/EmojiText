@@ -45,3 +45,22 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         return text
     }
 }
+
+#if DEBUG
+#Preview {
+    List {
+        EmojiText(
+            verbatim: "Hello :a:",
+            emojis: .emojis
+        )
+        EmojiText(
+            verbatim: "World :wide:",
+            emojis: .emojis
+        )
+        EmojiText(
+            verbatim: "Hello World :test:",
+            emojis: .emojis
+        )
+    }
+}
+#endif

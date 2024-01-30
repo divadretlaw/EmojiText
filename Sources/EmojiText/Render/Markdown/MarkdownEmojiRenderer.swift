@@ -101,3 +101,48 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    List {
+        EmojiText(
+            markdown: "Hello :a:",
+            emojis: .emojis
+        )
+        EmojiText(
+            markdown: "Hello [:a:](https://github.com)",
+            emojis: .emojis
+        )
+        EmojiText(
+            markdown: """
+            Hello :a:
+            
+            ```
+            EmojiText(markdown: "Hello :a:", emojis: .emojis)
+            ```
+            
+            World :wide:
+            """,
+            emojis: .emojis
+        )
+        EmojiText(
+            markdown: """
+            # Hello :a:
+            ## Hello :a:
+            ### Hello :a:
+            **Hello :a:**
+            *Hello :a:*
+            _Hello :a:_
+            `Hello :a:`
+            
+            * Hello :a:
+            * Hello :wide:
+              
+            1. Hello :a:
+            2. Hello :wide:
+            """,
+            emojis: .emojis
+        )
+    }
+}
+#endif
