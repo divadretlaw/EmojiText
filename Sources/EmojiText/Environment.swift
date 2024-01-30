@@ -89,20 +89,6 @@ public extension EnvironmentValues {
         get { self[EmojiAnimatedModeKey.self] }
         set { self[EmojiAnimatedModeKey.self] = newValue }
     }
-    
-    /// Whether to omit spaces between emojis
-    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
-    var emojiOmitSpacesBetweenEmojis: Bool {
-        get { true }
-        set { }
-    }
-    
-    /// The syntax for interpreting a Markdown string
-    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
-    var emojiMarkdownInterpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax {
-        get { .inlineOnlyPreservingWhitespace }
-        set { }
-    }
 }
 
 internal extension EnvironmentValues {
@@ -163,26 +149,5 @@ public extension View {
     /// you can provide a emoji baseline offset
     func emojiBaselineOffset(_ offset: CGFloat?) -> some View {
         environment(\.emojiBaselineOffset, offset)
-    }
-    
-    /// Overrides whether spaces are omitted between emojis
-    ///
-    /// - Parameter value: Whether to omit spaces between emojis
-    ///
-    /// Consider removing spaces between emojis as this will often drastically reduce
-    /// the amount of text contactenations needed to render the emojis.
-    ///
-    /// There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
-    @available(*, deprecated, message: "Provide the value on the `EmojiText.init` instead")
-    func emojiOmitSpacesBetweenEmojis(_ value: Bool) -> some View {
-        self
-    }
-    
-    /// Sets the syntax for interpreting a Markdown string.
-    ///
-    /// - Parameter value: The syntax for interpreting a Markdown string.
-    @available(*, deprecated, message: "Provide the syntax on the `EmojiText.init` instead")
-    func emojiMarkdownInterpretedSyntax(_ value: AttributedString.MarkdownParsingOptions.InterpretedSyntax) -> some View {
-        self
     }
 }
