@@ -20,14 +20,14 @@ public struct EmojiText: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.displayScale) var displayScale
     
-    @Environment(\.emojiImagePipeline) var imagePipeline
-    @Environment(\.emojiPlaceholder) var emojiPlaceholder
-    @Environment(\.emojiSize) var emojiSize
-    @Environment(\.emojiBaselineOffset) var emojiBaselineOffset
+    @Environment(\.emojiText.imagePipeline) var imagePipeline
+    @Environment(\.emojiText.placeholder) var placeholder
+    @Environment(\.emojiText.size) var size
+    @Environment(\.emojiText.baselineOffset) var baselineOffset
     #if os(watchOS) || os(macOS)
-    @Environment(\.emojiTimer) var emojiTimer
+    @Environment(\.emojiText.timer) var timer
     #endif
-    @Environment(\.emojiAnimatedMode) var emojiAnimatedMode
+    @Environment(\.emojiText.animatedMode) var animatedMode
     
     @ScaledMetric
     var scaleFactor: CGFloat = 1.0
@@ -81,11 +81,11 @@ public struct EmojiText: View {
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
-                for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower).values.map(\.targetTimestamp) {
+                for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: animatedMode.disabledOnLowPower).values.map(\.targetTimestamp) {
                     renderTime = targetTimestamp
                 }
                 #else
-                for await time in emojiTimer.values(stopOnLowPowerMode: emojiAnimatedMode.disabledOnLowPower) {
+                for await time in timer.values(stopOnLowPowerMode: animatedMode.disabledOnLowPower) {
                     renderTime = time.timeIntervalSinceReferenceDate as CFTimeInterval
                 }
                 #endif
@@ -110,7 +110,7 @@ public struct EmojiText: View {
     
     func loadEmojis() -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
-        let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
+        let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
         
         var renderedEmojis = [String: RenderedEmoji]()
         
@@ -152,7 +152,7 @@ public struct EmojiText: View {
                 // Set a placeholder for all other emoji
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: emoji,
-                    placeholder: emojiPlaceholder,
+                    placeholder: placeholder,
                     targetHeight: targetHeight,
                     baselineOffset: baselineOffset
                 )
@@ -164,7 +164,7 @@ public struct EmojiText: View {
     
     func loadLazyEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
-        let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
+        let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let resizeHeight = targetHeight * displayScale
         
         return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [targetHeight, shouldAnimateIfNeeded] group in
@@ -322,14 +322,14 @@ public struct EmojiText: View {
             hasher.combine(emoji)
         }
         hasher.combine(shouldAnimateIfNeeded)
-        hasher.combine(emojiSize)
-        hasher.combine(emojiAnimatedMode)
+        hasher.combine(size)
+        hasher.combine(animatedMode)
         hasher.combine(displayScale)
         return hasher.finalize()
     }
     
     var targetHeight: CGFloat {
-        if let emojiSize = emojiSize {
+        if let emojiSize = size {
             return emojiSize
         } else {
             let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)

@@ -24,8 +24,8 @@ import SwiftUI
                 verbatim: "Hello World :mastodon: :puppu_purin: with a custom emoji.",
                 emojis: EmojiText.emojis
             )
-            .emojiSize(34)
-            .emojiBaselineOffset(-8.5)
+            .emojiText.size(34)
+            .emojiText.baselineOffset(-8.5)
         } header: {
             Text("Verbatim")
         }

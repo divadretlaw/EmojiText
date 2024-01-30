@@ -28,7 +28,7 @@ private struct AnimatedEmoji: View {
                     emojis: EmojiText.animatedEmojis
                 )
                 .animated()
-                .environment(\.emojiAnimatedMode, .never)
+                .environment(\.emojiText.animatedMode, .never)
             } header: {
                 Text("Default")
             }
@@ -39,14 +39,14 @@ private struct AnimatedEmoji: View {
                     emojis: EmojiText.animatedEmojis
                 )
                 .animated()
-                .environment(\.emojiAnimatedMode, enableAnimation ? .always : .never)
+                .environment(\.emojiText.animatedMode, enableAnimation ? .always : .never)
                 
                 EmojiText(
                     markdown: "**Never Animated** *GIF* :gif:",
                     emojis: EmojiText.animatedEmojis
                 )
                 .animated()
-                .environment(\.emojiAnimatedMode, .never)
+                .environment(\.emojiText.animatedMode, .never)
                 
                 Toggle("Enable animation", isOn: $enableAnimation)
             } header: {
@@ -61,7 +61,7 @@ private struct AnimatedEmoji: View {
 }
 
 private struct EmojiTextWithSlider: View {
-    @State private var emojiSize: CGFloat = 20
+    @State private var size: CGFloat = 20
     
     var body: some View {
         List {
@@ -70,9 +70,9 @@ private struct EmojiTextWithSlider: View {
                     verbatim: "Hello World :mastodon: with a remote emoji",
                     emojis: EmojiText.emojis
                 )
-                .emojiSize(emojiSize)
+                .emojiText.size(size)
                 
-                Slider(value: $emojiSize, in: 1...50)
+                Slider(value: $size, in: 1...50)
             }
         }
     }
