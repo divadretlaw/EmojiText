@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-extension Publisher where Self.Failure == Never {
+extension Publisher where Failure == Never {
     func values(stopOnLowPowerMode: Bool) -> AsyncPublisher<AnyPublisher<Output, Never>> {
         filter { _ in
             if stopOnLowPowerMode && ProcessInfo.processInfo.isLowPowerModeEnabled {

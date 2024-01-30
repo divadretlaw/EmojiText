@@ -22,7 +22,7 @@ extension CADisplayLink {
         var values: AsyncStream<CADisplayLink> {
             AsyncStream { continuation in
                 let displayLink = DisplayLink(mode: mode) { displayLink in
-                    if stopOnLowPowerMode && ProcessInfo.processInfo.isLowPowerModeEnabled {
+                    if stopOnLowPowerMode, ProcessInfo.processInfo.isLowPowerModeEnabled {
                         // Do not yield information on low-power mode
                     } else {
                         continuation.yield(displayLink)

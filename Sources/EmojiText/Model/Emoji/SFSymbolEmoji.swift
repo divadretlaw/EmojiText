@@ -33,7 +33,7 @@ public struct SFSymbolEmoji: CustomEmoji {
         SFSymbolEmoji(shortcode: "square.dashed", symbolRenderingMode: .monochrome, renderingMode: .template)
     }
     
-    // MARK: Hashable
+    // MARK: - Hashable
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)

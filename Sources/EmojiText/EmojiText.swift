@@ -72,7 +72,7 @@ public struct EmojiText: View {
                 
                 // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
-                    emojis = emojis.merging(await loadRemoteEmojis()) { _, new in
+                    emojis = emojis.merging(await loadLazyEmojis()) { _, new in
                         new
                     }
                     renderedEmojis = emojis
@@ -145,7 +145,7 @@ public struct EmojiText: View {
                         baselineOffset: baselineOffset
                     )
                 } else {
-                    // Remote emoji wasn't found in cache and a placholder will be used instead
+                    // Remote emoji wasn't found in cache and a placeholder will be used instead
                     fallthrough
                 }
             default:
@@ -162,7 +162,7 @@ public struct EmojiText: View {
         return renderedEmojis
     }
     
-    func loadRemoteEmojis() async -> [String: RenderedEmoji] {
+    func loadLazyEmojis() async -> [String: RenderedEmoji] {
         let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
         let baselineOffset = emojiBaselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let resizeHeight = targetHeight * displayScale
@@ -340,11 +340,12 @@ public struct EmojiText: View {
     var needsAnimation: Bool {
         guard let renderedEmojis else { return false }
         
-        guard case .never = emojiAnimatedMode else {
+        switch animatedMode {
+        case .never:
+            return false
+        default:
             return renderedEmojis.contains { $1.isAnimated }
         }
-        
-        return false
     }
 }
 

@@ -107,22 +107,14 @@ public extension EnvironmentValues {
 
 internal extension EnvironmentValues {
     var emojiPlaceholder: any CustomEmoji {
-        get {
-            self[EmojiPlaceholderKey.self]
-        }
-        set {
-            self[EmojiPlaceholderKey.self] = newValue
-        }
+        get { self[EmojiPlaceholderKey.self] }
+        set { self[EmojiPlaceholderKey.self] = newValue }
     }
     
     #if os(watchOS) || os(macOS)
     var emojiTimer: Publishers.Autoconnect<Timer.TimerPublisher> {
-        get {
-            self[EmojiTimerKey.self]
-        }
-        set {
-            self[EmojiTimerKey.self] = newValue
-        }
+        get { self[EmojiTimerKey.self] }
+        set { self[EmojiTimerKey.self] = newValue }
     }
     #endif
 }
