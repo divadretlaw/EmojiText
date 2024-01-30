@@ -66,7 +66,7 @@ Supported formats:
 > EmojiText(verbatim: "GIF :my_gif:",
 >           emojis: [RemoteEmoji(shortcode: "my_gif", url:  /* URL to gif */)])
 >   .animated()
->   .environment(\.emojiAnimatedMode, .always)
+>   .environment(\.emojiText.AnimatedMode, .always)
 > ```
 
 ## Configuration
@@ -74,19 +74,19 @@ Supported formats:
 Remote emojis are replaced by a placeholder image when loading. Default is the SF Symbol `square.dashed` but you can overide the placeholder image with
 
 ```swift
-.placeholderEmoji(systemName: /* SF Symbol */)
+.emojiText.placeholder(systemName: /* SF Symbol */)
 ```
 
 or
 
 ```swift
-.placeholderEmoji(image: /* some UIImage or NSImage */)
+.emojiText.placeholder(image: /* some UIImage or NSImage */)
 ```
 
 Remote emojis use `ImagePipeline.shared` from [Nuke](https://github.com/kean/Nuke) to load them, but you can provide a custom pipeline with
 
 ```swift
-.environment(\.emojiImagePipeline, ImagePipeline())
+.environment(\.emojiText.imagePipeline, ImagePipeline())
 ```
 
 ## License
