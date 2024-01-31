@@ -10,7 +10,7 @@ import ImageIO
 import OSLog
 
 /// A wrapper arround ``EmojiImage`` to support animated images on all platforms.
-struct RawImage {
+struct RawImage: Sendable {
     /// A static representation of the animated image
     let `static`: EmojiImage
     /// The complete array of image objects that compose the animation of an animated object.

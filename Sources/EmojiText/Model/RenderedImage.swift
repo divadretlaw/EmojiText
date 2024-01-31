@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RenderedImage: Hashable, Equatable {
+struct RenderedImage: Hashable, Equatable, Sendable {
     private let systemName: String?
     private let platformImage: EmojiImage?
     private let animationImages: [EmojiImage]?

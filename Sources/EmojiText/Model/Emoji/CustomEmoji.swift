@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// A custom emoji
-public protocol CustomEmoji: Hashable, Equatable, Identifiable {
+public protocol CustomEmoji: Hashable, Equatable, Identifiable, Sendable {
     /// The ID of the emoji
     var id: String { get }
     /// Shortcode of the emoji

@@ -167,7 +167,7 @@ public struct EmojiText: View {
         let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let resizeHeight = targetHeight * displayScale
         
-        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [targetHeight, shouldAnimateIfNeeded] group in
+        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [imagePipeline, targetHeight, shouldAnimateIfNeeded] group in
             for emoji in emojis {
                 switch emoji {
                 case let remoteEmoji as RemoteEmoji:

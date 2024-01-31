@@ -10,7 +10,7 @@ import SwiftUI
 import OSLog
 
 /// A rendered custom emoji
-struct RenderedEmoji: Hashable, Equatable, Identifiable {
+struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
     let shortcode: String
     let baselineOffset: CGFloat?
     let renderingMode: Image.TemplateRenderingMode?
