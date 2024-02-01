@@ -24,7 +24,7 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         for substring in splits {
             if let emoji = emojis[substring] {
                 // If the part is an emoji we render it as an inline image
-                let text = Text(emoji: emoji, renderTime: time)
+                let text = EmojiTextRenderer(emoji: emoji).render(at: time)
                 result = result + text
             } else {
                 // Otherwise we just render the part as String

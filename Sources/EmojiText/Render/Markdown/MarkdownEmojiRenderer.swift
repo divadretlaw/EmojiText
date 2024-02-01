@@ -40,7 +40,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an interpolated image in a Text view
-                let text = Text(emoji: emoji, renderTime: time)
+                let text = EmojiTextRenderer(emoji: emoji).render(at: time)
                 
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by

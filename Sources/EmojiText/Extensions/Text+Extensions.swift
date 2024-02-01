@@ -24,17 +24,6 @@ extension Text {
         self.init(string)
     }
     
-    init(emoji: RenderedEmoji, renderTime: CFTimeInterval) {
-        // Surround the image with zero-width spaces to give the emoji a default height
-        var text = Text("\u{200B}\(emoji.frame(at: renderTime))\u{200B}")
-        
-        if let baselineOffset = emoji.baselineOffset {
-            text = text.baselineOffset(baselineOffset)
-        }
-        
-        self = text.accessibilityLabel(emoji.shortcode)
-    }
-    
     init(repating text: Text, count: Int) {
         self = Array(repeating: text, count: max(count, 1)).joined()
     }
