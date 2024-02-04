@@ -17,7 +17,11 @@ public typealias EmojiColor = UIColor
 
 extension EmojiColor {
     static var placeholderEmoji: EmojiColor {
+        #if os(watchOS)
+        .gray
+        #else
         .placeholderText
+        #endif
     }
 }
 #endif
