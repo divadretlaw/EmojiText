@@ -49,7 +49,7 @@ final class EmojiTextTests: XCTestCase {
     
     func test_Mastodon_Custom_Scaled() async throws {
         let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
-            .emojiSize(30)
+            .emojiText.size(30)
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
@@ -60,13 +60,13 @@ final class EmojiTextTests: XCTestCase {
     
     func test_Mastodon_Offset_Positive() async throws {
         let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
-            .emojiBaselineOffset(8)
+            .emojiText.baselineOffset(8)
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
     func test_Mastodon_Offset_Negative() async throws {
         let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
-            .emojiBaselineOffset(-8)
+            .emojiText.baselineOffset(-8)
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
@@ -114,7 +114,7 @@ final class EmojiTextTests: XCTestCase {
     
     func test_Wide_Custom_Scaled() async throws {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
-            .emojiSize(30)
+            .emojiText.size(30)
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
     }
     
@@ -184,7 +184,7 @@ final class EmojiTextTests: XCTestCase {
         
         > quote
         """
-        let view = EmojiText.init(markdown: markdown, interpretedSyntax: .full, emojis: [])
+        let view = EmojiText(markdown: markdown, interpretedSyntax: .full, emojis: [])
         await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
     }
 }

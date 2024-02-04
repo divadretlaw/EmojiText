@@ -1,5 +1,5 @@
 //
-//  Status.swift
+//  DTOs.swift
 //  EmojiTextTest
 //
 //  Created by David Walter on 14.12.23.

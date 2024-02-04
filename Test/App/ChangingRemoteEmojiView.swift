@@ -9,12 +9,10 @@ import SwiftUI
 import EmojiText
 
 struct ChangingRemoteEmojiView: View {
-    @State private var emojis: [any CustomEmoji] = {
-        [
-            RemoteEmoji(shortcode: "custom", url: URL(string: "https://dummyimage.com/64x64/00f/fff&text=A")!)
-        ]
-    }()
-    
+    @State private var emojis: [any CustomEmoji] = [
+        RemoteEmoji(shortcode: "custom", url: URL(string: "https://dummyimage.com/64x64/00f/fff&text=A")!),
+    ]
+
     var body: some View {
         List {
             Section {

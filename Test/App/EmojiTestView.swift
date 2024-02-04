@@ -22,30 +22,30 @@ struct EmojiTestView<Content>: View where Content: View {
             Section {
                 sectionContent
             } header: {
-                Text("emojiBaselineOffset = -20")
+                Text("Emoji BaselineOffset = -20")
             }
-            .emojiBaselineOffset(-20)
+            .emojiText.baselineOffset(-20)
             
             Section {
                 sectionContent
             } header: {
-                Text("emojiBaselineOffset = 20")
+                Text("Emoji BaselineOffset = 20")
             }
-            .emojiBaselineOffset(-20)
+            .emojiText.baselineOffset(-20)
             
             Section {
                 sectionContent
             } header: {
-                Text("emojiSize = 30")
+                Text("Emoji Size = 30")
             }
-            .emojiSize(30)
+            .emojiText.size(30)
             
             Section {
                 sectionContent
             } header: {
-                Text("emojiSize = 10")
+                Text("Emoji Size = 10")
             }
-            .emojiSize(10)
+            .emojiText.size(10)
         }
     }
     

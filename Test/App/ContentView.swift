@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Test
+//  EmojiTextTest
 //
 //  Created by David Walter on 18.02.23.
 //
@@ -40,6 +40,12 @@ struct ContentView: View {
                         SFSymbolEmojiView()
                     } label: {
                         Text("SF Symbol Emoji")
+                    }
+                    
+                    NavigationLink {
+                        LocalEmojiView()
+                    } label: {
+                        Text("Local Emoji")
                     }
                     
                     NavigationLink {

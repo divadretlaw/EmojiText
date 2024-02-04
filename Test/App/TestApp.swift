@@ -1,6 +1,6 @@
 //
 //  TestApp.swift
-//  Test
+//  EmojiTextTest
 //
 //  Created by David Walter on 18.02.23.
 //

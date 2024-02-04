@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		631ECE592B6F933B0051E3CB /* GraphicsRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 631ECE582B6F933B0051E3CB /* GraphicsRenderer */; };
+		631ECE5B2B6FA2B10051E3CB /* LocalEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631ECE5A2B6FA2B10051E3CB /* LocalEmojiView.swift */; };
 		6334D1E62B33B4B500E9D8DE /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D1E52B33B4B500E9D8DE /* TestApp.swift */; };
 		6334D1E82B33B4B500E9D8DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D1E72B33B4B500E9D8DE /* ContentView.swift */; };
 		6334D1EA2B33B4B600E9D8DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6334D1E92B33B4B600E9D8DE /* Assets.xcassets */; };
@@ -21,7 +23,6 @@
 		6334D2312B33B6DC00E9D8DE /* EmojiTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D22D2B33B6DC00E9D8DE /* EmojiTextTests.swift */; };
 		6334D2342B33B6DC00E9D8DE /* Emojis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2302B33B6DC00E9D8DE /* Emojis.swift */; };
 		6334D2362B33B78D00E9D8DE /* Snapshotting+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */; };
-		6334D2392B33B7AC00E9D8DE /* GraphicsRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 6334D2382B33B7AC00E9D8DE /* GraphicsRenderer */; };
 		6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 6353366A2B6852B5004E4DD2 /* HTML2Markdown */; };
 		639F664C2B63ED4D00B7F747 /* DTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F66492B63ED4D00B7F747 /* DTOs.swift */; };
 		639F664D2B63ED4D00B7F747 /* MastodonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		631ECE5A2B6FA2B10051E3CB /* LocalEmojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalEmojiView.swift; sourceTree = "<group>"; };
 		6334D1E22B33B4B500E9D8DE /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6334D1E52B33B4B500E9D8DE /* TestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		6334D1E72B33B4B500E9D8DE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -66,7 +68,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */,
-				6334D2392B33B7AC00E9D8DE /* GraphicsRenderer in Frameworks */,
 				6334D21B2B33B51B00E9D8DE /* EmojiText in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				631ECE592B6F933B0051E3CB /* GraphicsRenderer in Frameworks */,
 				6334D2122B33B4DF00E9D8DE /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -82,6 +84,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		631ECE572B6F933B0051E3CB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6334D1D92B33B4B500E9D8DE = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +98,7 @@
 				6334D1E42B33B4B500E9D8DE /* App */,
 				6334D1F62B33B4B600E9D8DE /* Tests */,
 				6334D1E32B33B4B500E9D8DE /* Products */,
+				631ECE572B6F933B0051E3CB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +122,7 @@
 				6334D21D2B33B64F00E9D8DE /* EmojiTestView.swift */,
 				6334D21F2B33B64F00E9D8DE /* RemoteEmojiView.swift */,
 				6334D2212B33B64F00E9D8DE /* SFSymbolEmojiView.swift */,
+				631ECE5A2B6FA2B10051E3CB /* LocalEmojiView.swift */,
 				6334D1E92B33B4B600E9D8DE /* Assets.xcassets */,
 				6334D1EB2B33B4B600E9D8DE /* Test.entitlements */,
 				6334D1EC2B33B4B600E9D8DE /* Preview Content */,
@@ -165,7 +176,6 @@
 			name = Test;
 			packageProductDependencies = (
 				6334D21A2B33B51B00E9D8DE /* EmojiText */,
-				6334D2382B33B7AC00E9D8DE /* GraphicsRenderer */,
 				6353366A2B6852B5004E4DD2 /* HTML2Markdown */,
 			);
 			productName = Test;
@@ -188,6 +198,7 @@
 			name = SnapshotTests;
 			packageProductDependencies = (
 				6334D2112B33B4DF00E9D8DE /* SnapshotTesting */,
+				631ECE582B6F933B0051E3CB /* GraphicsRenderer */,
 			);
 			productName = TestTests;
 			productReference = 6334D1F32B33B4B600E9D8DE /* SnapshotTests.xctest */;
@@ -267,6 +278,7 @@
 				6334D1E82B33B4B500E9D8DE /* ContentView.swift in Sources */,
 				639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */,
 				6334D2252B33B64F00E9D8DE /* RemoteEmojiView.swift in Sources */,
+				631ECE5B2B6FA2B10051E3CB /* LocalEmojiView.swift in Sources */,
 				6334D2232B33B64F00E9D8DE /* EmojiTestView.swift in Sources */,
 				6334D2222B33B64F00E9D8DE /* AnimatedEmojiView.swift in Sources */,
 				6334D1E62B33B4B500E9D8DE /* TestApp.swift in Sources */,
@@ -442,10 +454,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = at.davidwalter.EmojiText.Test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 			};
 			name = Debug;
 		};
@@ -479,10 +492,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = at.davidwalter.EmojiText.Test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 			};
 			name = Release;
 		};
@@ -505,6 +519,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Test";
@@ -529,6 +544,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Test";
@@ -602,6 +618,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		631ECE582B6F933B0051E3CB /* GraphicsRenderer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */;
+			productName = GraphicsRenderer;
+		};
 		6334D2112B33B4DF00E9D8DE /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
@@ -610,11 +631,6 @@
 		6334D21A2B33B51B00E9D8DE /* EmojiText */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = EmojiText;
-		};
-		6334D2382B33B7AC00E9D8DE /* GraphicsRenderer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */;
-			productName = GraphicsRenderer;
 		};
 		6353366A2B6852B5004E4DD2 /* HTML2Markdown */ = {
 			isa = XCSwiftPackageProductDependency;

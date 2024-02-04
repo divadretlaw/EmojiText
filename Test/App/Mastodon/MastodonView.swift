@@ -91,7 +91,7 @@ extension Status {
     }
     
     var customEmojis: [any CustomEmoji] {
-        self.emojis.map { emoji in
+        emojis.map { emoji in
             RemoteEmoji(shortcode: emoji.shortcode, url: emoji.url)
         }
     }

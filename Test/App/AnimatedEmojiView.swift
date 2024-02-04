@@ -40,7 +40,6 @@ struct AnimatedEmojiView: View {
                         Image(systemName: "play")
                     }
                 }
-
             }
         }
     }
