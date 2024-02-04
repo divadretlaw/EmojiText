@@ -14,6 +14,10 @@ public struct LocalEmoji: CustomEmoji {
     public let shortcode: String
     /// The image representing the emoji
     public let image: EmojiImage
+    /// The color to render the emoji with
+    ///
+    /// Set `nil` if you don't want to override the color.
+    public let color: EmojiColor?
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
     public let baselineOffset: CGFloat?
@@ -23,13 +27,15 @@ public struct LocalEmoji: CustomEmoji {
     /// - Parameters:
     ///     - shortcode: The shortcode of the emoji
     ///     - image: The image containing the emoji
+    ///     - color: Override the color to render the emoji with
     ///     - renderingMode: The mode SwiftUI uses to render this emoji
     ///     - baselineOffset: The baseline offset to use when rendering this emoji
-    public init(shortcode: String, image: EmojiImage, renderingMode: Image.TemplateRenderingMode? = nil, baselineOffset: CGFloat? = nil) {
+    public init(shortcode: String, image: EmojiImage, color: EmojiColor? = nil, renderingMode: Image.TemplateRenderingMode? = nil, baselineOffset: CGFloat? = nil) {
         self.shortcode = shortcode
         self.image = image
         self.renderingMode = renderingMode
         self.baselineOffset = baselineOffset
+        self.color = color
     }
     
     // MARK: - Hashable
@@ -39,6 +45,7 @@ public struct LocalEmoji: CustomEmoji {
         hasher.combine(image)
         hasher.combine(renderingMode)
         hasher.combine(baselineOffset)
+        hasher.combine(color)
     }
     
     // MARK: - Equatable

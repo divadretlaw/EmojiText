@@ -19,6 +19,7 @@ public struct EmojiText: View {
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.displayScale) var displayScale
+    @Environment(\.colorScheme) var colorScheme
     
     @Environment(\.emojiText.imagePipeline) var imagePipeline
     @Environment(\.emojiText.placeholder) var placeholder
@@ -324,6 +325,7 @@ public struct EmojiText: View {
         hasher.combine(size)
         hasher.combine(animatedMode)
         hasher.combine(displayScale)
+        hasher.combine(colorScheme)
         return hasher.finalize()
     }
     

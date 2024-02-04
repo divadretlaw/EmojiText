@@ -12,7 +12,8 @@ struct LocalEmojiView: View {
     var emojis: [any CustomEmoji] {
         [
             LocalEmoji(shortcode: "original", image: EmojiImage(named: "Test")!),
-            LocalEmoji(shortcode: "template", image: EmojiImage(named: "Test")!, renderingMode: .template)
+            LocalEmoji(shortcode: "template", image: EmojiImage(named: "Test")!, renderingMode: .template),
+            LocalEmoji(shortcode: "color", image: EmojiImage(named: "Test")!, color: .systemBlue)
         ]
     }
     
@@ -20,6 +21,7 @@ struct LocalEmojiView: View {
         EmojiTestView {
             EmojiText(verbatim: "Original :original:", emojis: emojis)
             EmojiText(verbatim: "Template :template:", emojis: emojis)
+            EmojiText(verbatim: "Color :color:", emojis: emojis)
         }
         .navigationTitle("Local Emoji")
     }

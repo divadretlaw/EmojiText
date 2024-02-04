@@ -36,7 +36,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
     
     init(from emoji: LocalEmoji, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
-        self.rawImage = RenderedImage(image: emoji.image, animated: animated, targetHeight: targetHeight)
+        self.rawImage = RenderedImage(image: emoji.image.withColor(emoji.color), animated: animated, targetHeight: targetHeight)
         self.renderingMode = emoji.renderingMode
         self.baselineOffset = emoji.baselineOffset ?? baselineOffset
         self.symbolRenderingMode = nil
@@ -72,7 +72,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
         
         switch placeholder {
         case let localEmoji as LocalEmoji:
-            self.rawImage = RenderedImage(image: localEmoji.image, animated: animated, targetHeight: targetHeight)
+            self.rawImage = RenderedImage(image: localEmoji.image.withColor(localEmoji.color), animated: animated, targetHeight: targetHeight)
         case let sfSymbolEmoji as SFSymbolEmoji:
             self.rawImage = RenderedImage(systemName: sfSymbolEmoji.shortcode)
         default:

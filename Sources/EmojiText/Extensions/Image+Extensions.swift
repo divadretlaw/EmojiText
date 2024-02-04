@@ -87,6 +87,14 @@ extension UIImage {
         
         return RawImage(frames: frames, duration: TimeInterval(duration) / 1000.0)
     }
+    
+    func withColor(_ color: UIColor?) -> UIImage {
+        guard let color else {
+            return self
+        }
+        
+        return withTintColor(color, renderingMode: .alwaysTemplate)
+    }
 }
 #endif
 
@@ -144,6 +152,25 @@ extension NSImage {
         }
         
         return RawImage(frames: frames, duration: TimeInterval(duration) / 1000.0)
+    }
+    
+    func withColor(_ color: NSColor?) -> NSImage {
+        guard let color else {
+            return self
+        }
+        
+        let image = self.copy() as! NSImage
+        image.lockFocus()
+        
+        color.set()
+        
+        let imageRect = NSRect(origin: .zero, size: image.size)
+        imageRect.fill(using: .sourceIn)
+        
+        image.unlockFocus()
+        image.isTemplate = false
+        
+        return image
     }
 }
 #endif
