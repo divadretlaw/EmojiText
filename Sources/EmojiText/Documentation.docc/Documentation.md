@@ -60,7 +60,7 @@ Supported formats:
 > EmojiText(verbatim: "GIF :my_gif:",
 >           emojis: [RemoteEmoji(shortcode: "my_gif", url: /* URL to gif */)])
 >   .animated()
->   .environment(\.emojiAnimatedMode, .always)
+>   .environment(\.emojiText.animatedMode, .always)
 > ```
 
 ## Topics

@@ -7,11 +7,11 @@ Remote emojis are replaced by a placeholder image. Default is the SF Symbol 􀓔
 You can provide a placeholder image with your own placeholder using
 
 ```swift
-.placeholderEmoji(systemName: /* SF Symbol */)
+.emojiText.placeholder(systemName: /* SF Symbol */)
 ```
 
 or
 
 ```swift
-.placeholderEmoji(image: /* some UIImage or NSImage */)
+.emojiText.placeholder(image: /* some UIImage or NSImage */)
 ```

@@ -7,5 +7,5 @@ While ``EmojiText`` tries to determine the size of the emoji based on the curren
 In case you use a custom font or want to override the calculation of the emoji size for some other reason you can provide a emoji size with
 
 ```swift
-.emojiSize(/* size in px */)
+.emojiText.size(/* size in px */)
 ```
