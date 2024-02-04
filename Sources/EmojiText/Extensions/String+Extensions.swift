@@ -27,8 +27,7 @@ extension String {
                 .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
                 .map { String($0) }
         } else {
-            splits = self
-                .components(separatedBy: String.emojiSeparator)
+            splits = components(separatedBy: String.emojiSeparator)
                 .filter { !$0.isEmpty }
         }
         

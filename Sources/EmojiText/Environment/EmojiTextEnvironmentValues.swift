@@ -20,7 +20,7 @@ public struct EmojiTextEnvironmentValues: CustomStringConvertible {
     /// that SwiftUI manages for you when you use the ``Environment``
     /// property wrapper and the ``View/environment(_:_:)`` view modifier.
     init() {
-        self.values = EnvironmentValues()
+        values = EnvironmentValues()
     }
     
     /// Accesses the environment value associated with a custom key.

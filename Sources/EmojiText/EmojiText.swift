@@ -56,7 +56,7 @@ public struct EmojiText: View {
                 let renderedHash = renderedEmojis.hashValue
                 var emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
                 
-                // Set placeholders
+                // Load emojis. Will set placeholders for lazy emojis
                 emojis = emojis.merging(loadEmojis()) { current, new in
                     if current.hasSameSource(as: new) {
                         if !new.isPlaceholder || current.isPlaceholder {
@@ -70,7 +70,7 @@ public struct EmojiText: View {
                 }
                 renderedEmojis = emojis
                 
-                // Load actual emojis if needed (e.g. placeholders were set or source emojis changed)
+                // Load lazy emojis if needed (e.g. placeholders were set or source emojis changed)
                 if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
                     emojis = emojis.merging(await loadLazyEmojis()) { _, new in
                         new
@@ -276,7 +276,6 @@ public struct EmojiText: View {
     ) where S: StringProtocol {
         self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
     }
-
     
     // MARK: - Modifier
     

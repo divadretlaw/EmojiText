@@ -1,5 +1,5 @@
 //
-//  EmojiText+Preview.swift
+//  Preview.swift
 //  EmojiText
 //
 //  Created by David Walter on 26.01.24.

@@ -11,7 +11,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
     fileprivate var substrings: [AttributedSubstring]
     
     init() {
-        self.substrings = []
+        substrings = []
     }
     
     mutating func append(_ substring: AttributedSubstring) {
