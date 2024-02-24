@@ -159,6 +159,7 @@ extension NSImage {
             return self
         }
         
+        // swiftlint:disable:next force_cast
         let image = self.copy() as! NSImage
         image.lockFocus()
         

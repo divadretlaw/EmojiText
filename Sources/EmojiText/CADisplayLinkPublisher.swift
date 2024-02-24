@@ -9,10 +9,9 @@ import SwiftUI
 
 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 extension CADisplayLink {
-    @MainActor
-    struct CADisplayLinkPublisher {
-        var mode: RunLoop.Mode
-        var stopOnLowPowerMode: Bool
+    @MainActor struct CADisplayLinkPublisher {
+        let mode: RunLoop.Mode
+        let stopOnLowPowerMode: Bool
         
         init(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) {
             self.mode = mode
@@ -36,14 +35,12 @@ extension CADisplayLink {
         }
     }
     
-    @MainActor
-    static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
+    @MainActor static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
         CADisplayLinkPublisher(mode: mode, stopOnLowPowerMode: stopOnLowPowerMode)
     }
 }
 
-@MainActor
-private final class DisplayLink: NSObject {
+@MainActor private final class DisplayLink: NSObject {
     private var displayLink: CADisplayLink!
     private let handler: (CADisplayLink) -> Void
     
