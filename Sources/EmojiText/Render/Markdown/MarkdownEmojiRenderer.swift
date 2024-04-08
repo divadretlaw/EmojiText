@@ -86,7 +86,11 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
             
-            let originalDocument = Document(parsing: string)
+            // We need to replace \\ with \\\\ otherwise the Markdown parser
+            // will interpret the previously escaped characters when rendering
+            // them in AttributedString
+            let escapedString = string.replacingOccurrences(of: "\\", with: "\\\\")
+            let originalDocument = Document(parsing: escapedString)
             var emojiReplacer = EmojiReplacer(emojis: emojis)
             let emojiDocument = emojiReplacer.visitDocument(originalDocument) ?? originalDocument
             
