@@ -155,7 +155,7 @@ final class EmojiTextTests: XCTestCase {
         > quote
         """
         let view = EmojiText(markdown: markdown, interpretedSyntax: .inlineOnlyPreservingWhitespace, emojis: [])
-        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
+        await assertSnapshot(matching: view, as: .rendered(size: CGSize(width: 300, height: 700), delay: 2))
     }
     
     func test_Markdown_Full() async throws {
