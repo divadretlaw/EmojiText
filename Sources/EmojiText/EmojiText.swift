@@ -97,9 +97,9 @@ public struct EmojiText: View {
         let result: Text
         
         if needsAnimation {
-            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? loadEmojis(), at: renderTime)
+            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? loadEmojis(), size: size, at: renderTime)
         } else {
-            result = renderer.render(string: raw, emojis: renderedEmojis ?? loadEmojis())
+            result = renderer.render(string: raw, emojis: renderedEmojis ?? loadEmojis(), size: size)
         }
         
         return [prepend?(), result, append?()]

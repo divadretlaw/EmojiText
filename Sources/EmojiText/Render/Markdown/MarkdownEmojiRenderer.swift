@@ -27,11 +27,11 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         )
     }
     
-    func render(string: String, emojis: [String: RenderedEmoji]) -> SwiftUI.Text {
-        renderAnimated(string: string, emojis: emojis, at: 0)
+    func render(string: String, emojis: [String: RenderedEmoji], size: CGFloat?) -> SwiftUI.Text {
+        renderAnimated(string: string, emojis: emojis, size: size, at: 0)
     }
     
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], at time: CFTimeInterval) -> SwiftUI.Text {
+    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> SwiftUI.Text {
         let attributedString = renderAttributedString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -40,7 +40,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an interpolated image in a Text view
-                let text = EmojiTextRenderer(emoji: emoji).render(at: time)
+                let text = EmojiTextRenderer(emoji: emoji).render(size, at: time)
                 
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by

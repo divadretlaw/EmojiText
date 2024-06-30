@@ -11,11 +11,11 @@ import OSLog
 struct VerbatimEmojiRenderer: EmojiRenderer {
     let shouldOmitSpacesBetweenEmojis: Bool
     
-    func render(string: String, emojis: [String: RenderedEmoji]) -> Text {
-        renderAnimated(string: string, emojis: emojis, at: 0)
+    func render(string: String, emojis: [String: RenderedEmoji], size: CGFloat?) -> Text {
+        renderAnimated(string: string, emojis: emojis, size: size, at: 0)
     }
     
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], at time: CFTimeInterval) -> Text {
+    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
         let string = renderString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -24,7 +24,7 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         for substring in splits {
             if let emoji = emojis[substring] {
                 // If the part is an emoji we render it as an inline image
-                let text = EmojiTextRenderer(emoji: emoji).render(at: time)
+                let text = EmojiTextRenderer(emoji: emoji).render(size, at: time)
                 result = result + text
             } else {
                 // Otherwise we just render the part as String
