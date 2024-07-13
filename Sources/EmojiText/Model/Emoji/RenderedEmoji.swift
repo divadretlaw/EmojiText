@@ -20,7 +20,7 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
     private let sourceHash: Int
     private let placeholderId: UUID?
     
-    init(from emoji: RemoteEmoji, image: RawImage, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
+    init(from emoji: any CustomEmoji, image: RawImage, animated: Bool = false, targetHeight: CGFloat, baselineOffset: CGFloat? = nil) {
         self.shortcode = emoji.shortcode
         self.rawImage = RenderedImage(image: image, animated: animated, targetHeight: targetHeight)
         self.renderingMode = emoji.renderingMode

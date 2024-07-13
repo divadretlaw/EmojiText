@@ -11,10 +11,6 @@ import Combine
 
 // MARK: - Environment Keys
 
-private struct EmojiImagePipelineKey: EnvironmentKey {
-    static var defaultValue: ImagePipeline { .shared }
-}
-
 private struct EmojiPlaceholderKey: EnvironmentKey {
     static var defaultValue: any CustomEmoji {
         #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
@@ -49,6 +45,12 @@ private struct EmojiAnimatedModeKey: EnvironmentKey {
     }
 }
 
+private struct EmojiProviderKey: EnvironmentKey {
+    static var defaultValue: EmojiProvider {
+        ImagePipeline.shared
+    }
+}
+
 #if os(watchOS) || os(macOS)
 private struct EmojiTimerKey: EnvironmentKey {
     typealias Value = Publishers.Autoconnect<Timer.TimerPublisher>
@@ -66,10 +68,25 @@ private struct EmojiTimerKey: EnvironmentKey {
 // MARK: - Environment Values
 
 public extension EmojiTextEnvironmentValues {
+    /// The ``EmojiProvider`` used to fetch emoji
+    var emojiProvider: EmojiProvider {
+        get { self[EmojiProviderKey.self] }
+        set { self[EmojiProviderKey.self] = newValue }
+    }
+    
     /// The image pipeline used to fetch remote emojis.
+    @available(*, deprecated, message: "Use 'remoteEmojiProvider' instead")
     var imagePipeline: ImagePipeline {
-        get { self[EmojiImagePipelineKey.self] }
-        set { self[EmojiImagePipelineKey.self] = newValue }
+        get {
+            if let pipeline = self[EmojiProviderKey.self] as? ImagePipeline {
+                pipeline
+            } else {
+                ImagePipeline.shared
+            }
+        }
+        set {
+            self[EmojiProviderKey.self] = newValue
+        }
     }
     
     /// The ``AnimatedEmojiMode`` that animated emojis should use

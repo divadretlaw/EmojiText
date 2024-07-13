@@ -18,7 +18,7 @@ public protocol CustomEmoji: Hashable, Equatable, Identifiable, Sendable {
     var renderingMode: Image.TemplateRenderingMode? { get }
     /// The symbol rendering mode to use for this emoji
     var symbolRenderingMode: SymbolRenderingMode? { get }
-    /// The symbols baseline offset
+    /// The emoji baseline offset
     var baselineOffset: CGFloat? { get }
 }
 

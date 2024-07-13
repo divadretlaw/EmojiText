@@ -21,7 +21,7 @@ import OSLog
     @Environment(\.displayScale) var displayScale
     @Environment(\.colorScheme) var colorScheme
     
-    @Environment(\.emojiText.imagePipeline) var imagePipeline
+    @Environment(\.emojiText.emojiProvider) var emojiProvider
     @Environment(\.emojiText.placeholder) var placeholder
     @Environment(\.emojiText.size) var size
     @Environment(\.emojiText.baselineOffset) var baselineOffset
@@ -129,34 +129,27 @@ import OSLog
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
                 )
-            case let remoteEmoji as RemoteEmoji:
+            default:
                 // Try to load remote emoji from cache
                 let resizeHeight = targetHeight * displayScale
-                let request = ImageRequest(
-                    url: remoteEmoji.url,
-                    processors: [.resize(height: resizeHeight)]
-                )
-                if let imageContainer = imagePipeline.cache[request] {
-                    // Remote emoji is available in cache and can be loaded instantly
-                    renderedEmojis[remoteEmoji.shortcode] = RenderedEmoji(
-                        from: remoteEmoji,
-                        image: RawImage(image: imageContainer.image),
+                if let image = emojiProvider.emojiCached(emoji: emoji, height: resizeHeight) {
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        image: RawImage(image: image),
                         animated: shouldAnimateIfNeeded,
                         targetHeight: targetHeight,
                         baselineOffset: baselineOffset
                     )
                 } else {
                     // Remote emoji wasn't found in cache and a placeholder will be used instead
-                    fallthrough
+                    // Set a placeholder for all other emoji
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        placeholder: placeholder,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
                 }
-            default:
-                // Set a placeholder for all other emoji
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                    from: emoji,
-                    placeholder: placeholder,
-                    targetHeight: targetHeight,
-                    baselineOffset: baselineOffset
-                )
             }
         }
         
@@ -168,38 +161,38 @@ import OSLog
         let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let resizeHeight = targetHeight * displayScale
         
-        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [imagePipeline, targetHeight, shouldAnimateIfNeeded] group in
+        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [emojiProvider, targetHeight, shouldAnimateIfNeeded] group in
             for emoji in emojis {
                 switch emoji {
-                case let remoteEmoji as RemoteEmoji:
+                case let localEmoji as LocalEmoji:
+                    // Local emoji don't require lazy loading as they can be loaded instantly
+                    continue
+                case let sfSymbolEmoji as SFSymbolEmoji:
+                    //  SF Symbol emoji don't require lazy loading as they can be loaded instantly
+                    continue
+                default:
                     _ = group.addTaskUnlessCancelled {
                         do {
                             let image: RawImage
-                            let request = ImageRequest(
-                                url: remoteEmoji.url,
-                                processors: [.resize(height: resizeHeight)]
-                            )
                             if shouldAnimateIfNeeded {
-                                let (data, _) = try await imagePipeline.data(for: request)
+                                let data = try await emojiProvider.emojiData(emoji: emoji, height: resizeHeight)
                                 image = try RawImage(data: data)
                             } else {
-                                let data = try await imagePipeline.image(for: request)
+                                let data = try await emojiProvider.emojiImage(emoji: emoji, height: resizeHeight)
                                 image = RawImage(image: data)
                             }
                             return RenderedEmoji(
-                                from: remoteEmoji,
+                                from: emoji,
                                 image: image,
                                 animated: shouldAnimateIfNeeded,
                                 targetHeight: targetHeight,
                                 baselineOffset: baselineOffset
                             )
                         } catch {
-                            Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
+                            Logger.emojiText.error("Unable to load custom emoji '\(emoji.shortcode)' (\(type(of: emoji)): \(error.localizedDescription)")
                             return nil
                         }
                     }
-                default:
-                    continue
                 }
             }
             // Collect TaskGroup results

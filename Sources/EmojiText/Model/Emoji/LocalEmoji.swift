@@ -20,6 +20,7 @@ public struct LocalEmoji: CustomEmoji {
     public let color: EmojiColor?
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
+    /// The emoji baseline offset
     public let baselineOffset: CGFloat?
     
     /// Initialize a local custom emoji
@@ -37,6 +38,8 @@ public struct LocalEmoji: CustomEmoji {
         self.baselineOffset = baselineOffset
         self.color = color
     }
+    
+    public var isLazy: Bool { false }
     
     // MARK: - Hashable
     

@@ -16,6 +16,7 @@ public struct RemoteEmoji: CustomEmoji {
     public let url: URL
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
+    /// The emoji baseline offset
     public let baselineOffset: CGFloat?
     
     /// Initialize a remote custom emoji
@@ -31,6 +32,8 @@ public struct RemoteEmoji: CustomEmoji {
         self.renderingMode = renderingMode
         self.baselineOffset = baselineOffset
     }
+    
+    public var isLazy: Bool { true }
     
     // MARK: - Hashable
     
