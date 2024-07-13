@@ -16,6 +16,10 @@ let package = Package(
         .library(
             name: "EmojiText",
             targets: ["EmojiText"]
+        ),
+        .library(
+            name: "NukeEmojiText",
+            targets: ["NukeEmojiText"]
         )
     ],
     dependencies: [
@@ -26,8 +30,14 @@ let package = Package(
         .target(
             name: "EmojiText",
             dependencies: [
-                .product(name: "Nuke", package: "Nuke"),
                 .product(name: "Markdown", package: "swift-markdown")
+            ]
+        ),
+        .target(
+            name: "NukeEmojiText",
+            dependencies: [
+                "EmojiText",
+                .product(name: "Nuke", package: "Nuke")
             ]
         )
     ]

@@ -1,5 +1,4 @@
 {
-  "originHash" : "2d70727d3cafb78fe6c1813aae868a461c0e08dcc0a6966c85bf6e5547d0dcd2",
   "pins" : [
     {
       "identity" : "graphicsrenderer",
@@ -74,5 +73,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }

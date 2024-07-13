@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
-import Nuke
 import OSLog
+
+package typealias CoreEmojiText = EmojiText
 
 /// A view that displays one or more lines of text with support for custom emojis.
 ///
 /// Custom Emojis are in the format `:emoji:`.
 /// Supports local and remote custom emojis.
-///
-/// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
 @MainActor public struct EmojiText: View {
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -294,8 +293,6 @@ import OSLog
         view.append = text
         return view
     }
-    
-    // MARK: - Modifier
     
     /// Enable animated emoji
     ///

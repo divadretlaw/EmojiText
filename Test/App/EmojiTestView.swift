@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import EmojiText
+import NukeEmojiText
 
 struct EmojiTestView<Content>: View where Content: View {
     @ViewBuilder var content: () -> Content

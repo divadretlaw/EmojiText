@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,7 +14,6 @@
 		6334D1EA2B33B4B600E9D8DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6334D1E92B33B4B600E9D8DE /* Assets.xcassets */; };
 		6334D1EE2B33B4B600E9D8DE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6334D1ED2B33B4B600E9D8DE /* Preview Assets.xcassets */; };
 		6334D2122B33B4DF00E9D8DE /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 6334D2112B33B4DF00E9D8DE /* SnapshotTesting */; };
-		6334D21B2B33B51B00E9D8DE /* EmojiText in Frameworks */ = {isa = PBXBuildFile; productRef = 6334D21A2B33B51B00E9D8DE /* EmojiText */; };
 		6334D2222B33B64F00E9D8DE /* AnimatedEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D21C2B33B64F00E9D8DE /* AnimatedEmojiView.swift */; };
 		6334D2232B33B64F00E9D8DE /* EmojiTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D21D2B33B64F00E9D8DE /* EmojiTestView.swift */; };
 		6334D2252B33B64F00E9D8DE /* RemoteEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D21F2B33B64F00E9D8DE /* RemoteEmojiView.swift */; };
@@ -24,6 +23,8 @@
 		6334D2342B33B6DC00E9D8DE /* Emojis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2302B33B6DC00E9D8DE /* Emojis.swift */; };
 		6334D2362B33B78D00E9D8DE /* Snapshotting+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */; };
 		6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 6353366A2B6852B5004E4DD2 /* HTML2Markdown */; };
+		635400462C42E8360083399E /* NukeEmojiText in Frameworks */ = {isa = PBXBuildFile; productRef = 635400452C42E8360083399E /* NukeEmojiText */; };
+		635400482C42F2280083399E /* EmojiText in Frameworks */ = {isa = PBXBuildFile; productRef = 635400472C42F2280083399E /* EmojiText */; };
 		639F664C2B63ED4D00B7F747 /* DTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F66492B63ED4D00B7F747 /* DTOs.swift */; };
 		639F664D2B63ED4D00B7F747 /* MastodonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */; };
 		639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664B2B63ED4D00B7F747 /* MastodonView.swift */; };
@@ -57,6 +58,7 @@
 		6334D2302B33B6DC00E9D8DE /* Emojis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emojis.swift; sourceTree = "<group>"; };
 		6334D2352B33B78D00E9D8DE /* Snapshotting+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Snapshotting+Extensions.swift"; sourceTree = "<group>"; };
 		6334D23B2B33BD5800E9D8DE /* SnapshotTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = SnapshotTests.xctestplan; path = Tests/SnapshotTests.xctestplan; sourceTree = "<group>"; };
+		635400432C42E82E0083399E /* EmojiText */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = EmojiText; path = ../..; sourceTree = "<group>"; };
 		639F66492B63ED4D00B7F747 /* DTOs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DTOs.swift; path = App/Mastodon/DTOs.swift; sourceTree = SOURCE_ROOT; };
 		639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonAPI.swift; path = App/Mastodon/MastodonAPI.swift; sourceTree = SOURCE_ROOT; };
 		639F664B2B63ED4D00B7F747 /* MastodonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonView.swift; path = App/Mastodon/MastodonView.swift; sourceTree = SOURCE_ROOT; };
@@ -67,8 +69,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				635400482C42F2280083399E /* EmojiText in Frameworks */,
 				6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */,
-				6334D21B2B33B51B00E9D8DE /* EmojiText in Frameworks */,
+				635400462C42E8360083399E /* NukeEmojiText in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,21 +87,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		631ECE572B6F933B0051E3CB /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		6334D1D92B33B4B500E9D8DE = {
 			isa = PBXGroup;
 			children = (
+				635400422C42E81D0083399E /* Packages */,
 				6334D23B2B33BD5800E9D8DE /* SnapshotTests.xctestplan */,
 				6334D1E42B33B4B500E9D8DE /* App */,
 				6334D1F62B33B4B600E9D8DE /* Tests */,
 				6334D1E32B33B4B500E9D8DE /* Products */,
-				631ECE572B6F933B0051E3CB /* Frameworks */,
+				635400442C42E8360083399E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -148,6 +145,21 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
+		635400422C42E81D0083399E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				635400432C42E82E0083399E /* EmojiText */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		635400442C42E8360083399E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		63932D9A2B64377200E193FB /* Mastodon */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,8 +187,9 @@
 			);
 			name = Test;
 			packageProductDependencies = (
-				6334D21A2B33B51B00E9D8DE /* EmojiText */,
 				6353366A2B6852B5004E4DD2 /* HTML2Markdown */,
+				635400452C42E8360083399E /* NukeEmojiText */,
+				635400472C42F2280083399E /* EmojiText */,
 			);
 			productName = Test;
 			productReference = 6334D1E22B33B4B500E9D8DE /* Test.app */;
@@ -235,7 +248,6 @@
 			mainGroup = 6334D1D92B33B4B500E9D8DE;
 			packageReferences = (
 				6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
-				6334D2192B33B51B00E9D8DE /* XCLocalSwiftPackageReference ".." */,
 				6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */,
 				635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
 			);
@@ -583,13 +595,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		6334D2192B33B51B00E9D8DE /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -628,14 +633,18 @@
 			package = 6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
 		};
-		6334D21A2B33B51B00E9D8DE /* EmojiText */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = EmojiText;
-		};
 		6353366A2B6852B5004E4DD2 /* HTML2Markdown */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */;
 			productName = HTML2Markdown;
+		};
+		635400452C42E8360083399E /* NukeEmojiText */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NukeEmojiText;
+		};
+		635400472C42F2280083399E /* EmojiText */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = EmojiText;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

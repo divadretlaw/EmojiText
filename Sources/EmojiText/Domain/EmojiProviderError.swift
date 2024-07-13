@@ -8,6 +8,8 @@
 import Foundation
 
 enum EmojiProviderError: Swift.Error {
-    /// Throw this error when an unsupported emojis is trying to be fetched
+    /// Thrown when the fetched data is invalid
+    case invalidData
+    /// Thrown when an unsupported emojis is trying to be fetched
     case unsupportedEmoji
 }

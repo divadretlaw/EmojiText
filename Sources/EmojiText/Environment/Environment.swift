@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Nuke
 import Combine
 
 // MARK: - Environment Keys
@@ -47,7 +46,7 @@ private struct EmojiAnimatedModeKey: EnvironmentKey {
 
 private struct EmojiProviderKey: EnvironmentKey {
     static var defaultValue: EmojiProvider {
-        ImagePipeline.shared
+        DefaultEmojiProvider(session: .shared)
     }
 }
 
@@ -72,21 +71,6 @@ public extension EmojiTextEnvironmentValues {
     var emojiProvider: EmojiProvider {
         get { self[EmojiProviderKey.self] }
         set { self[EmojiProviderKey.self] = newValue }
-    }
-    
-    /// The image pipeline used to fetch remote emojis.
-    @available(*, deprecated, message: "Use 'remoteEmojiProvider' instead")
-    var imagePipeline: ImagePipeline {
-        get {
-            if let pipeline = self[EmojiProviderKey.self] as? ImagePipeline {
-                pipeline
-            } else {
-                ImagePipeline.shared
-            }
-        }
-        set {
-            self[EmojiProviderKey.self] = newValue
-        }
     }
     
     /// The ``AnimatedEmojiMode`` that animated emojis should use

@@ -69,4 +69,3 @@ Supported formats:
 
 - <doc:Placeholder>
 - <doc:Emoji_Size>
-- <doc:ImagePipeline>

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import EmojiText
+import NukeEmojiText
 
 struct ChangingRemoteEmojiView: View {
     @State private var emojis: [any CustomEmoji] = [

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import EmojiText
+import NukeEmojiText
 
 struct AnimatedEmojiView: View {
     var emojis: [any CustomEmoji] {

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import EmojiText
+import NukeEmojiText
 import Nuke
 import HTML2Markdown
 

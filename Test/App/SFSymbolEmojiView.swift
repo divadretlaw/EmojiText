@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import EmojiText
+import NukeEmojiText
 
 struct SFSymbolEmojiView: View {
     var emojis: [any CustomEmoji] {

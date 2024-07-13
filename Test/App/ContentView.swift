@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import EmojiText
 
 struct ContentView: View {
     var body: some View {
