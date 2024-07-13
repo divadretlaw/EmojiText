@@ -98,7 +98,6 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - accessibility_label_for_image
   - accessibility_trait_for_button
   - anonymous_argument_in_multiline_closure
-  - anyobject_protocol
   - array_init
   # - attributes
   - balanced_xctest_lifecycle
@@ -150,12 +149,11 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - implicit_return
   # - implicitly_unwrapped_optional
   # - indentation_width
-  - inert_defer
   - joined_default_parameter
   - last_where
   - legacy_multiple
   - legacy_objc_type
-  - let_var_whitespace
+  # - let_var_whitespace
   - literal_expression_end_indentation
   - local_doc_comment
   - lower_acl_than_parent
@@ -176,7 +174,7 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   # - nslocalizedstring_require_bundle
   # - number_separator
   - object_literal
-  - one_declaration_per_file
+  # - one_declaration_per_file
   - operator_usage_whitespace
   - optional_enum_case_matching
   - overridden_super_call
@@ -226,7 +224,6 @@ opt_in_rules: # some rules are turned off by default, so you need to opt-in
   - unneeded_parentheses_in_closure_argument
   - unowned_variable_capture
   - untyped_error_in_catch
-  - unused_capture_list
   # - unused_declaration
   # - unused_import
   - vertical_parameter_alignment_on_call

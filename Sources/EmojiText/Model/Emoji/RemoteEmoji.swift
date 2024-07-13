@@ -9,13 +9,14 @@ import Foundation
 import SwiftUI
 
 /// A custom remote emoji
-public struct RemoteEmoji: CustomEmoji {
+public struct RemoteEmoji: AsyncCustomEmoji {
     /// Shortcode of the emoji
     public let shortcode: String
     /// Remote location of the emoji
     public let url: URL
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
+    /// The emoji baseline offset
     public let baselineOffset: CGFloat?
     
     /// Initialize a remote custom emoji

@@ -81,6 +81,23 @@ struct ContentView: View {
                 } header: {
                     Text("Mastodon")
                 }
+                
+                Section {
+                    NavigationLink {
+                        RemoteEmojiView()
+                            .environment(\.emojiText.asyncEmojiProvider, URLSessionEmojiProvider(session: .shared))
+                    } label: {
+                        Text("Remote Emoji")
+                    }
+                    NavigationLink {
+                        LocalEmojiView()
+                            .environment(\.emojiText.syncEmojiProvider, UpsideDownEmojiProvider())
+                    } label: {
+                        Text("Local Emoji")
+                    }
+                } header: {
+                    Text("Custom Emoji Provider")
+                }
             }
             .navigationTitle("EmojiText")
         }
