@@ -15,7 +15,7 @@ import OSLog
 /// Supports local and remote custom emojis.
 ///
 /// Remote emojis are resolved using [Nuke](https://github.com/kean/Nuke)
-public struct EmojiText: View {
+@MainActor public struct EmojiText: View {
     @Environment(\.font) var font
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.displayScale) var displayScale
@@ -203,11 +203,13 @@ public struct EmojiText: View {
                 }
             }
             // Collect TaskGroup results
-            return await group.reduce(into: [:]) { partialResult, emoji in
+            var result: [String: RenderedEmoji] = [:]
+            for await emoji in group {
                 if let emoji {
-                    partialResult[emoji.shortcode] = emoji
+                    result[emoji.shortcode] = emoji
                 }
             }
+            return result
         }
     }
     
