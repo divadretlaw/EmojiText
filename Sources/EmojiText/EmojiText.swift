@@ -21,7 +21,9 @@ import OSLog
     @Environment(\.displayScale) var displayScale
     @Environment(\.colorScheme) var colorScheme
     
-    @Environment(\.emojiText.imagePipeline) var imagePipeline
+    @Environment(\.emojiText.syncEmojiProvider) var syncEmojiProvider
+    @Environment(\.emojiText.asyncEmojiProvider) var asyncEmojiProvider
+    
     @Environment(\.emojiText.placeholder) var placeholder
     @Environment(\.emojiText.size) var size
     @Environment(\.emojiText.baselineOffset) var baselineOffset
@@ -117,37 +119,48 @@ import OSLog
         
         for emoji in emojis {
             switch emoji {
-            case let localEmoji as LocalEmoji:
-                // Local emoji don't require a placeholder as they can be loaded instantly
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                    from: localEmoji,
-                    targetHeight: targetHeight,
-                    baselineOffset: baselineOffset
-                )
             case let sfSymbolEmoji as SFSymbolEmoji:
                 // SF Symbol emoji don't require a placeholder as they can be loaded instantly
                 renderedEmojis[emoji.shortcode] = RenderedEmoji(
                     from: sfSymbolEmoji
                 )
-            case let remoteEmoji as RemoteEmoji:
-                // Try to load remote emoji from cache
-                let resizeHeight = targetHeight * displayScale
-                let request = ImageRequest(
-                    url: remoteEmoji.url,
-                    processors: [.resize(height: resizeHeight)]
-                )
-                if let imageContainer = imagePipeline.cache[request] {
-                    // Remote emoji is available in cache and can be loaded instantly
-                    renderedEmojis[remoteEmoji.shortcode] = RenderedEmoji(
-                        from: remoteEmoji,
-                        image: RawImage(image: imageContainer.image),
+            case let emoji as any SyncCustomEmoji:
+                if let image = syncEmojiProvider.emojiImage(emoji: emoji, height: targetHeight) {
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        image: RawImage(image: image),
                         animated: shouldAnimateIfNeeded,
                         targetHeight: targetHeight,
                         baselineOffset: baselineOffset
                     )
                 } else {
-                    // Remote emoji wasn't found in cache and a placeholder will be used instead
-                    fallthrough
+                    // Sync emoji wasn't loaded and a placeholder will be used instead
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        placeholder: placeholder,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
+                }
+            case let emoji as any AsyncCustomEmoji:
+                // Try to load remote emoji from cache
+                let resizeHeight = targetHeight * displayScale
+                if let image = asyncEmojiProvider.lazyEmojiCached(emoji: emoji, height: resizeHeight) {
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        image: RawImage(image: image),
+                        animated: shouldAnimateIfNeeded,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
+                } else {
+                    // Async emoji wasn't found in cache and a placeholder will be used instead
+                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
+                        from: emoji,
+                        placeholder: placeholder,
+                        targetHeight: targetHeight,
+                        baselineOffset: baselineOffset
+                    )
                 }
             default:
                 // Set a placeholder for all other emoji
@@ -168,33 +181,28 @@ import OSLog
         let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
         let resizeHeight = targetHeight * displayScale
         
-        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [imagePipeline, targetHeight, shouldAnimateIfNeeded] group in
+        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [asyncEmojiProvider, targetHeight, shouldAnimateIfNeeded] group in
             for emoji in emojis {
                 switch emoji {
-                case let remoteEmoji as RemoteEmoji:
+                case let emoji as any AsyncCustomEmoji:
                     _ = group.addTaskUnlessCancelled {
                         do {
                             let image: RawImage
-                            let request = ImageRequest(
-                                url: remoteEmoji.url,
-                                processors: [.resize(height: resizeHeight)]
-                            )
+                            let data = try await asyncEmojiProvider.lazyEmojiData(emoji: emoji, height: resizeHeight)
                             if shouldAnimateIfNeeded {
-                                let (data, _) = try await imagePipeline.data(for: request)
-                                image = try RawImage(data: data)
+                                image = try RawImage(animated: data)
                             } else {
-                                let data = try await imagePipeline.image(for: request)
-                                image = RawImage(image: data)
+                                image = try RawImage(static: data)
                             }
                             return RenderedEmoji(
-                                from: remoteEmoji,
+                                from: emoji,
                                 image: image,
                                 animated: shouldAnimateIfNeeded,
                                 targetHeight: targetHeight,
                                 baselineOffset: baselineOffset
                             )
                         } catch {
-                            Logger.emojiText.error("Unable to load custom emoji \(emoji.shortcode): \(error.localizedDescription)")
+                            Logger.emojiText.error("Unable to load '\(type(of: emoji))' with code '\(emoji.shortcode)': \(error.localizedDescription)")
                             return nil
                         }
                     }
@@ -301,8 +309,6 @@ import OSLog
         view.append = text
         return view
     }
-    
-    // MARK: - Modifier
     
     /// Enable animated emoji
     ///

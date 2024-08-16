@@ -26,8 +26,8 @@ public struct EmojiTextEnvironmentValues: CustomStringConvertible {
     /// Accesses the environment value associated with a custom key.
     ///
     /// Create custom environment values by defining a key
-    /// that conforms to the ``EnvironmentKey`` protocol, and then using that
-    /// key with the subscript operator of the ``EnvironmentValues`` structure
+    /// that conforms to the `EnvironmentKey` protocol, and then using that
+    /// key with the subscript operator of the `EnvironmentValues` structure
     /// to get and set a value for that key:
     ///
     ///     private struct MyEnvironmentKey: EnvironmentKey {
@@ -42,8 +42,8 @@ public struct EmojiTextEnvironmentValues: CustomStringConvertible {
     ///     }
     ///
     /// You use custom environment values the same way you use system-provided
-    /// values, setting a value with the ``View/environment(_:_:)`` view
-    /// modifier, and reading values with the ``Environment`` property wrapper.
+    /// values, setting a value with the `View/environment(_:_:)` view
+    /// modifier, and reading values with the `Environment` property wrapper.
     /// You can also provide a dedicated view modifier as a convenience for
     /// setting the value:
     ///

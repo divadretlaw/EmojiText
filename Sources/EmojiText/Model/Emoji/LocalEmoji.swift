@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// A custom local emoji
-public struct LocalEmoji: CustomEmoji {
+public struct LocalEmoji: SyncCustomEmoji {
     /// Shortcode of the emoji
     public let shortcode: String
     /// The image representing the emoji
@@ -20,6 +20,7 @@ public struct LocalEmoji: CustomEmoji {
     public let color: EmojiColor?
     /// The mode SwiftUI uses to render this emoji
     public let renderingMode: Image.TemplateRenderingMode?
+    /// The emoji baseline offset
     public let baselineOffset: CGFloat?
     
     /// Initialize a local custom emoji

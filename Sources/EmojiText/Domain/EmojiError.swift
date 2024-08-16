@@ -9,6 +9,8 @@ import Foundation
 
 /// Internal errors for loading images
 internal enum EmojiError: LocalizedError {
+    /// The data was corrupted.
+    case invalidData
     /// The static fallback data was corrupted.
     case staticData
     /// The animated image data was corrupted.
@@ -18,6 +20,8 @@ internal enum EmojiError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
+        case .invalidData:
+            return "The image data could not be read"
         case .staticData:
             return "The static fallback image could not be read"
         case .animatedData:

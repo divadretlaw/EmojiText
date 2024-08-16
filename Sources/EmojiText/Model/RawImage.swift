@@ -36,7 +36,15 @@ struct RawImage: Sendable {
         self.duration = 0
     }
     
-    init(data: Data) throws {
+    init(static data: Data) throws {
+        if let image = EmojiImage(data: data) {
+            self = RawImage(image: image)
+        } else {
+            throw EmojiError.invalidData
+        }
+    }
+    
+    init(animated data: Data) throws {
         do {
             guard let type = AnimatedImageType(from: data) else {
                 throw EmojiError.notAnimated
