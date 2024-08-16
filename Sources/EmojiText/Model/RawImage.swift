@@ -11,12 +11,8 @@ import OSLog
 
 /// A wrapper arround ``EmojiImage`` to support animated images on all platforms.
 struct RawImage: Sendable {
-    /// A static representation of the animated image
-    let `static`: EmojiImage
-    /// The complete array of image objects that compose the animation of an animated object.
-    ///
-    /// For a non-animated image, the value of this property is nil.
-    let frames: [EmojiImage]?
+    private let _static: Lock<EmojiImage>
+    private let _frames: Lock<[EmojiImage]?>
     /// The time interval for displaying an animated image.
     ///
     /// For a non-animated image, the value of this property is 0.0.
@@ -25,14 +21,16 @@ struct RawImage: Sendable {
     init?(frames: [EmojiImage], duration: TimeInterval) {
         guard let image = frames.first else { return nil }
         
-        self.static = image
-        self.frames = frames
+        let lock = NSLock()
+        self._static = Lock(image, lock: lock)
+        self._frames = Lock(frames, lock: lock)
         self.duration = duration
     }
     
     init(image: EmojiImage) {
-        self.static = image
-        self.frames = nil
+        let lock = NSLock()
+        self._static = Lock(image, lock: lock)
+        self._frames = Lock(nil, lock: lock)
         self.duration = 0
     }
     
@@ -69,5 +67,17 @@ struct RawImage: Sendable {
                 throw EmojiError.staticData
             }
         }
+    }
+    
+    /// A static representation of the animated image
+    var `static`: EmojiImage {
+        _static.wrappedValue
+    }
+    
+    /// The complete array of image objects that compose the animation of an animated object.
+    ///
+    /// For a non-animated image, the value of this property is nil.
+    var frames: [EmojiImage]? {
+        _frames.wrappedValue
     }
 }

@@ -18,13 +18,13 @@ extension CADisplayLink {
             self.stopOnLowPowerMode = stopOnLowPowerMode
         }
         
-        var values: AsyncStream<CADisplayLink> {
+        var targetTimestamps: AsyncStream<CFTimeInterval> {
             AsyncStream { continuation in
                 let displayLink = DisplayLink(mode: mode) { displayLink in
                     if stopOnLowPowerMode, ProcessInfo.processInfo.isLowPowerModeEnabled {
                         // Do not yield information on low-power mode
                     } else {
-                        continuation.yield(displayLink)
+                        continuation.yield(displayLink.targetTimestamp)
                     }
                 }
                 
