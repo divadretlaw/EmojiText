@@ -14,7 +14,11 @@ struct DefaultSyncEmojiProvider: SyncEmojiProvider {
         switch emoji {
         case let emoji as LocalEmoji:
             if let color = emoji.color {
+                #if os(macOS)
+                return emoji.image.withColor(color)
+                #else
                 return emoji.image.withTintColor(color, renderingMode: .alwaysTemplate)
+                #endif
             } else {
                 return emoji.image
             }
