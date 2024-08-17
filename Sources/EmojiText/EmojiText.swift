@@ -32,9 +32,6 @@ import OSLog
     #endif
     @Environment(\.emojiText.animatedMode) var animatedMode
     
-    @ScaledMetric
-    var scaleFactor: CGFloat = 1.0
-    
     let raw: String
     let emojis: [any CustomEmoji]
     let renderer: EmojiRenderer
@@ -334,6 +331,7 @@ import OSLog
         hasher.combine(animatedMode)
         hasher.combine(displayScale)
         hasher.combine(colorScheme)
+        hasher.combine(dynamicTypeSize)
         return hasher.finalize()
     }
     
@@ -342,7 +340,7 @@ import OSLog
             return emojiSize
         } else {
             let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
-            return font.pointSize * scaleFactor
+            return font.pointSize
         }
     }
     
