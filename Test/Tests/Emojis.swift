@@ -10,12 +10,12 @@ import EmojiText
 import SwiftUI
 
 enum Emojis {
-    static var mastodon: RemoteEmoji {
-        RemoteEmoji(shortcode: "mastodon", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!)
+    static var async: RemoteEmoji {
+        RemoteEmoji(shortcode: "async", url: URL(string: "https://dummyimage.com/64x64/0A6FFF/fff&text=A")!)
     }
     
-    static var mastodonWithOffset: RemoteEmoji {
-        RemoteEmoji(shortcode: "mastodon_offset", url: URL(string: "https://files.mastodon.social/custom_emojis/images/000/003/675/original/089aaae26a2abcc1.png")!, baselineOffset: -8)
+    static var asyncWithOffset: RemoteEmoji {
+        RemoteEmoji(shortcode: "async_offset", url: URL(string: "https://dummyimage.com/64x64/0A6FFF/fff&text=A")!, baselineOffset: -8)
     }
     
     static var iPhone: SFSymbolEmoji {
@@ -34,6 +34,6 @@ enum Emojis {
     }
     
     static var wide: RemoteEmoji {
-        RemoteEmoji(shortcode: "wide", url: URL(string: "https://s3.fedibird.com/custom_emojis/images/000/358/023/static/5fe65ba070089507.png")!)
+        RemoteEmoji(shortcode: "wide", url: URL(string: "https://dummyimage.com/256x64/DE3A3B/fff&text=wide")!)
     }
 }

@@ -291,7 +291,7 @@ import OSLog
     ///
     /// - Parameter text: Callback generating the text to prepend
     /// - Returns: ``EmojiText`` with some text prepended
-    public func prepend(text: @escaping () -> Text) -> Self {
+    public func prepend(text: @Sendable @escaping () -> Text) -> Self {
         var view = self
         view.prepend = text
         return view
@@ -301,7 +301,7 @@ import OSLog
     ///
     /// - Parameter text: Callback generating the text to append
     /// - Returns: ``EmojiText`` with some text appended
-    public func append(text: @escaping () -> Text) -> Self {
+    public func append(text: @Sendable @escaping () -> Text) -> Self {
         var view = self
         view.append = text
         return view

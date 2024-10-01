@@ -6,113 +6,124 @@
 //
 
 import XCTest
-import EmojiText
-import SnapshotTesting
+@preconcurrency import SnapshotTesting
+@testable import EmojiText
 import SwiftUI
 
 final class EmojiTextTests: XCTestCase {
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        isRecording = false
+    override func invokeTest() {
+        withSnapshotTesting(record: .failed) {
+            super.invokeTest()
+        }
     }
     
     @MainActor
-    func test_Empty() async throws {
+    func test_Empty() {
         let view = EmojiText(verbatim: "", emojis: [])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100)))
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 100, height: 100)))
     }
     
     @MainActor
-    func test_No_Emoji() async throws {
+    func test_No_Emoji() {
         let view = EmojiText(verbatim: "Hello World", emojis: [])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100)))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_Async() {
+        let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Verbatim_Double() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon: :mastodon:", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_Async_Verbatim_Double() {
+        let view = EmojiText(verbatim: "Hello Async :async: :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Markdown_Double() async throws {
-        let view = EmojiText(markdown: "Hello Mastodon :mastodon: :mastodon:", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_Async_Markdown_Double() {
+        let view = EmojiText(markdown: "Hello Async :async: :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Scaled() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+    func test_Async_Scaled() {
+        let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .font(.largeTitle)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Custom_Scaled() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+    func test_Async_Custom_Scaled() {
+        let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Offset() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon: and :mastodon_offset:", emojis: [Emojis.mastodon, Emojis.mastodonWithOffset])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_Async_Offset() {
+        let view = EmojiText(verbatim: "Hello Async :async: and :async_offset:", emojis: [Emojis.async, Emojis.asyncWithOffset])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Offset_Positive() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+    func test_Async_Offset_Positive() {
+        let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(8)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Offset_Negative() async throws {
-        let view = EmojiText(verbatim: "Hello Mastodon :mastodon:", emojis: [Emojis.mastodon])
+    func test_Async_Offset_Negative() {
+        let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(-8)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Mastodon_Markdown() async throws {
-        let view = EmojiText(markdown: "**Hello** _Mastodon_ :mastodon:", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_Async_Markdown() {
+        let view = EmojiText(markdown: "**Hello** _Async_ :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_iPhone() async throws {
+    func test_iPhone() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 1))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_iPhone_Scaled() async throws {
+    func test_iPhone_Scaled() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
             .font(.largeTitle)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 400, height: 100), delay: 1))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_iPhone_RenderingMode() async throws {
+    func test_iPhone_RenderingMode() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone(renderingMode: .template)])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 1))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Multiple() async throws {
+    func test_Multiple() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 1))
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Prepend_Append() async throws {
+    func test_Prepend_Append() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
             .prepend {
                 Text("Prepended - ")
@@ -120,36 +131,41 @@ final class EmojiTextTests: XCTestCase {
             .append {
                 Text(" - Appended")
             }
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 400, height: 100), delay: 1))
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Wide() async throws {
+    func test_Wide() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Wide_Custom_Scaled() async throws {
+    func test_Wide_Custom_Scaled() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_EmojiInMarkdown() async throws {
-        let view = EmojiText(markdown: "**Hello :mastodon:** _Mastodon :mastodon:_ :mastodon:", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_EmojiInMarkdown() {
+        let view = EmojiText(markdown: "**Hello :async:** _Async :async:_ :async:", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_EmojiInMarkdownNested() async throws {
-        let view = EmojiText(markdown: "**Hello :mastodon: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.mastodon])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 100), delay: 2))
+    func test_EmojiInMarkdownNested() {
+        let view = EmojiText(markdown: "**Hello :async: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.async])
+            .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Markdown_InlineOnlyPreservingWhitespace() async throws {
+    func test_Markdown_InlineOnlyPreservingWhitespace() {
         let markdown = """
         # Title 1
         
@@ -176,11 +192,11 @@ final class EmojiTextTests: XCTestCase {
         > quote
         """
         let view = EmojiText(markdown: markdown, interpretedSyntax: .inlineOnlyPreservingWhitespace, emojis: [])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 700), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
     
     @MainActor
-    func test_Markdown_Full() async throws {
+    func test_Markdown_Full() {
         let markdown = """
         # Title 1
         
@@ -207,6 +223,6 @@ final class EmojiTextTests: XCTestCase {
         > quote
         """
         let view = EmojiText(markdown: markdown, interpretedSyntax: .full, emojis: [])
-        await assertSnapshot(of: view, as: .rendered(size: CGSize(width: 300, height: 500), delay: 2))
+        assertSnapshot(of: view, as: .image)
     }
 }
