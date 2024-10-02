@@ -81,7 +81,7 @@ import OSLog
                 guard shouldAnimateIfNeeded, needsAnimation else { return }
                 
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
-                for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: animatedMode.disabledOnLowPower).values.map(\.targetTimestamp) {
+                for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: animatedMode.disabledOnLowPower).targetTimestamps {
                     renderTime = targetTimestamp
                 }
                 #else

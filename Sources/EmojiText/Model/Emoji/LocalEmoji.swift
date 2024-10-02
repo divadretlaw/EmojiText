@@ -13,7 +13,7 @@ public struct LocalEmoji: SyncCustomEmoji {
     /// Shortcode of the emoji
     public let shortcode: String
     /// The image representing the emoji
-    public let image: EmojiImage
+    private let _image: Lock<EmojiImage>
     /// The color to render the emoji with
     ///
     /// Set `nil` if you don't want to override the color.
@@ -33,10 +33,14 @@ public struct LocalEmoji: SyncCustomEmoji {
     ///     - baselineOffset: The baseline offset to use when rendering this emoji
     public init(shortcode: String, image: EmojiImage, color: EmojiColor? = nil, renderingMode: Image.TemplateRenderingMode? = nil, baselineOffset: CGFloat? = nil) {
         self.shortcode = shortcode
-        self.image = image
+        self._image = Lock(image)
         self.renderingMode = renderingMode
         self.baselineOffset = baselineOffset
         self.color = color
+    }
+    
+    public var image: EmojiImage {
+        _image.wrappedValue
     }
     
     // MARK: - Hashable
