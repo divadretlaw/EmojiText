@@ -9,7 +9,7 @@ import Foundation
 import Observation
 
 @Observable
-final class MastodonAPI {
+final class MastodonAPI: Sendable {
     private let baseURL: URL
     private let decoder: JSONDecoder
     

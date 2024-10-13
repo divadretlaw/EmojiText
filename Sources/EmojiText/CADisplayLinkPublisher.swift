@@ -9,7 +9,7 @@ import SwiftUI
 
 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 extension CADisplayLink {
-    @MainActor struct CADisplayLinkPublisher {
+    struct CADisplayLinkPublisher {
         let mode: RunLoop.Mode
         let stopOnLowPowerMode: Bool
         
@@ -18,33 +18,33 @@ extension CADisplayLink {
             self.stopOnLowPowerMode = stopOnLowPowerMode
         }
         
-        var values: AsyncStream<CADisplayLink> {
+        var targetTimestamps: AsyncStream<CFTimeInterval> {
             AsyncStream { continuation in
                 let displayLink = DisplayLink(mode: mode) { displayLink in
                     if stopOnLowPowerMode, ProcessInfo.processInfo.isLowPowerModeEnabled {
                         // Do not yield information on low-power mode
                     } else {
-                        continuation.yield(displayLink)
+                        continuation.yield(displayLink.targetTimestamp)
                     }
                 }
                 
                 continuation.onTermination = { _ in
-                    Task { await displayLink.stop() }
+                    displayLink.stop()
                 }
             }
         }
     }
     
-    @MainActor static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
+    static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
         CADisplayLinkPublisher(mode: mode, stopOnLowPowerMode: stopOnLowPowerMode)
     }
 }
 
-@MainActor private final class DisplayLink: NSObject {
+private final class DisplayLink: NSObject, @unchecked Sendable {
     private var displayLink: CADisplayLink!
     private let handler: (CADisplayLink) -> Void
     
-    init(mode: RunLoop.Mode, handler: @escaping (CADisplayLink) -> Void) {
+    init(mode: RunLoop.Mode, handler: @Sendable @escaping (CADisplayLink) -> Void) {
         self.handler = handler
         super.init()
         
