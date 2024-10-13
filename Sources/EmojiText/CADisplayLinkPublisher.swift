@@ -9,7 +9,7 @@ import SwiftUI
 
 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 extension CADisplayLink {
-    @MainActor struct CADisplayLinkPublisher {
+    struct CADisplayLinkPublisher {
         let mode: RunLoop.Mode
         let stopOnLowPowerMode: Bool
         
@@ -29,22 +29,22 @@ extension CADisplayLink {
                 }
                 
                 continuation.onTermination = { _ in
-                    Task { await displayLink.stop() }
+                    displayLink.stop()
                 }
             }
         }
     }
     
-    @MainActor static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
+    static func publish(mode: RunLoop.Mode, stopOnLowPowerMode: Bool) -> CADisplayLinkPublisher {
         CADisplayLinkPublisher(mode: mode, stopOnLowPowerMode: stopOnLowPowerMode)
     }
 }
 
-@MainActor private final class DisplayLink: NSObject {
+private final class DisplayLink: NSObject, @unchecked Sendable {
     private var displayLink: CADisplayLink!
     private let handler: (CADisplayLink) -> Void
     
-    init(mode: RunLoop.Mode, handler: @escaping (CADisplayLink) -> Void) {
+    init(mode: RunLoop.Mode, handler: @Sendable @escaping (CADisplayLink) -> Void) {
         self.handler = handler
         super.init()
         
