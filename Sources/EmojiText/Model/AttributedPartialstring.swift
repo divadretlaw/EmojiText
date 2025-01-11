@@ -47,7 +47,9 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         AttributedString(self).unicodeScalars
     }
     
-    subscript<K>(_ value: K.Type) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
+    subscript<K>(
+        _ value: K.Type
+    ) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
         get {
             AttributedString(self)[value]
         }
@@ -60,7 +62,9 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<K>(dynamicMember keyPath: KeyPath<AttributeDynamicLookup, K>) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
+    subscript<K>(
+        dynamicMember keyPath: KeyPath<AttributeDynamicLookup, K>
+    ) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
         get {
             AttributedString(self)[dynamicMember: keyPath]
         }
@@ -73,7 +77,9 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<S>(dynamicMember keyPath: KeyPath<AttributeScopes, S.Type>) -> ScopedAttributeContainer<S> where S: AttributeScope {
+    subscript<S>(
+        dynamicMember keyPath: KeyPath<AttributeScopes, S.Type>
+    ) -> ScopedAttributeContainer<S> where S: AttributeScope {
         get {
             AttributedString(self)[dynamicMember: keyPath]
         }
@@ -86,11 +92,15 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    subscript<R>(bounds: R) -> AttributedSubstring where R: RangeExpression, R.Bound == AttributedString.Index {
+    subscript<R>(
+        bounds: R
+    ) -> AttributedSubstring where R: RangeExpression, R.Bound == AttributedString.Index {
         AttributedString(self)[bounds]
     }
     
-    mutating func setAttributes(_ attributes: AttributeContainer) {
+    mutating func setAttributes(
+        _ attributes: AttributeContainer
+    ) {
         substrings = substrings.map { substring in
             var substring = substring
             substring.setAttributes(attributes)
@@ -98,7 +108,10 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    mutating func mergeAttributes(_ attributes: AttributeContainer, mergePolicy: AttributedString.AttributeMergePolicy) {
+    mutating func mergeAttributes(
+        _ attributes: AttributeContainer,
+        mergePolicy: AttributedString.AttributeMergePolicy
+    ) {
         substrings = substrings.map { substring in
             var substring = substring
             substring.mergeAttributes(attributes, mergePolicy: mergePolicy)
@@ -106,7 +119,10 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         }
     }
     
-    mutating func replaceAttributes(_ attributes: AttributeContainer, with others: AttributeContainer) {
+    mutating func replaceAttributes(
+        _ attributes: AttributeContainer,
+        with others: AttributeContainer
+    ) {
         substrings = substrings.map { substring in
             var substring = substring
             substring.replaceAttributes(attributes, with: others)
