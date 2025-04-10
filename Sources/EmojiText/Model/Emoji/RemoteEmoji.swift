@@ -32,7 +32,19 @@ public struct RemoteEmoji: AsyncCustomEmoji {
         self.renderingMode = renderingMode
         self.baselineOffset = baselineOffset
     }
-    
+
+    /// Initialize a remote custom emoji
+    ///
+    /// - Parameters:
+    ///     - shortcode: The shortcode of the emoji
+    ///     - url: The remote location of the emoji
+    ///     - renderingMode: The mode SwiftUI uses to render this emoji
+    ///     - baselineOffset: The baseline offset to use when rendering this emoji
+    public init?(shortcode: String, url: URL?, renderingMode: Image.TemplateRenderingMode? = nil, baselineOffset: CGFloat? = nil) {
+        guard let url else { return nil }
+        self.init(shortcode: shortcode, url: url, renderingMode: renderingMode, baselineOffset: baselineOffset)
+    }
+
     // MARK: - Hashable
     
     public func hash(into hasher: inout Hasher) {

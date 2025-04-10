@@ -15,7 +15,7 @@ struct UpsideDownEmojiProvider: SyncEmojiProvider {
     func emojiImage(emoji: any SyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         switch emoji {
         case let emoji as LocalEmoji:
-            #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
+            #if canImport(UIKit)
             return emoji.image.upsideDown()
             #else
             return emoji.image

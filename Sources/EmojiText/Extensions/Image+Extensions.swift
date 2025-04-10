@@ -12,8 +12,10 @@ extension Image {
     init(emojiImage: EmojiImage) {
         #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
         self.init(uiImage: emojiImage)
-        #else
+        #elseif os(macOS)
         self.init(nsImage: emojiImage)
+        #else
+        self.init(systemName: "exclamationmark.triangle.fill")
         #endif
     }
 }

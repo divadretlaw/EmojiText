@@ -11,7 +11,7 @@ import Combine
 extension Publisher where Failure == Never {
     func values(stopOnLowPowerMode: Bool) -> AsyncPublisher<AnyPublisher<Output, Never>> {
         filter { _ in
-            if stopOnLowPowerMode && ProcessInfo.processInfo.isLowPowerModeEnabled {
+            if stopOnLowPowerMode, ProcessInfo.processInfo.isLowPowerModeEnabled {
                 return false
             } else {
                 return true

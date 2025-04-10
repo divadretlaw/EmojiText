@@ -10,8 +10,8 @@ import SwiftUI
 
 /// A custom emoji
 public protocol CustomEmoji: Hashable, Equatable, Identifiable, Sendable {
-    /// The ID of the emoji
-    var id: String { get }
+    associatedtype ID = String
+    
     /// Shortcode of the emoji
     var shortcode: String { get }
     /// The mode SwiftUI uses to render this emoji

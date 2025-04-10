@@ -53,9 +53,7 @@ extension UIFont {
         return UIFont.preferredFont(from: font, compatibleWith: traitCollection)
     }
 }
-#endif
-
-#if os(watchOS)
+#elseif os(watchOS)
 import UIKit
 
 extension UIFont {

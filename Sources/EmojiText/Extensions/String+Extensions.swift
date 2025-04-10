@@ -22,7 +22,7 @@ extension String {
     /// - Returns: The split text with every emoji separated
     func splitOnEmoji(omittingSpacesBetweenEmojis: Bool = true) -> [String] {
         let splits: [String]
-        if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
+        if #available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
             splits = self
                 .split(separator: String.emojiSeparator, omittingEmptySubsequences: true)
                 .map { String($0) }

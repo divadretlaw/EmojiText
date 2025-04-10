@@ -62,8 +62,10 @@ private struct EmojiTimerKey: EnvironmentKey {
     
     static var defaultValue: Publishers.Autoconnect<Timer.TimerPublisher> {
         #if os(watchOS)
+        // Render in 24 fps
         Timer.publish(every: 1 / 24, on: .main, in: .common).autoconnect()
         #else
+        // Render in 60 fps
         Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
         #endif
     }

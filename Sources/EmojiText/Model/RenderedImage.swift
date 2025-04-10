@@ -24,6 +24,7 @@ struct RenderedImage: Hashable, Equatable, @unchecked Sendable {
         }
         self.duration = image.duration
         #else
+        // No support for animated images on this platform
         self.animationImages = nil
         self.duration = 0
         #endif

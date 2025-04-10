@@ -25,9 +25,7 @@ extension EmojiColor {
         #endif
     }
 }
-#endif
-
-#if os(macOS)
+#elseif os(macOS)
 import AppKit
 
 /// Platform indepdendent image alias. Will be `NSImage`.
@@ -41,4 +39,6 @@ extension EmojiColor {
         .placeholderTextColor
     }
 }
+#else
+#error("Unsupported platform")
 #endif

@@ -29,7 +29,7 @@ extension Text {
     }
 }
 
-extension Array where Element == Text {
+extension [Text] {
     func joined() -> Text {
         guard var result = first else {
             return Text(verbatim: "")
