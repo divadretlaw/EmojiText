@@ -5,84 +5,68 @@
 //  Created by David Walter on 18.02.23.
 //
 
-import XCTest
+import Testing
 @preconcurrency import SnapshotTesting
 @testable import EmojiText
 import SwiftUI
 
-final class EmojiTextTests: XCTestCase {
-    override func invokeTest() {
-        withSnapshotTesting(record: .failed) {
-            super.invokeTest()
-        }
-    }
-    
-    @MainActor
-    func test_Empty() {
+@MainActor struct EmojiTextTests {
+    @Test func test_Empty() {
         let view = EmojiText(verbatim: "", emojis: [])
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 100, height: 100)))
     }
     
-    @MainActor
-    func test_No_Emoji() {
+    @Test func test_No_Emoji() {
         let view = EmojiText(verbatim: "Hello World", emojis: [])
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async() {
+    @Test func test_Async() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Verbatim_Double() {
+    @Test func test_Async_Verbatim_Double() {
         let view = EmojiText(verbatim: "Hello Async :async: :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Markdown_Double() {
+    @Test func test_Async_Markdown_Double() {
         let view = EmojiText(markdown: "Hello Async :async: :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Scaled() {
+    @Test func test_Async_Scaled() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .font(.largeTitle)
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Custom_Scaled() {
+    @Test func test_Async_Custom_Scaled() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Offset() {
+    @Test func test_Async_Offset() {
         let view = EmojiText(verbatim: "Hello Async :async: and :async_offset:", emojis: [Emojis.async, Emojis.asyncWithOffset])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Offset_Positive() {
+    @Test func test_Async_Offset_Positive() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(8)
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Async_Offset_Negative() {
+    @Test func test_Async_Offset_Negative() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(-8)
@@ -96,34 +80,29 @@ final class EmojiTextTests: XCTestCase {
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_iPhone() {
+    @Test func test_iPhone() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_iPhone_Scaled() {
+    @Test func test_iPhone_Scaled() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
             .font(.largeTitle)
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_iPhone_RenderingMode() {
+    @Test func test_iPhone_RenderingMode() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone(renderingMode: .template)])
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Multiple() {
+    @Test func test_Multiple() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Prepend_Append() {
+    @Test func test_Prepend_Append() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
             .prepend {
                 Text("Prepended - ")
@@ -135,37 +114,32 @@ final class EmojiTextTests: XCTestCase {
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Wide() {
+    @Test func test_Wide() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Wide_Custom_Scaled() {
+    @Test func test_Wide_Custom_Scaled() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_EmojiInMarkdown() {
+    @Test func test_EmojiInMarkdown() {
         let view = EmojiText(markdown: "**Hello :async:** _Async :async:_ :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_EmojiInMarkdownNested() {
+    @Test func test_EmojiInMarkdownNested() {
         let view = EmojiText(markdown: "**Hello :async: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Markdown_InlineOnlyPreservingWhitespace() {
+    @Test func test_Markdown_InlineOnlyPreservingWhitespace() {
         let markdown = """
         # Title 1
         
@@ -195,8 +169,7 @@ final class EmojiTextTests: XCTestCase {
         assertSnapshot(of: view, as: .image)
     }
     
-    @MainActor
-    func test_Markdown_Full() {
+    @Test func test_Markdown_Full() {
         let markdown = """
         # Title 1
         
