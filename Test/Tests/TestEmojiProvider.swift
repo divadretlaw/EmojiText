@@ -14,7 +14,7 @@ struct TestEmojiProvider: AsyncEmojiProvider {
     
     // MARK: - AsyncEmojiProvider
     
-    func lazyEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
+    func fetchEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         switch emoji.shortcode {
         case "wide":
             return EmojiImage(named: "wide")

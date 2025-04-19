@@ -6,52 +6,35 @@
 //
 
 import Foundation
-import Nuke
 
-struct DefaultAsyncEmojiProvider: AsyncEmojiProvider {
-    private let pipeline: ImagePipeline
-    
-    init(pipeline: ImagePipeline) {
-        self.pipeline = pipeline
+public struct DefaultAsyncEmojiProvider: AsyncEmojiProvider {
+    private let session: URLSession
+
+    public init(session: URLSession = .shared) {
+        self.session = session
     }
-    
+
     // MARK: - AsyncEmojiProvider
-    
-    func lazyEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
+
+    public func cachedEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) -> Data? {
+        guard let cache = session.configuration.urlCache else { return nil }
         switch emoji {
         case let emoji as RemoteEmoji:
-            let request = request(for: emoji, height: height)
-            guard let container = pipeline.cache[request] else { return nil }
-            return container.image
+            let request = URLRequest(url: emoji.url)
+            guard let response = cache.cachedResponse(for: request) else { return nil }
+            return response.data
         default:
             return nil
         }
     }
-    
-    func lazyEmojiCached(emoji: RemoteEmoji, height: CGFloat?) -> EmojiImage? {
-        let request = request(for: emoji, height: height)
-        guard let container = pipeline.cache[request] else { return nil }
-        return container.image
-    }
-    
-    func lazyEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
+
+    public func fetchEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
         switch emoji {
         case let emoji as RemoteEmoji:
-            let request = request(for: emoji, height: height)
-            let (data, _) = try await pipeline.data(for: request)
+            let (data, _) = try await session.data(from: emoji.url)
             return data
         default:
             throw EmojiProviderError.unsupportedEmoji
-        }
-    }
-    
-    // MARK: - Helper
-    
-    private func request(for emoji: RemoteEmoji, height: CGFloat?) -> ImageRequest {
-        if let height {
-            ImageRequest(url: emoji.url, processors: [.resize(height: height)])
-        } else {
-            ImageRequest(url: emoji.url)
         }
     }
 }

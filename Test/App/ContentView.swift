@@ -85,7 +85,7 @@ struct ContentView: View {
                 Section {
                     NavigationLink {
                         RemoteEmojiView()
-                            .environment(\.emojiText.asyncEmojiProvider, URLSessionEmojiProvider(session: .shared))
+                            .environment(\.emojiText.asyncEmojiProvider, NukeEmojiProvider())
                     } label: {
                         Text("Remote Emoji")
                     }

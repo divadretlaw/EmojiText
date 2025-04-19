@@ -52,7 +52,7 @@ private struct SyncEmojiProviderKey: EnvironmentKey {
 
 private struct AsyncEmojiProviderKey: EnvironmentKey {
     static var defaultValue: AsyncEmojiProvider {
-        DefaultAsyncEmojiProvider(pipeline: .shared)
+        DefaultAsyncEmojiProvider()
     }
 }
 

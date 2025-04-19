@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Nuke
 import OSLog
 
 /// A view that displays one or more lines of text with support for custom emojis.
@@ -142,7 +141,7 @@ import OSLog
             case let emoji as any AsyncCustomEmoji:
                 // Try to load remote emoji from cache
                 let resizeHeight = targetHeight * displayScale
-                if let image = asyncEmojiProvider.lazyEmojiCached(emoji: emoji, height: resizeHeight) {
+                if let image = asyncEmojiProvider.cachedEmojiImage(emoji: emoji, height: resizeHeight) {
                     renderedEmojis[emoji.shortcode] = RenderedEmoji(
                         from: emoji,
                         image: RawImage(image: image),
@@ -185,7 +184,7 @@ import OSLog
                     _ = group.addTaskUnlessCancelled {
                         do {
                             let image: RawImage
-                            let data = try await asyncEmojiProvider.lazyEmojiData(emoji: emoji, height: resizeHeight)
+                            let data = try await asyncEmojiProvider.fetchEmojiData(emoji: emoji, height: resizeHeight)
                             if shouldAnimateIfNeeded {
                                 image = try RawImage(animated: data)
                             } else {

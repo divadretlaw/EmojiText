@@ -25,6 +25,8 @@
 		6352F9C62C44177C003ABABC /* URLSessionEmojiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6352F9C52C44177C003ABABC /* URLSessionEmojiProvider.swift */; };
 		6352F9C92C441A68003ABABC /* UpsideDownEmojiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6352F9C82C441A68003ABABC /* UpsideDownEmojiProvider.swift */; };
 		6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 6353366A2B6852B5004E4DD2 /* HTML2Markdown */; };
+		639A28012DB3925900681CBA /* NukeEmojiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639A28002DB3925900681CBA /* NukeEmojiProvider.swift */; };
+		639A28042DB3927300681CBA /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 639A28032DB3927300681CBA /* Nuke */; };
 		639F664C2B63ED4D00B7F747 /* DTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F66492B63ED4D00B7F747 /* DTOs.swift */; };
 		639F664D2B63ED4D00B7F747 /* MastodonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */; };
 		639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F664B2B63ED4D00B7F747 /* MastodonView.swift */; };
@@ -60,6 +62,7 @@
 		6334D23B2B33BD5800E9D8DE /* SnapshotTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = SnapshotTests.xctestplan; sourceTree = "<group>"; };
 		6352F9C52C44177C003ABABC /* URLSessionEmojiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionEmojiProvider.swift; sourceTree = "<group>"; };
 		6352F9C82C441A68003ABABC /* UpsideDownEmojiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsideDownEmojiProvider.swift; sourceTree = "<group>"; };
+		639A28002DB3925900681CBA /* NukeEmojiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeEmojiProvider.swift; sourceTree = "<group>"; };
 		639F66492B63ED4D00B7F747 /* DTOs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DTOs.swift; path = App/Mastodon/DTOs.swift; sourceTree = SOURCE_ROOT; };
 		639F664A2B63ED4D00B7F747 /* MastodonAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonAPI.swift; path = App/Mastodon/MastodonAPI.swift; sourceTree = SOURCE_ROOT; };
 		639F664B2B63ED4D00B7F747 /* MastodonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MastodonView.swift; path = App/Mastodon/MastodonView.swift; sourceTree = SOURCE_ROOT; };
@@ -71,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				639A28042DB3927300681CBA /* Nuke in Frameworks */,
 				6353366B2B6852B5004E4DD2 /* HTML2Markdown in Frameworks */,
 				6334D21B2B33B51B00E9D8DE /* EmojiText in Frameworks */,
 			);
@@ -158,6 +162,7 @@
 			children = (
 				6352F9C52C44177C003ABABC /* URLSessionEmojiProvider.swift */,
 				6352F9C82C441A68003ABABC /* UpsideDownEmojiProvider.swift */,
+				639A28002DB3925900681CBA /* NukeEmojiProvider.swift */,
 			);
 			path = Provider;
 			sourceTree = "<group>";
@@ -191,6 +196,7 @@
 			packageProductDependencies = (
 				6334D21A2B33B51B00E9D8DE /* EmojiText */,
 				6353366A2B6852B5004E4DD2 /* HTML2Markdown */,
+				639A28032DB3927300681CBA /* Nuke */,
 			);
 			productName = Test;
 			productReference = 6334D1E22B33B4B500E9D8DE /* Test.app */;
@@ -252,6 +258,7 @@
 				6334D2192B33B51B00E9D8DE /* XCLocalSwiftPackageReference ".." */,
 				6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */,
 				635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
+				639A28022DB3927300681CBA /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 6334D1E32B33B4B500E9D8DE /* Products */;
 			projectDirPath = "";
@@ -293,6 +300,7 @@
 				6334D1E82B33B4B500E9D8DE /* ContentView.swift in Sources */,
 				639F664E2B63ED4D00B7F747 /* MastodonView.swift in Sources */,
 				6334D2252B33B64F00E9D8DE /* RemoteEmojiView.swift in Sources */,
+				639A28012DB3925900681CBA /* NukeEmojiProvider.swift in Sources */,
 				631ECE5B2B6FA2B10051E3CB /* LocalEmojiView.swift in Sources */,
 				6334D2232B33B64F00E9D8DE /* EmojiTestView.swift in Sources */,
 				6352F9C92C441A68003ABABC /* UpsideDownEmojiProvider.swift in Sources */,
@@ -629,6 +637,14 @@
 				minimumVersion = 3.0.2;
 			};
 		};
+		639A28022DB3927300681CBA /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -650,6 +666,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */;
 			productName = HTML2Markdown;
+		};
+		639A28032DB3927300681CBA /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 639A28022DB3927300681CBA /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
