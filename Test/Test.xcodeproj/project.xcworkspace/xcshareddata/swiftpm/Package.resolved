@@ -1,15 +1,6 @@
 {
-  "originHash" : "2d70727d3cafb78fe6c1813aae868a461c0e08dcc0a6966c85bf6e5547d0dcd2",
+  "originHash" : "03fbb67d6b95caed1d2947c56b5b0c6335532d0e0acdaafff9ca1a49d9f64e6d",
   "pins" : [
-    {
-      "identity" : "graphicsrenderer",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/shaps80/GraphicsRenderer",
-      "state" : {
-        "revision" : "fa9b28096ea13eb59333a02d616244482ad6039f",
-        "version" : "1.4.4"
-      }
-    },
     {
       "identity" : "html2markdown",
       "kind" : "remoteSourceControl",

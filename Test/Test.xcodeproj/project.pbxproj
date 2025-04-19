@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		631ECE592B6F933B0051E3CB /* GraphicsRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 631ECE582B6F933B0051E3CB /* GraphicsRenderer */; };
 		631ECE5B2B6FA2B10051E3CB /* LocalEmojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631ECE5A2B6FA2B10051E3CB /* LocalEmojiView.swift */; };
 		6334D1E62B33B4B500E9D8DE /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D1E52B33B4B500E9D8DE /* TestApp.swift */; };
 		6334D1E82B33B4B500E9D8DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6334D1E72B33B4B500E9D8DE /* ContentView.swift */; };
@@ -84,7 +83,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				631ECE592B6F933B0051E3CB /* GraphicsRenderer in Frameworks */,
 				6334D2122B33B4DF00E9D8DE /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -218,7 +216,6 @@
 			name = SnapshotTests;
 			packageProductDependencies = (
 				6334D2112B33B4DF00E9D8DE /* SnapshotTesting */,
-				631ECE582B6F933B0051E3CB /* GraphicsRenderer */,
 			);
 			productName = TestTests;
 			productReference = 6334D1F32B33B4B600E9D8DE /* SnapshotTests.xctest */;
@@ -256,7 +253,6 @@
 			packageReferences = (
 				6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 				6334D2192B33B51B00E9D8DE /* XCLocalSwiftPackageReference ".." */,
-				6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */,
 				635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
 				639A28022DB3927300681CBA /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
@@ -621,14 +617,6 @@
 				minimumVersion = 1.17.5;
 			};
 		};
-		6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/shaps80/GraphicsRenderer";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.4;
-			};
-		};
 		635336692B6852B5004E4DD2 /* XCRemoteSwiftPackageReference "HTML2Markdown" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:divadretlaw/HTML2Markdown.git";
@@ -648,11 +636,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		631ECE582B6F933B0051E3CB /* GraphicsRenderer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6334D2372B33B7AC00E9D8DE /* XCRemoteSwiftPackageReference "GraphicsRenderer" */;
-			productName = GraphicsRenderer;
-		};
 		6334D2112B33B4DF00E9D8DE /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6334D2102B33B4DF00E9D8DE /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
