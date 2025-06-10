@@ -150,7 +150,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
 }
 
 private extension AttributedString {
-  init(_ value: AttributedPartialstring) {
+    init(_ value: AttributedPartialstring) {
         self = value.substrings.reduce(AttributedString()) { partialResult, substring in
             partialResult + substring
         }
