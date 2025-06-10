@@ -8,6 +8,18 @@
 import SwiftUI
 
 struct AttributedPartialstring: AttributedStringProtocol, Sendable {
+  
+    @available(iOS 26.0, *)
+    var utf8: AttributedString.UTF8View {
+      AttributedString(self).utf8
+      
+    }
+    
+    @available(iOS 26.0, *)
+    var utf16: AttributedString.UTF16View {
+          AttributedString(self).utf16
+    }
+  
     fileprivate var substrings: [AttributedSubstring]
     
     init() {
@@ -138,9 +150,10 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
 }
 
 private extension AttributedString {
-    init(_ value: AttributedPartialstring) {
+  init(_ value: AttributedPartialstring) {
         self = value.substrings.reduce(AttributedString()) { partialResult, substring in
             partialResult + substring
         }
     }
+
 }
