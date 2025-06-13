@@ -8,57 +8,55 @@
 import SwiftUI
 
 struct AttributedPartialstring: AttributedStringProtocol, Sendable {
-  
-    @available(iOS 26.0, *)
-    var utf8: AttributedString.UTF8View {
-      AttributedString(self).utf8
-      
-    }
-    
-    @available(iOS 26.0, *)
-    var utf16: AttributedString.UTF16View {
-          AttributedString(self).utf16
-    }
-  
     fileprivate var substrings: [AttributedSubstring]
-    
+
     init() {
         substrings = []
     }
-    
+
     mutating func append(_ substring: AttributedSubstring) {
         substrings.append(substring)
     }
-    
+
     mutating func consume() -> [AttributedSubstring] {
         defer {
             self.substrings = []
         }
         return self.substrings
     }
-    
+
     // MARK: - AttributedStringProtocol
-    
+
     var startIndex: AttributedString.Index {
         AttributedString(self).startIndex
     }
-    
+
     var endIndex: AttributedString.Index {
         AttributedString(self).endIndex
     }
-    
+
     var runs: AttributedString.Runs {
         AttributedString(self).runs
     }
-    
+
     var characters: AttributedString.CharacterView {
         AttributedString(self).characters
     }
-    
+
     var unicodeScalars: AttributedString.UnicodeScalarView {
         AttributedString(self).unicodeScalars
     }
-    
+
+    @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
+    var utf8: AttributedString.UTF8View {
+        AttributedString(self).utf8
+    }
+
+    @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
+    var utf16: AttributedString.UTF16View {
+        AttributedString(self).utf16
+    }
+
     subscript<K>(
         _ value: K.Type
     ) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
@@ -73,7 +71,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             }
         }
     }
-    
+
     subscript<K>(
         dynamicMember keyPath: KeyPath<AttributeDynamicLookup, K>
     ) -> K.Value? where K: AttributedStringKey, K.Value: Sendable {
@@ -88,7 +86,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             }
         }
     }
-    
+
     subscript<S>(
         dynamicMember keyPath: KeyPath<AttributeScopes, S.Type>
     ) -> ScopedAttributeContainer<S> where S: AttributeScope {
@@ -103,13 +101,13 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             }
         }
     }
-    
+
     subscript<R>(
         bounds: R
     ) -> AttributedSubstring where R: RangeExpression, R.Bound == AttributedString.Index {
         AttributedString(self)[bounds]
     }
-    
+
     mutating func setAttributes(
         _ attributes: AttributeContainer
     ) {
@@ -119,7 +117,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             return substring
         }
     }
-    
+
     mutating func mergeAttributes(
         _ attributes: AttributeContainer,
         mergePolicy: AttributedString.AttributeMergePolicy
@@ -130,7 +128,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             return substring
         }
     }
-    
+
     mutating func replaceAttributes(
         _ attributes: AttributeContainer,
         with others: AttributeContainer
@@ -141,9 +139,9 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
             return substring
         }
     }
-    
+
     // MARK: - CustomStringConvertible
-    
+
     var description: String {
         AttributedString(self).description
     }
@@ -155,5 +153,4 @@ private extension AttributedString {
             partialResult + substring
         }
     }
-
 }
