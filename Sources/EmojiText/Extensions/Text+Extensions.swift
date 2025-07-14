@@ -36,7 +36,7 @@ extension [Text] {
         }
         
         for element in dropFirst() {
-            result = result + element
+            result = Text("\(result)\(element)")
         }
         
         return result
