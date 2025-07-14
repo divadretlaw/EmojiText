@@ -47,6 +47,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
         AttributedString(self).unicodeScalars
     }
 
+    #if swift(>=6.2)
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
     var utf8: AttributedString.UTF8View {
         AttributedString(self).utf8
@@ -56,6 +57,7 @@ struct AttributedPartialstring: AttributedStringProtocol, Sendable {
     var utf16: AttributedString.UTF16View {
         AttributedString(self).utf16
     }
+    #endif
 
     subscript<K>(
         _ value: K.Type
