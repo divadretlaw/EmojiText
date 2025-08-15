@@ -42,6 +42,7 @@ public protocol AsyncEmojiProvider: Sendable {
     func lazyEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data
 }
 
+// swiftlint:disable missing_docs
 public extension AsyncEmojiProvider {
     func cachedEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) -> Data? {
         nil
@@ -58,9 +59,11 @@ public extension AsyncEmojiProvider {
         }
     }
 }
+// swiftlint:enable missing_docs
 
 // MARK: - Deprecations
 
+// swiftlint:disable missing_docs
 public extension AsyncEmojiProvider {
     func lazyEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         nil
@@ -77,3 +80,4 @@ public extension AsyncEmojiProvider {
         return try await lazyEmojiData(emoji: emoji, height: height)
     }
 }
+// swiftlint:enable missing_docs

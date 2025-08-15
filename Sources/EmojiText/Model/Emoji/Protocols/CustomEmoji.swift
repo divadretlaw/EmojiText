@@ -10,7 +10,7 @@ import SwiftUI
 
 /// A custom emoji
 public protocol CustomEmoji: Hashable, Equatable, Identifiable, Sendable {
-    associatedtype ID = String
+    associatedtype ID = String // swiftlint:disable:this type_name
     
     /// Shortcode of the emoji
     var shortcode: String { get }
