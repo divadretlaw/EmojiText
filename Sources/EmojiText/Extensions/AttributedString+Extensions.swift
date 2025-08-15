@@ -14,7 +14,7 @@ extension AttributedString {
 }
 
 extension AttributedString.Runs.Element {
-    func emoji(from values: [String: RenderedEmoji]) -> RenderedEmoji? {
+    func emoji(from values: [String: LoadedEmoji]) -> LoadedEmoji? {
         guard let imageURL = attributes[AttributeScopes.FoundationAttributes.ImageURLAttribute.self] else { return nil }
         guard imageURL.scheme == String.emojiScheme else { return nil }
         if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {

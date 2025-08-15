@@ -10,12 +10,14 @@ import OSLog
 
 struct VerbatimEmojiRenderer: EmojiRenderer {
     let shouldOmitSpacesBetweenEmojis: Bool
-    
-    func render(string: String, emojis: [String: RenderedEmoji], size: CGFloat?) -> Text {
+
+    // MARK: - SwiftUI
+
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> Text {
         renderAnimated(string: string, emojis: emojis, size: size, at: 0)
     }
-    
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
+
+    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
         let string = renderString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -24,7 +26,7 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         for substring in splits {
             if let emoji = emojis[substring] {
                 // If the part is an emoji we render it as an inline image
-                let text = EmojiTextRenderer(emoji: emoji).render(size, at: time)
+                let text = EmojiTextRenderer(emoji: emoji).text(size, at: time)
                 result = result + text
             } else {
                 // Otherwise we just render the part as String
@@ -34,8 +36,32 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         
         return result
     }
-    
-    private func renderString(from string: String, with emojis: [String: RenderedEmoji]) -> String {
+
+    // MARK: - UIKit & AppKit
+
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
+        let string = renderString(from: string, with: emojis)
+
+        let result = NSMutableAttributedString()
+
+        let splits = string.splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
+        for substring in splits {
+            if let emoji = emojis[substring] {
+                // If the part is an emoji we render it as an inline image
+                let text = EmojiTextRenderer(emoji: emoji).attributedString(size)
+                result.append(text)
+            } else {
+                // Otherwise we just render the part as String
+                result.append(NSAttributedString(string: substring))
+            }
+        }
+
+        return result
+    }
+
+    // MARK: - Helper
+
+    private func renderString(from string: String, with emojis: [String: LoadedEmoji]) -> String {
         var text = string
         
         for shortcode in emojis.keys {

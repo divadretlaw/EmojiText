@@ -26,12 +26,14 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
             orderedListNumerals: .incrementing(start: 1)
         )
     }
-    
-    func render(string: String, emojis: [String: RenderedEmoji], size: CGFloat?) -> SwiftUI.Text {
+
+    // MARK: - SwiftUI
+
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> SwiftUI.Text {
         renderAnimated(string: string, emojis: emojis, size: size, at: 0)
     }
-    
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> SwiftUI.Text {
+
+    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> SwiftUI.Text {
         let attributedString = renderAttributedString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -40,7 +42,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an interpolated image in a Text view
-                let text = EmojiTextRenderer(emoji: emoji).render(size, at: time)
+                let text = EmojiTextRenderer(emoji: emoji).text(size, at: time)
                 
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by
@@ -77,15 +79,15 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
             .compactMap { $0 }
             .joined()
     }
-    
-    private func renderAttributedString(from string: String, with emojis: [String: RenderedEmoji]) -> AttributedString {
+
+    private func renderAttributedString(from string: String, with emojis: [String: LoadedEmoji]) -> AttributedString {
         do {
             let options = AttributedString.MarkdownParsingOptions(
                 allowsExtendedAttributes: true,
                 interpretedSyntax: interpretedSyntax,
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
-            
+
             // We need to replace \\ with \\\\ otherwise the Markdown parser
             // will interpret the previously escaped characters when rendering
             // them in AttributedString
@@ -93,16 +95,57 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
             let originalDocument = Document(parsing: escapedString)
             var emojiReplacer = EmojiReplacer(emojis: emojis)
             let emojiDocument = emojiReplacer.visitDocument(originalDocument) ?? originalDocument
-            
+
             let markdown = emojiDocument.format(options: formatterOptions)
                 .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
                 .joined()
-            
+
             return try AttributedString(markdown: markdown, options: options)
         } catch {
             Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
             return AttributedString(stringLiteral: string)
         }
+    }
+
+    // MARK: - UIKit & AppKit
+
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
+        do {
+            let result = NSMutableAttributedString()
+
+            let options = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: interpretedSyntax,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
+
+            let splits = renderString(from: string, with: emojis)
+                .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
+            for substring in splits {
+                if let emoji = emojis[substring] {
+                    // If the part is an emoji we render it as an inline image
+                    let text = EmojiTextRenderer(emoji: emoji).attributedString(size)
+                    result.append(text)
+                } else {
+                    // Otherwise we just render the part as String
+                    result.append(try NSAttributedString(markdown: substring, options: options))
+                }
+            }
+            return result
+        } catch {
+            Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
+            return NSAttributedString(string: string)
+        }
+    }
+
+    private func renderString(from string: String, with emojis: [String: LoadedEmoji]) -> String {
+        var text = string
+
+        for shortcode in emojis.keys {
+            text = text.replacingOccurrences(of: ":\(shortcode):", with: "\(String.emojiSeparator)\(shortcode)\(String.emojiSeparator)")
+        }
+
+        return text
     }
 }
 

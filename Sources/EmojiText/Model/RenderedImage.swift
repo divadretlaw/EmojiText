@@ -57,7 +57,17 @@ struct RenderedImage: Hashable, Equatable, @unchecked Sendable {
             return Image(emojiImage: EmojiImage())
         }
     }
-    
+
+    var emojiImage: EmojiImage {
+        if let systemName = systemName {
+            return EmojiImage(systemName: systemName) ?? EmojiImage()
+        } else if let image = platformImage {
+            return image
+        } else {
+            return EmojiImage()
+        }
+    }
+
     var isAnimated: Bool {
         guard let animationImages = animationImages else { return false }
         return !animationImages.isEmpty && duration > 0
@@ -75,7 +85,7 @@ struct RenderedImage: Hashable, Equatable, @unchecked Sendable {
         
         return Image(emojiImage: rawImages[index])
     }
-    
+
     // MARK: - Hashable
     
     func hash(into hasher: inout Hasher) {

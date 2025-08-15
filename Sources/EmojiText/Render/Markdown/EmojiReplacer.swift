@@ -9,7 +9,7 @@ import Foundation
 import Markdown
 
 struct EmojiReplacer: MarkupRewriter {
-    let emojis: [String: RenderedEmoji]
+    let emojis: [String: LoadedEmoji]
     
     mutating func visitText(_ text: Text) -> Markup? {
         var string = text.string
