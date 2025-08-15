@@ -8,7 +8,7 @@
 import Foundation
 
 /// A provider loading emoji's in a synchronized way
-public protocol SyncEmojiProvider {
+public protocol SyncEmojiProvider: Sendable {
     /// Load the sync emoji
     /// - Parameters:
     ///   - emoji: The sync emoji to load.
