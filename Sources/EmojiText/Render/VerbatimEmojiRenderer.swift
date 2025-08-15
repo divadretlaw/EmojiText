@@ -21,12 +21,12 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         let string = renderString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
-        
+
         let splits = string.splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
         for substring in splits {
             if let emoji = emojis[substring] {
                 // If the part is an emoji we render it as an inline image
-                let text = EmojiTextRenderer(emoji: emoji).text(size, at: time)
+                let text = Text(emoji, size: size, at: time)
                 result = result + text
             } else {
                 // Otherwise we just render the part as String
@@ -43,19 +43,19 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         let string = renderString(from: string, with: emojis)
 
         let result = NSMutableAttributedString()
+        result.beginEditing()
 
         let splits = string.splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
         for substring in splits {
             if let emoji = emojis[substring] {
                 // If the part is an emoji we render it as an inline image
-                let text = EmojiTextRenderer(emoji: emoji).attributedString(size)
-                result.append(text)
+                result.append(NSAttributedString(emoji, size: size))
             } else {
                 // Otherwise we just render the part as String
                 result.append(NSAttributedString(string: substring))
             }
         }
-
+        result.endEditing()
         return result
     }
 

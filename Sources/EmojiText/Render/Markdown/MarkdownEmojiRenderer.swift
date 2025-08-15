@@ -10,14 +10,17 @@ import Markdown
 import OSLog
 
 struct MarkdownEmojiRenderer: EmojiRenderer {
+    let font: EmojiFont?
     let shouldOmitSpacesBetweenEmojis: Bool
     let interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
     private let formatterOptions: MarkupFormatter.Options
     
     init(
+        font: EmojiFont? = nil,
         shouldOmitSpacesBetweenEmojis: Bool,
         interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
     ) {
+        self.font = font
         self.shouldOmitSpacesBetweenEmojis = shouldOmitSpacesBetweenEmojis
         self.interpretedSyntax = interpretedSyntax
         
@@ -25,6 +28,20 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
             unorderedListMarker: .star,
             orderedListNumerals: .incrementing(start: 1)
         )
+    }
+
+    func formatMarkdown(_ string: String, emojis: [String: LoadedEmoji]) -> String {
+        // We need to replace \\ with \\\\ otherwise the Markdown parser
+        // will interpret the previously escaped characters when rendering
+        // them in AttributedString
+        let escapedString = string.replacingOccurrences(of: "\\", with: "\\\\")
+        let originalDocument = Document(parsing: escapedString)
+        var emojiReplacer = MarkdownEmojiReplacer(emojis: emojis)
+        let emojiDocument = emojiReplacer.visitDocument(originalDocument) ?? originalDocument
+
+        return emojiDocument.format(options: formatterOptions)
+            .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
+            .joined()
     }
 
     // MARK: - SwiftUI
@@ -42,8 +59,8 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
         for run in attributedString.runs {
             if let emoji = run.emoji(from: emojis) {
                 // If the run is an emoji we render it as an interpolated image in a Text view
-                let text = EmojiTextRenderer(emoji: emoji).text(size, at: time)
-                
+                let text = Text(emoji, size: size, at: time)
+
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by
                 // the character count of the emojo to calculate how often the emoji needs to be displayed
@@ -88,18 +105,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
 
-            // We need to replace \\ with \\\\ otherwise the Markdown parser
-            // will interpret the previously escaped characters when rendering
-            // them in AttributedString
-            let escapedString = string.replacingOccurrences(of: "\\", with: "\\\\")
-            let originalDocument = Document(parsing: escapedString)
-            var emojiReplacer = EmojiReplacer(emojis: emojis)
-            let emojiDocument = emojiReplacer.visitDocument(originalDocument) ?? originalDocument
-
-            let markdown = emojiDocument.format(options: formatterOptions)
-                .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-                .joined()
-
+            let markdown = formatMarkdown(string, emojis: emojis)
             return try AttributedString(markdown: markdown, options: options)
         } catch {
             Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
@@ -110,42 +116,13 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
     // MARK: - UIKit & AppKit
 
     func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
-        do {
-            let result = NSMutableAttributedString()
-
-            let options = AttributedString.MarkdownParsingOptions(
-                allowsExtendedAttributes: true,
-                interpretedSyntax: interpretedSyntax,
-                failurePolicy: .returnPartiallyParsedIfPossible
-            )
-
-            let splits = renderString(from: string, with: emojis)
-                .splitOnEmoji(omittingSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-            for substring in splits {
-                if let emoji = emojis[substring] {
-                    // If the part is an emoji we render it as an inline image
-                    let text = EmojiTextRenderer(emoji: emoji).attributedString(size)
-                    result.append(text)
-                } else {
-                    // Otherwise we just render the part as String
-                    result.append(try NSAttributedString(markdown: substring, options: options))
-                }
-            }
-            return result
-        } catch {
-            Logger.text.error("Unable to parse Markdown, falling back to verbatim string: \(error.localizedDescription)")
-            return NSAttributedString(string: string)
-        }
-    }
-
-    private func renderString(from string: String, with emojis: [String: LoadedEmoji]) -> String {
-        var text = string
-
-        for shortcode in emojis.keys {
-            text = text.replacingOccurrences(of: ":\(shortcode):", with: "\(String.emojiSeparator)\(shortcode)\(String.emojiSeparator)")
-        }
-
-        return text
+        let markdown = formatMarkdown(string, emojis: emojis)
+        var renderer = MarkdownEmojiVisitor(
+            emojis: emojis,
+            font: font ?? EmojiFont.preferredFont(forTextStyle: .body),
+            interpretedSyntax: interpretedSyntax
+        )
+        return renderer.parseAndVisit(markdown)
     }
 }
 
