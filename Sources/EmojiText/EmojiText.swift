@@ -222,10 +222,10 @@ import OSLog
     /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
-    ///     - markdown: The string that contains the Markdown formatting.
+    ///     - content: The string that contains the Markdown formatting.
     ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
     ///     - emojis: The custom emojis to render.
-    ///     - shoulOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
+    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce
@@ -246,9 +246,9 @@ import OSLog
     /// Initialize a ``EmojiText`` with support for custom emojis.
     ///
     /// - Parameters:
-    ///     - verbatim: A string to display without localization.
+    ///     - content: A string to display without localization.
     ///     - emojis: The custom emojis to render.
-    ///     - shoulOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
+    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce
@@ -270,6 +270,7 @@ import OSLog
     /// - Parameters:
     ///     - content: A string value to display without localization.
     ///     - emojis: The custom emojis to render.
+    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce

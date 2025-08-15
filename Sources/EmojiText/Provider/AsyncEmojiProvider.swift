@@ -16,14 +16,14 @@ import OSLog
 public protocol AsyncEmojiProvider: Sendable {
     /// Fetch the async emoji from cache (if applicable)
     /// - Parameters:
-    ///   - url: The async emoji to fetch.
+    ///   - emoji: The async emoji to fetch.
     ///   - height: The desired height of the emoji.
     /// - Returns: The data representing the emoji or `nil` if the emoji wasn't cached.
     func cachedEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) -> Data?
 
     /// Fetch the async emoji from cache (if applicable)
     /// - Parameters:
-    ///   - url: The async emoji to fetch.
+    ///   - emoji: The async emoji to fetch.
     ///   - height: The desired height of the emoji.
     /// - Returns: The image representing the emoji or `nil` if the emoji wasn't cached.
     func cachedEmojiImage(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage?
