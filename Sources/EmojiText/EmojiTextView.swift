@@ -9,7 +9,7 @@
 import AppKit
 import SwiftUI
 
-@MainActor public final class NSEmojiTextView: NSTextView {
+public final class EmojiTextView: NSTextView {
     private var raw: String
     private let emojis: [any CustomEmoji]
     private let renderer: EmojiRenderer
@@ -18,7 +18,7 @@ import SwiftUI
     private var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
     private var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
-    /// Initialize a ``NSEmojiTextView`` with support for custom emojis.
+    /// Initialize a ``EmojiTextView`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -35,11 +35,11 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a Markdown formatted ``NSEmojiTextView`` with support for custom emojis.
+    /// Initialize a Markdown formatted ``EmojiTextView`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
     ///     - emojis: The custom emojis to render.
     ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
     public convenience init(
@@ -55,7 +55,7 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a ``NSEmojiTextView`` with support for custom emojis.
+    /// Initialize a ``EmojiTextView`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -107,7 +107,7 @@ import SwiftUI
         drawsBackground = false
     }
 
-    @objc private func load() {
+    private func load() {
         guard !emojis.isEmpty else {
             return
         }
@@ -148,6 +148,8 @@ import SwiftUI
     }
 
     private func render(_ renderedEmojis: [String: LoadedEmoji]) {
+        guard let textStorage else { return }
+
         let string: NSAttributedString = renderer.render(
             string: raw,
             emojis: renderedEmojis,
@@ -158,7 +160,6 @@ import SwiftUI
             guard value is URL else { return }
             result.addAttribute(.foregroundColor, value: NSColor.controlAccentColor, range: range)
         }
-        guard let textStorage else { return }
         textStorage.setAttributedString(result)
     }
 
@@ -186,7 +187,7 @@ import SwiftUI
 
 private struct NSPreview: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
-        NSEmojiTextView(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
+        EmojiTextView(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
