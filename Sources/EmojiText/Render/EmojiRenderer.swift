@@ -9,12 +9,15 @@ import SwiftUI
 import Combine
 
 protocol EmojiRenderer {
-    func render(string: String, emojis: [String: RenderedEmoji], size: CGFloat?) -> Text
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text
+    // SwiftUI
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> Text
+    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text
+    // AttributedString
+    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString
 }
 
 extension EmojiRenderer {
-    func renderAnimated(string: String, emojis: [String: RenderedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
+    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
         render(string: string, emojis: emojis, size: size)
     }
 }
