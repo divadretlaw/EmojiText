@@ -105,7 +105,7 @@ public final class EmojiLabel: UILabel {
 
     @objc private func load() {
         guard !emojis.isEmpty else {
-            return
+            return render([:])
         }
 
         let loader = makeLoader()
