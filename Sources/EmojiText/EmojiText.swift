@@ -223,7 +223,7 @@ import OSLog
     ///
     /// - Parameters:
     ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
     ///     - emojis: The custom emojis to render.
     ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
     ///
