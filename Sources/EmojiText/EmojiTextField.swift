@@ -1,5 +1,5 @@
 //
-//  NSEmojiTextField.swift
+//  EmojiTextField.swift
 //  EmojiText
 //
 //  Created by David Walter on 10.08.25.
@@ -9,7 +9,7 @@
 import AppKit
 import SwiftUI
 
-@MainActor public final class NSEmojiTextField: NSTextField {
+public final class EmojiTextField: NSTextField {
     private var raw: String
     private let emojis: [any CustomEmoji]
     private let renderer: EmojiRenderer
@@ -18,7 +18,7 @@ import SwiftUI
     private var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
     private var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
-    /// Initialize a ``NSEmojiTextField`` with support for custom emojis.
+    /// Initialize a ``EmojiTextField`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -35,11 +35,11 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a Markdown formatted ``NSEmojiTextField`` with support for custom emojis.
+    /// Initialize a Markdown formatted ``EmojiTextField`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
     ///     - emojis: The custom emojis to render.
     ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
     public convenience init(
@@ -55,7 +55,7 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a ``NSEmojiTextField`` with support for custom emojis.
+    /// Initialize a ``EmojiTextField`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -97,7 +97,7 @@ import SwiftUI
         isBordered = false
     }
 
-    @objc private func load() {
+    private func load() {
         guard !emojis.isEmpty else {
             return
         }
@@ -170,19 +170,8 @@ import SwiftUI
     }
 }
 
-#if DEBUG
-private struct NSPreview: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
-        NSEmojiTextField(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-    }
-}
-
+@available(macOS 14.0, *)
 #Preview {
-    NSPreview()
-        .padding()
+    EmojiTextField(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
 }
-#endif
 #endif
