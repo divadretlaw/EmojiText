@@ -109,7 +109,7 @@ public final class EmojiTextView: NSTextView {
 
     private func load() {
         guard !emojis.isEmpty else {
-            return
+            return render([:])
         }
 
         let loader = makeLoader()
@@ -148,7 +148,9 @@ public final class EmojiTextView: NSTextView {
     }
 
     private func render(_ renderedEmojis: [String: LoadedEmoji]) {
-        guard let textStorage else { return }
+        guard let textStorage else {
+            return
+        }
 
         let string: NSAttributedString = renderer.render(
             string: raw,
