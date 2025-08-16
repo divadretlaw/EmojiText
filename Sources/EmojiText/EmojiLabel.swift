@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-@MainActor public final class UIEmojiLabel: UILabel {
+public final class EmojiLabel: UILabel {
     private var raw: String
     private let emojis: [any CustomEmoji]
     private let renderer: EmojiRenderer
@@ -19,7 +19,7 @@ import SwiftUI
     private var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
     private var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
-    /// Initialize a ``UIEmojiLabel`` with support for custom emojis.
+    /// Initialize a ``EmojiLabel`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -36,11 +36,11 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a Markdown formatted ``UIEmojiLabel`` with support for custom emojis.
+    /// Initialize a Markdown formatted ``EmojiLabel`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for intepreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
+    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
     ///     - emojis: The custom emojis to render.
     ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
     public convenience init(
@@ -56,7 +56,7 @@ import SwiftUI
         self.init(string: content, emojis: emojis, renderer: renderer)
     }
 
-    /// Initialize a ``UIEmojiLabel`` with support for custom emojis.
+    /// Initialize a ``EmojiLabel`` with support for custom emojis.
     ///
     /// - Parameters:
     ///     - content: A string to display without localization.
@@ -182,18 +182,8 @@ import SwiftUI
 
 #if DEBUG
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
-private struct UIPreview: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
-        UIEmojiLabel(markdown: "Hello **World** :a:", emojis: .emojis)
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-    }
-}
-
-@available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 #Preview {
-    UIPreview()
+    EmojiLabel(markdown: "Hello **World** :a:", emojis: .emojis)
 }
 #endif
 #endif
