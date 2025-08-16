@@ -99,7 +99,7 @@ public final class EmojiTextField: NSTextField {
 
     private func load() {
         guard !emojis.isEmpty else {
-            return
+            return render([:])
         }
 
         let loader = makeLoader()
