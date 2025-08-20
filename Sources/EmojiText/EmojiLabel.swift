@@ -70,7 +70,7 @@ public final class EmojiLabel: UILabel {
         self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
     }
 
-    init(
+    private init(
         string: String,
         emojis: [any CustomEmoji],
         renderer: EmojiRenderer
@@ -161,7 +161,7 @@ public final class EmojiLabel: UILabel {
         }
     }
 
-    func makeLoader() -> EmojiLoader {
+    private func makeLoader() -> EmojiLoader {
         EmojiLoader(placeholder: placeholder, font: font) { parameter in
             parameter
             // .overrideSize(size)
@@ -171,7 +171,7 @@ public final class EmojiLabel: UILabel {
         .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
     }
 
-    var placeholder: any CustomEmoji {
+    private var placeholder: any CustomEmoji {
         if let image = UIImage(systemName: "square.dashed") {
             return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
         } else {

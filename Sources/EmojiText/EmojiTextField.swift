@@ -69,7 +69,7 @@ public final class EmojiTextField: NSTextField {
         self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
     }
 
-    init(
+    private init(
         string: String,
         emojis: [any CustomEmoji],
         renderer: EmojiRenderer
@@ -151,7 +151,7 @@ public final class EmojiTextField: NSTextField {
         self.attributedStringValue = result
     }
 
-    func makeLoader() -> EmojiLoader {
+    private func makeLoader() -> EmojiLoader {
         EmojiLoader(placeholder: placeholder, font: font ?? NSFont.preferredFont(forTextStyle: .body)) { parameter in
             parameter
             // overrideSize(size)
@@ -161,7 +161,7 @@ public final class EmojiTextField: NSTextField {
         .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
     }
 
-    var placeholder: any CustomEmoji {
+    private var placeholder: any CustomEmoji {
         if let image = NSImage(systemName: "square.dashed") {
             return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
         } else {
