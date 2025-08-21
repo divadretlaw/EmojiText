@@ -69,6 +69,7 @@ import OSLog
                         return new
                     }
                 }
+                guard !Task.isCancelled else { return }
                 renderedEmojis = result
 
                 // Load lazy emojis if needed (e.g. placeholders were set or source emojis changed)
@@ -76,11 +77,12 @@ import OSLog
                     result = result.merging(await loader.loadLazyEmojis(emojis)) { _, new in
                         new
                     }
+                    guard !Task.isCancelled else { return }
                     renderedEmojis = result
                 }
-                
-                guard shouldAnimateIfNeeded, needsAnimation else { return }
-                
+
+                guard !Task.isCancelled, shouldAnimateIfNeeded, needsAnimation else { return }
+
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
                 for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: animatedMode.disabledOnLowPower).targetTimestamps {
                     renderTime = targetTimestamp

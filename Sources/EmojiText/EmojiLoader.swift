@@ -98,6 +98,7 @@ struct EmojiLoader: Sendable {
         var renderedEmojis = [String: LoadedEmoji]()
 
         for emoji in emojis {
+            guard !Task.isCancelled else { return [:] }
             switch emoji {
             case let sfSymbolEmoji as SFSymbolEmoji:
                 // SF Symbol emoji don't require a placeholder as they can be loaded instantly
@@ -158,6 +159,7 @@ struct EmojiLoader: Sendable {
     func loadLazyEmojis(_ emojis: [any CustomEmoji]) async -> [String: LoadedEmoji] {
         await withTaskGroup(of: LoadedEmoji?.self, returning: [String: LoadedEmoji].self) { [asyncEmojiProvider, parameter] group in
             for emoji in emojis {
+                guard !Task.isCancelled else { return [:] }
                 switch emoji {
                 case let emoji as any AsyncCustomEmoji:
                     _ = group.addTaskUnlessCancelled {
