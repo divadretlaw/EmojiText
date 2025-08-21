@@ -1,5 +1,5 @@
 //
-//  NSEmojiTextField.swift
+//  EmojiTextView.swift
 //  EmojiText
 //
 //  Created by David Walter on 10.08.25.
