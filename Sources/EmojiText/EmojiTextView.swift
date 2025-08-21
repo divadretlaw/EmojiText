@@ -7,16 +7,18 @@
 
 #if canImport(AppKit)
 import AppKit
-import SwiftUI
 
-public final class EmojiTextView: NSTextView {
-    private var raw: String
-    private let emojis: [any CustomEmoji]
-    private let renderer: EmojiRenderer
+public final class EmojiTextView: NSTextView, EmojiTextPresenter {
+    var raw: String
+    let emojis: [any CustomEmoji]
+    let renderer: EmojiRenderer
 
-    private var task: Task<Void, Never>?
-    private var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
-    private var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
+    var task: Task<Void, Never>?
+
+    var targetHeight: CGFloat?
+    var baselineOffset: CGFloat?
+    var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
+    var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
     /// Initialize a ``EmojiTextView`` with support for custom emojis.
     ///
@@ -107,47 +109,7 @@ public final class EmojiTextView: NSTextView {
         drawsBackground = false
     }
 
-    private func load() {
-        guard !emojis.isEmpty else {
-            return render([:])
-        }
-
-        let loader = makeLoader()
-        task = Task.detached { [weak self, emojis] in
-            guard let self else { return }
-            // Hash of currently displayed emojis
-            var renderedEmojis: [String: LoadedEmoji] = [:]
-
-            // Load emojis. Will set placeholders for lazy emojis
-            renderedEmojis = renderedEmojis.merging(loader.loadEmojis(emojis)) { current, new in
-                if current.hasSameSource(as: new) {
-                    if !new.isPlaceholder || current.isPlaceholder {
-                        return new
-                    } else {
-                        return current
-                    }
-                } else {
-                    return new
-                }
-            }
-            await self.render(renderedEmojis)
-            // Load emojis. Will set placeholders for lazy emojis
-            renderedEmojis = renderedEmojis.merging(await loader.loadLazyEmojis(emojis)) { current, new in
-                if current.hasSameSource(as: new) {
-                    if !new.isPlaceholder || current.isPlaceholder {
-                        return new
-                    } else {
-                        return current
-                    }
-                } else {
-                    return new
-                }
-            }
-            await self.render(renderedEmojis)
-        }
-    }
-
-    private func render(_ renderedEmojis: [String: LoadedEmoji]) {
+    func render(_ renderedEmojis: [String: LoadedEmoji]) {
         guard let textStorage else {
             return
         }
@@ -165,11 +127,11 @@ public final class EmojiTextView: NSTextView {
         textStorage.setAttributedString(result)
     }
 
-    private func makeLoader() -> EmojiLoader {
+    func makeLoader() -> EmojiLoader {
         EmojiLoader(placeholder: placeholder, font: font ?? NSFont.preferredFont(forTextStyle: .body)) { parameter in
             parameter
-            // .overrideSize(size)
-            // .overrideBaselineOffset(baselineOffset)
+                .overrideSize(targetHeight)
+                .overrideBaselineOffset(baselineOffset)
                 .displayScale(window?.screen?.backingScaleFactor)
         }
         .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
@@ -180,6 +142,37 @@ public final class EmojiTextView: NSTextView {
             return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
         } else {
             return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
+    // MARK: - Modifier
+
+    public func setEmojiProvider(syncEmojiProvider: SyncEmojiProvider, asyncEmojiProvider: AsyncEmojiProvider) {
+        self.syncEmojiProvider = syncEmojiProvider
+        self.asyncEmojiProvider = asyncEmojiProvider
+        // Reload emojis
+        load()
+    }
+
+    public var overrideSize: CGFloat? {
+        get {
+            targetHeight
+        }
+        set {
+            self.targetHeight = newValue
+            // Reload emojis
+            load()
+        }
+    }
+
+    public var overrideBaselineOffset: CGFloat? {
+        get {
+            baselineOffset
+        }
+        set {
+            self.baselineOffset = newValue
+            // Reload emojis
+            load()
         }
     }
 }
