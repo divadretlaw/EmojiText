@@ -10,6 +10,14 @@ import UIKit
 
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 open class EmojiLabel: UILabel, EmojiTextPresenter {
+    static var placeholder: any CustomEmoji {
+        if let image = UIImage(systemName: "square.dashed") {
+            LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
     // MARK: Public
 
     override public var text: String? {
@@ -50,6 +58,7 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
     var raw: String?
     var emojiTargetHeight: CGFloat?
     var emojiBaselineOffset: CGFloat?
+    var emojiPlaceholder: any CustomEmoji = EmojiLabel.placeholder
 
     // MARK: Rendering
 
@@ -99,14 +108,6 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
 
     // MARK: - EmojiTextPresenter
 
-    var emojiPlaceholder: any CustomEmoji {
-        if let image = UIImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
-        }
-    }
-
     var emojiFont: EmojiFont {
         font
     }
@@ -155,6 +156,18 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
         }
         set {
             self.emojiBaselineOffset = newValue
+            // Reload emojis
+            perform()
+        }
+    }
+
+    public var placeholder: (any CustomEmoji)! {
+        get {
+            emojiPlaceholder
+        }
+        set {
+            self.emojiPlaceholder = newValue ?? EmojiLabel.placeholder
+
             // Reload emojis
             perform()
         }

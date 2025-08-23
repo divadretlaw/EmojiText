@@ -16,7 +16,7 @@ import Foundation
     /// Loading task
     var task: Task<Void, Never>? { get set }
 
-    var emojiPlaceholder: CustomEmoji { get }
+    var emojiPlaceholder: any CustomEmoji { get }
     var emojiFont: EmojiFont { get }
     var emojiTargetHeight: CGFloat? { get }
     var emojiBaselineOffset: CGFloat? { get }

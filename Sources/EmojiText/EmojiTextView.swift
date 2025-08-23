@@ -9,6 +9,14 @@
 import AppKit
 
 open class EmojiTextView: NSTextView, EmojiTextPresenter {
+    static var placeholder: any CustomEmoji {
+        if let image = NSImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
     // MARK: Public
 
     public var text: String? {
@@ -49,6 +57,7 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
     var raw: String?
     var emojiTargetHeight: CGFloat?
     var emojiBaselineOffset: CGFloat?
+    var emojiPlaceholder: any CustomEmoji = EmojiTextView.placeholder
 
     // MARK: Rendering
 
@@ -115,14 +124,6 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
 
     // MARK: - EmojiTextPresenter
 
-    var emojiPlaceholder: any CustomEmoji {
-        if let image = NSImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
-        }
-    }
-
     var emojiFont: EmojiFont {
         font ?? NSFont.preferredFont(forTextStyle: .body)
     }
@@ -167,6 +168,18 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
         }
         set {
             self.emojiBaselineOffset = newValue
+            // Reload emojis
+            perform()
+        }
+    }
+
+    public var placeholder: (any CustomEmoji)! {
+        get {
+            emojiPlaceholder
+        }
+        set {
+            self.emojiPlaceholder = newValue ?? EmojiTextField.placeholder
+
             // Reload emojis
             perform()
         }
