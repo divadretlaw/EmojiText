@@ -8,84 +8,84 @@
 #if canImport(AppKit)
 import AppKit
 
-public final class EmojiTextField: NSTextField, EmojiTextPresenter {
-    var raw: String
-    let emojis: [any CustomEmoji]
-    let renderer: EmojiRenderer
+open class EmojiTextField: NSTextField, EmojiTextPresenter {
+    // MARK: Public
+
+    public var text: String? {
+        get {
+            raw
+        }
+        set {
+            raw = newValue
+            perform()
+        }
+    }
+
+    open override var stringValue: String {
+        get {
+            text ?? super.stringValue
+        }
+        set {
+            text = newValue
+        }
+    }
+
+    /// Whether to omit spaces between emojis. Defaults to `true.
+    public var shouldOmitSpacesBetweenEmojis: Bool = true {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The emojis that can be displayed
+    public var emojis: [any CustomEmoji] = [] {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The syntax for interpreting a Markdown string.
+    ///
+    /// If `nil` the text will not be interpreted as Markdown
+    public var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? = .inlineOnlyPreservingWhitespace {
+        didSet {
+            perform()
+        }
+    }
+
+    // MARK: Internal
+
+    var raw: String?
+    var emojiTargetHeight: CGFloat?
+    var emojiBaselineOffset: CGFloat?
+
+    // MARK: Rendering
 
     var task: Task<Void, Never>?
 
-    var targetHeight: CGFloat?
-    var baselineOffset: CGFloat?
+    // MARK: Provider
+
     var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
     var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
-    /// Initialize a ``EmojiTextField`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init(
-        verbatim content: String,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = VerbatimEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
-    }
+    // MARK: Init
 
-    /// Initialize a Markdown formatted ``EmojiTextField`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
-    public convenience init(
-        markdown content: String,
-        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = MarkdownEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
-            interpretedSyntax: interpretedSyntax
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
-    }
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
 
-    /// Initialize a ``EmojiTextField`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init<S>(
-        _ content: S,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) where S: StringProtocol {
-        self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-    }
-
-    private init(
-        string: String,
-        emojis: [any CustomEmoji],
-        renderer: EmojiRenderer
-    ) {
-        self.raw = string
-        self.emojis = emojis
-        self.renderer = renderer
-        super.init(frame: .zero)
         setup()
-        load()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    public init() {
+        super.init(frame: .zero)
+
+        setup()
+    }
+
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        setup()
     }
 
     deinit {
@@ -99,12 +99,26 @@ public final class EmojiTextField: NSTextField, EmojiTextPresenter {
         isBordered = false
     }
 
-    func render(_ renderedEmojis: [String: LoadedEmoji]) {
-        let string: NSAttributedString = renderer.render(
-            string: raw,
-            emojis: renderedEmojis,
-            size: nil
-        )
+    // MARK: - EmojiTextPresenter
+
+    var emojiPlaceholder: any CustomEmoji {
+        if let image = NSImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
+    var emojiFont: EmojiFont {
+        font ?? NSFont.preferredFont(forTextStyle: .body)
+    }
+
+    var emojiScale: CGFloat? {
+        window?.screen?.backingScaleFactor
+    }
+
+    func draw(_ renderedEmojis: [String: LoadedEmoji]) {
+        guard let string = makeString(from: renderedEmojis) else { return }
         let result = NSMutableAttributedString(attributedString: string)
         result.enumerateAttribute(.link) { value, range, _ in
             guard value is URL else { return }
@@ -113,58 +127,45 @@ public final class EmojiTextField: NSTextField, EmojiTextPresenter {
         self.attributedStringValue = result
     }
 
-    func makeLoader() -> EmojiLoader {
-        EmojiLoader(placeholder: placeholder, font: font ?? NSFont.preferredFont(forTextStyle: .body)) { parameter in
-            parameter
-                .overrideSize(targetHeight)
-                .overrideBaselineOffset(baselineOffset)
-                .displayScale(window?.screen?.backingScaleFactor)
-        }
-        .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
-    }
-
-    private var placeholder: any CustomEmoji {
-        if let image = NSImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
-        }
-    }
-
     // MARK: - Modifier
 
     public func setEmojiProvider(syncEmojiProvider: SyncEmojiProvider, asyncEmojiProvider: AsyncEmojiProvider) {
         self.syncEmojiProvider = syncEmojiProvider
         self.asyncEmojiProvider = asyncEmojiProvider
         // Reload emojis
-        load()
+        perform()
     }
 
     public var overrideSize: CGFloat? {
         get {
-            targetHeight
+            emojiTargetHeight
         }
         set {
-            self.targetHeight = newValue
+            self.emojiTargetHeight = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 
     public var overrideBaselineOffset: CGFloat? {
         get {
-            baselineOffset
+            emojiBaselineOffset
         }
         set {
-            self.baselineOffset = newValue
+            self.emojiBaselineOffset = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 }
 
+#if DEBUG
 @available(macOS 14.0, *)
 #Preview {
-    EmojiTextField(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
+    let textField = EmojiTextField()
+    textField.emojis = .emojis
+    textField.text = "Hello **World** :a:"
+    return textField
 }
+#endif
 #endif

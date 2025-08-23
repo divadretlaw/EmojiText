@@ -8,34 +8,51 @@
 import Foundation
 
 @MainActor protocol EmojiTextPresenter: AnyObject, Sendable {
-    var raw: String { get set }
+    var raw: String? { get set }
+    var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? { get set }
     var emojis: [any CustomEmoji] { get }
-    var renderer: EmojiRenderer { get }
+    var shouldOmitSpacesBetweenEmojis: Bool { get set }
 
     /// Loading task
     var task: Task<Void, Never>? { get set }
 
-    var targetHeight: CGFloat? { get set }
-    var baselineOffset: CGFloat? { get set }
+    var emojiPlaceholder: CustomEmoji { get }
+    var emojiFont: EmojiFont { get }
+    var emojiTargetHeight: CGFloat? { get }
+    var emojiBaselineOffset: CGFloat? { get }
+    var emojiScale: CGFloat? { get }
     var syncEmojiProvider: SyncEmojiProvider { get set }
     var asyncEmojiProvider: AsyncEmojiProvider { get set }
 
     /// Reload emojis
-    func load()
-    /// Render emojis
-    func render(_ renderedEmojis: [String: LoadedEmoji])
+    func perform()
+    /// Draw the emojis
+    func draw(_ string: [String: LoadedEmoji])
     /// Create an ``EmojiLoader``
     func makeLoader() -> EmojiLoader
 }
 
 extension EmojiTextPresenter {
-    func load() {
+    func makeLoader() -> EmojiLoader {
+        EmojiLoader(
+            placeholder: emojiPlaceholder,
+            font: emojiFont
+        ) { parameter in
+            parameter
+                .overrideSize(emojiTargetHeight)
+                .overrideBaselineOffset(emojiBaselineOffset)
+                .displayScale(emojiScale)
+        }
+        .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
+    }
+
+    func perform() {
+        task?.cancel()
         guard !emojis.isEmpty else {
-            return render([:])
+            return draw([:])
         }
 
         let loader = makeLoader()
-        task?.cancel()
         task = Task.detached { [weak self, emojis] in
             guard let self, !Task.isCancelled else { return }
             // Hash of currently displayed emojis
@@ -54,7 +71,7 @@ extension EmojiTextPresenter {
                 }
             }
             guard !Task.isCancelled else { return }
-            await self.render(renderedEmojis)
+            await self.draw(renderedEmojis)
             // Load emojis. Will set placeholders for lazy emojis
             renderedEmojis = renderedEmojis.merging(await loader.loadLazyEmojis(emojis)) { current, new in
                 if current.hasSameSource(as: new) {
@@ -68,7 +85,28 @@ extension EmojiTextPresenter {
                 }
             }
             guard !Task.isCancelled else { return }
-            await self.render(renderedEmojis)
+            await self.draw(renderedEmojis)
         }
+    }
+
+    /// Helper to create `NSAttributedString` from emojis
+    func makeString(from emojis: [String: LoadedEmoji]) -> NSAttributedString? {
+        guard let raw else { return nil }
+        let renderer: EmojiRenderer = if let interpretedSyntax {
+            MarkdownEmojiRenderer(
+                font: emojiFont,
+                shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
+                interpretedSyntax: interpretedSyntax
+            )
+        } else {
+            VerbatimEmojiRenderer(
+                shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
+            )
+        }
+        return renderer.render(
+            string: raw,
+            emojis: emojis,
+            size: emojiTargetHeight
+        )
     }
 }

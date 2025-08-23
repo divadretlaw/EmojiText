@@ -8,78 +8,75 @@
 #if canImport(AppKit)
 import AppKit
 
-public final class EmojiTextView: NSTextView, EmojiTextPresenter {
-    var raw: String
-    let emojis: [any CustomEmoji]
-    let renderer: EmojiRenderer
+open class EmojiTextView: NSTextView, EmojiTextPresenter {
+    // MARK: Public
+
+    public var text: String? {
+        get {
+            raw
+        }
+        set {
+            raw = newValue
+            perform()
+        }
+    }
+
+    /// Whether to omit spaces between emojis. Defaults to `true.
+    public var shouldOmitSpacesBetweenEmojis: Bool = true {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The emojis that can be displayed
+    public var emojis: [any CustomEmoji] = [] {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The syntax for interpreting a Markdown string.
+    ///
+    /// If `nil` the text will not be interpreted as Markdown
+    public var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? = .inlineOnlyPreservingWhitespace {
+        didSet {
+            perform()
+        }
+    }
+
+    // MARK: Internal
+
+    var raw: String?
+    var emojiTargetHeight: CGFloat?
+    var emojiBaselineOffset: CGFloat?
+
+    // MARK: Rendering
 
     var task: Task<Void, Never>?
 
-    var targetHeight: CGFloat?
-    var baselineOffset: CGFloat?
+    // MARK: Provider
+
     var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
     var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
 
-    /// Initialize a ``EmojiTextView`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init(
-        verbatim content: String,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = VerbatimEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
+    // MARK: Init
+
+    public override init(frame: CGRect) {
+        // Create text container
+        let textContainer = NSTextContainer()
+        // Create layout manager using the text container
+        let layoutManager = NSLayoutManager()
+        layoutManager.addTextContainer(textContainer)
+        // Create text storage using the layout manager
+        let textStorage = NSTextStorage()
+        textStorage.addLayoutManager(layoutManager)
+
+        super.init(frame: frame, textContainer: textContainer)
+
+        setup()
     }
 
-    /// Initialize a Markdown formatted ``EmojiTextView`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
-    public convenience init(
-        markdown content: String,
-        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = MarkdownEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
-            interpretedSyntax: interpretedSyntax
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
-    }
-
-    /// Initialize a ``EmojiTextView`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init<S>(
-        _ content: S,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) where S: StringProtocol {
-        self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-    }
-
-    private init(
-        string: String,
-        emojis: [any CustomEmoji],
-        renderer: EmojiRenderer
-    ) {
-        self.raw = string
-        self.emojis = emojis
-        self.renderer = renderer
-
+    public init() {
         // Create text container
         let textContainer = NSTextContainer()
         // Create layout manager using the text container
@@ -92,11 +89,12 @@ public final class EmojiTextView: NSTextView, EmojiTextPresenter {
         super.init(frame: .zero, textContainer: textContainer)
 
         setup()
-        load()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        setup()
     }
 
     deinit {
@@ -109,16 +107,26 @@ public final class EmojiTextView: NSTextView, EmojiTextPresenter {
         drawsBackground = false
     }
 
-    func render(_ renderedEmojis: [String: LoadedEmoji]) {
-        guard let textStorage else {
-            return
-        }
+    // MARK: - EmojiTextPresenter
 
-        let string: NSAttributedString = renderer.render(
-            string: raw,
-            emojis: renderedEmojis,
-            size: nil
-        )
+    var emojiPlaceholder: any CustomEmoji {
+        if let image = NSImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
+    var emojiFont: EmojiFont {
+        font ?? NSFont.preferredFont(forTextStyle: .body)
+    }
+
+    var emojiScale: CGFloat? {
+        window?.screen?.backingScaleFactor
+    }
+
+    func draw(_ renderedEmojis: [String: LoadedEmoji]) {
+        guard let textStorage, let string = makeString(from: renderedEmojis) else { return }
         let result = NSMutableAttributedString(attributedString: string)
         result.enumerateAttribute(.link) { value, range, stop in
             guard value is URL else { return }
@@ -127,52 +135,34 @@ public final class EmojiTextView: NSTextView, EmojiTextPresenter {
         textStorage.setAttributedString(result)
     }
 
-    func makeLoader() -> EmojiLoader {
-        EmojiLoader(placeholder: placeholder, font: font ?? NSFont.preferredFont(forTextStyle: .body)) { parameter in
-            parameter
-                .overrideSize(targetHeight)
-                .overrideBaselineOffset(baselineOffset)
-                .displayScale(window?.screen?.backingScaleFactor)
-        }
-        .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
-    }
-
-    private var placeholder: any CustomEmoji {
-        if let image = NSImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
-        }
-    }
-
     // MARK: - Modifier
 
     public func setEmojiProvider(syncEmojiProvider: SyncEmojiProvider, asyncEmojiProvider: AsyncEmojiProvider) {
         self.syncEmojiProvider = syncEmojiProvider
         self.asyncEmojiProvider = asyncEmojiProvider
         // Reload emojis
-        load()
+        perform()
     }
 
     public var overrideSize: CGFloat? {
         get {
-            targetHeight
+            emojiTargetHeight
         }
         set {
-            self.targetHeight = newValue
+            self.emojiTargetHeight = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 
     public var overrideBaselineOffset: CGFloat? {
         get {
-            baselineOffset
+            emojiBaselineOffset
         }
         set {
-            self.baselineOffset = newValue
+            self.emojiBaselineOffset = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 }
@@ -182,7 +172,10 @@ import SwiftUI
 
 private struct NSPreview: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
-        EmojiTextView(markdown: "**Hello** :iphone: _and_ :a:", emojis: .emojis)
+        let view = EmojiTextView()
+        view.emojis = .emojis
+        view.text = "**Hello** :iphone: _and_ :a:"
+        return view
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {

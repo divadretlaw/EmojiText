@@ -9,112 +9,114 @@
 import UIKit
 
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
-public final class EmojiLabel: UILabel, EmojiTextPresenter {
-    var raw: String
-    let emojis: [any CustomEmoji]
-    let renderer: EmojiRenderer
-
-    var task: Task<Void, Never>?
-
-    var targetHeight: CGFloat?
-    var baselineOffset: CGFloat?
-    var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
-    var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
-
-    /// Initialize a ``EmojiLabel`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init(
-        verbatim content: String,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = VerbatimEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
-    }
-
-    /// Initialize a Markdown formatted ``EmojiLabel`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: The string that contains the Markdown formatting.
-    ///     - interpretedSyntax: The syntax for interpreting a Markdown string. Defaults to `.inlineOnlyPreservingWhitespace`.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.`
-    public convenience init(
-        markdown content: String,
-        interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax = .inlineOnlyPreservingWhitespace,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) {
-        let renderer = MarkdownEmojiRenderer(
-            shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
-            interpretedSyntax: interpretedSyntax
-        )
-        self.init(string: content, emojis: emojis, renderer: renderer)
-    }
-
-    /// Initialize a ``EmojiLabel`` with support for custom emojis.
-    ///
-    /// - Parameters:
-    ///     - content: A string to display without localization.
-    ///     - emojis: The custom emojis to render.
-    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
-    public convenience init<S>(
-        _ content: S,
-        emojis: [any CustomEmoji],
-        shouldOmitSpacesBetweenEmojis: Bool = true
-    ) where S: StringProtocol {
-        self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-    }
-
-    private init(
-        string: String,
-        emojis: [any CustomEmoji],
-        renderer: EmojiRenderer
-    ) {
-        self.raw = string
-        self.emojis = emojis
-        self.renderer = renderer
-        super.init(frame: .zero)
-        #if !os(watchOS)
-        registerForTraitChanges([UITraitDisplayScale.self, UITraitPreferredContentSizeCategory.self], action: #selector(traitsDidChange))
-        #endif
-        load()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        task?.cancel()
-    }
+open class EmojiLabel: UILabel, EmojiTextPresenter {
+    // MARK: Public
 
     override public var text: String? {
         get {
             raw
         }
         set {
-            raw = newValue ?? ""
-            load()
+            raw = newValue
+            perform()
         }
     }
 
-    @objc func traitsDidChange() {
-        load()
+    /// Whether to omit spaces between emojis. Defaults to `true.
+    public var shouldOmitSpacesBetweenEmojis: Bool = true {
+        didSet {
+            perform()
+        }
     }
 
-    func render(_ renderedEmojis: [String: LoadedEmoji]) {
-        let string: NSAttributedString = renderer.render(
-            string: raw,
-            emojis: renderedEmojis,
-            size: nil
-        )
+    /// The emojis that can be displayed
+    public var emojis: [any CustomEmoji] = [] {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The syntax for interpreting a Markdown string.
+    ///
+    /// If `nil` the text will not be interpreted as Markdown
+    public var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? = .inlineOnlyPreservingWhitespace {
+        didSet {
+            perform()
+        }
+    }
+
+    // MARK: Internal
+
+    var raw: String?
+    var emojiTargetHeight: CGFloat?
+    var emojiBaselineOffset: CGFloat?
+
+    // MARK: Rendering
+
+    var task: Task<Void, Never>?
+
+    // MARK: Provider
+
+    var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
+    var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
+
+    // MARK: Init
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        #if !os(watchOS)
+        registerForTraitChanges([UITraitDisplayScale.self, UITraitPreferredContentSizeCategory.self], action: #selector(traitsDidChange))
+        #endif
+    }
+
+    public init() {
+        super.init(frame: .zero)
+
+        #if !os(watchOS)
+        registerForTraitChanges([UITraitDisplayScale.self, UITraitPreferredContentSizeCategory.self], action: #selector(traitsDidChange))
+        #endif
+    }
+
+    required public init?(coder: NSCoder) {
+        self.emojis = []
+        self.shouldOmitSpacesBetweenEmojis = true
+
+        super.init(coder: coder)
+
+        #if !os(watchOS)
+        registerForTraitChanges([UITraitDisplayScale.self, UITraitPreferredContentSizeCategory.self], action: #selector(traitsDidChange))
+        #endif
+    }
+
+    deinit {
+        task?.cancel()
+    }
+
+    @objc func traitsDidChange() {
+        perform()
+    }
+
+    // MARK: - EmojiTextPresenter
+
+    var emojiPlaceholder: any CustomEmoji {
+        if let image = UIImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+
+    var emojiFont: EmojiFont {
+        font
+    }
+
+    var emojiScale: CGFloat? {
+        window?.screen.scale
+    }
+
+    func draw(_ renderedEmojis: [String: LoadedEmoji]) {
+        guard let string = makeString(from: renderedEmojis) else { return }
         if let color = tintColor {
             let result = NSMutableAttributedString(attributedString: string)
             result.enumerateAttribute(.link) { value, range, _ in
@@ -127,52 +129,34 @@ public final class EmojiLabel: UILabel, EmojiTextPresenter {
         }
     }
 
-    func makeLoader() -> EmojiLoader {
-        EmojiLoader(placeholder: placeholder, font: font) { parameter in
-            parameter
-                .overrideSize(targetHeight)
-                .overrideBaselineOffset(baselineOffset)
-                .displayScale(window?.screen.scale)
-        }
-        .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
-    }
-
-    private var placeholder: any CustomEmoji {
-        if let image = UIImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
-        }
-    }
-
     // MARK: - Modifier
 
     public func setEmojiProvider(syncEmojiProvider: SyncEmojiProvider, asyncEmojiProvider: AsyncEmojiProvider) {
         self.syncEmojiProvider = syncEmojiProvider
         self.asyncEmojiProvider = asyncEmojiProvider
         // Reload emojis
-        load()
+        perform()
     }
 
     public var overrideSize: CGFloat? {
         get {
-            targetHeight
+            emojiTargetHeight
         }
         set {
-            self.targetHeight = newValue
+            self.emojiTargetHeight = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 
     public var overrideBaselineOffset: CGFloat? {
         get {
-            baselineOffset
+            emojiBaselineOffset
         }
         set {
-            self.baselineOffset = newValue
+            self.emojiBaselineOffset = newValue
             // Reload emojis
-            load()
+            perform()
         }
     }
 }
@@ -180,7 +164,10 @@ public final class EmojiLabel: UILabel, EmojiTextPresenter {
 #if DEBUG
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 #Preview {
-    EmojiLabel(markdown: "Hello **World** :a:", emojis: .emojis)
+    let label = EmojiLabel()
+    label.emojis = .emojis
+    label.text = "Hello **World** :a:"
+    return label
 }
 #endif
 #endif

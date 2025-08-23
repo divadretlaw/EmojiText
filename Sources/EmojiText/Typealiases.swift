@@ -12,7 +12,7 @@ import UIKit
 
 /// Platform indepdendent image alias. Will be `UIImage`.
 public typealias EmojiImage = UIImage
-typealias EmojiFont = UIFont
+public typealias EmojiFont = UIFont
 /// Platform indepdendent color alias. Will be `UIColor`.
 public typealias EmojiColor = UIColor
 
@@ -30,7 +30,7 @@ import AppKit
 
 /// Platform indepdendent image alias. Will be `NSImage`.
 public typealias EmojiImage = NSImage
-typealias EmojiFont = NSFont
+public typealias EmojiFont = NSFont
 /// Platform indepdendent color alias. Will be `NSColor`.
 public typealias EmojiColor = NSColor
 
