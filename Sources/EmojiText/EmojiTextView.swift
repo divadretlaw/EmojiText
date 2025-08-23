@@ -61,6 +61,12 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
 
     // MARK: Init
 
+    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+        super.init(frame: frame, textContainer: textContainer)
+
+        setup()
+    }
+
     public override init(frame: CGRect) {
         // Create text container
         let textContainer = NSTextContainer()
