@@ -25,6 +25,16 @@ extension EmojiColor {
         #endif
     }
 }
+
+extension UIImage {
+    static var placeholderEmoji: any CustomEmoji {
+        if let image = UIImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+}
 #elseif os(macOS)
 import AppKit
 
@@ -37,6 +47,16 @@ public typealias EmojiColor = NSColor
 extension EmojiColor {
     static var placeholderEmoji: EmojiColor {
         .placeholderTextColor
+    }
+}
+
+extension NSImage {
+    static var placeholderEmoji: any CustomEmoji {
+        if let image = NSImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
     }
 }
 #else

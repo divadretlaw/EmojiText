@@ -5,18 +5,123 @@
 //  Created by David Walter on 10.08.25.
 //
 
-#if canImport(AppKit)
-import AppKit
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
+import UIKit
 
-open class EmojiTextView: NSTextView, EmojiTextPresenter {
-    static var placeholder: any CustomEmoji {
-        if let image = NSImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        } else {
-            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+open class EmojiTextView: UITextView, EmojiTextPresenter {
+    // MARK: Public
+
+    override public var text: String? {
+        get {
+            raw
+        }
+        set {
+            raw = newValue
+            perform()
         }
     }
 
+    /// Whether to omit spaces between emojis. Defaults to `true.
+    public var shouldOmitSpacesBetweenEmojis: Bool = true {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The emojis that can be displayed
+    public var emojis: [any CustomEmoji] = [] {
+        didSet {
+            perform()
+        }
+    }
+
+    /// The syntax for interpreting a Markdown string.
+    ///
+    /// If `nil` the text will not be interpreted as Markdown
+    public var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? = .inlineOnlyPreservingWhitespace {
+        didSet {
+            perform()
+        }
+    }
+
+    // MARK: Internal
+
+    var raw: String?
+    var emojiTargetHeight: CGFloat?
+    var emojiBaselineOffset: CGFloat?
+    var emojiPlaceholder: any CustomEmoji = EmojiImage.placeholderEmoji
+
+    // MARK: Rendering
+
+    var task: Task<Void, Never>?
+
+    // MARK: Provider
+
+    var syncEmojiProvider: SyncEmojiProvider = DefaultSyncEmojiProvider()
+    var asyncEmojiProvider: AsyncEmojiProvider = DefaultAsyncEmojiProvider()
+
+    // MARK: Init
+
+    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+        super.init(frame: frame, textContainer: textContainer)
+
+        setup()
+    }
+
+    public init() {
+        // Create text container
+        let textContainer = NSTextContainer()
+        // Create layout manager using the text container
+        let layoutManager = NSLayoutManager()
+        layoutManager.addTextContainer(textContainer)
+        // Create text storage using the layout manager
+        let textStorage = NSTextStorage()
+        textStorage.addLayoutManager(layoutManager)
+
+        super.init(frame: .zero, textContainer: textContainer)
+
+        setup()
+    }
+
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        setup()
+    }
+
+    deinit {
+        task?.cancel()
+    }
+
+    private func setup() {
+        isEditable = false
+        backgroundColor = .clear
+    }
+
+    // MARK: - EmojiTextPresenter
+
+    var emojiFont: EmojiFont {
+        font ?? UIFont.preferredFont(forTextStyle: .body)
+    }
+
+    var emojiScale: CGFloat? {
+        window?.screen.scale
+    }
+
+    func draw(_ renderedEmojis: [String: LoadedEmoji]) {
+        guard let string = makeString(from: renderedEmojis) else { return }
+        let result = NSMutableAttributedString(attributedString: string)
+        result.enumerateAttribute(.link) { value, range, stop in
+            guard value is URL else { return }
+            result.addAttribute(.foregroundColor, value: UIColor.tintColor, range: range)
+        }
+        textStorage.setAttributedString(result)
+    }
+}
+#elseif os(macOS)
+import AppKit
+
+open class EmojiTextView: NSTextView, EmojiTextPresenter {
     // MARK: Public
 
     public var text: String? {
@@ -57,7 +162,7 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
     var raw: String?
     var emojiTargetHeight: CGFloat?
     var emojiBaselineOffset: CGFloat?
-    var emojiPlaceholder: any CustomEmoji = EmojiTextView.placeholder
+    var emojiPlaceholder: any CustomEmoji = EmojiImage.placeholderEmoji
 
     // MARK: Rendering
 
@@ -141,7 +246,10 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
         }
         textStorage.setAttributedString(result)
     }
+}
+#endif
 
+extension EmojiTextView {
     // MARK: - Modifier
 
     public func setEmojiProvider(syncEmojiProvider: SyncEmojiProvider, asyncEmojiProvider: AsyncEmojiProvider) {
@@ -178,7 +286,7 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
             emojiPlaceholder
         }
         set {
-            self.emojiPlaceholder = newValue ?? EmojiTextField.placeholder
+            self.emojiPlaceholder = newValue ?? EmojiImage.placeholderEmoji
 
             // Reload emojis
             perform()
@@ -187,23 +295,11 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
 }
 
 #if DEBUG
-import SwiftUI
-
-private struct NSPreview: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
-        let view = EmojiTextView()
-        view.emojis = .emojis
-        view.text = "**Hello** :iphone: _and_ :a:"
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-    }
-}
-
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 #Preview {
-    NSPreview()
-        .padding()
+    let view = EmojiTextView()
+    view.emojis = .emojis
+    view.text = "**Hello** :iphone: _and_ :a:"
+    return view
 }
-#endif
 #endif
