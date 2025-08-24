@@ -12,17 +12,7 @@ import Combine
 
 private struct EmojiPlaceholderKey: EnvironmentKey {
     static var defaultValue: any CustomEmoji {
-        #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
-        if let image = UIImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        }
-        #elseif os(macOS)
-        if let image = NSImage(systemName: "square.dashed") {
-            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
-        }
-        #endif
-        
-        return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        EmojiImage.placeholderEmoji
     }
 }
 
