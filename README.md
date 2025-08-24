@@ -4,29 +4,41 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fdivadretlaw%2FEmojiText%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/divadretlaw/EmojiText)
 
 
-Render Custom Emoji in SwiftUI `Text`. Supports local and remote emojis.
+Render Custom Emoji in
+
+- SwiftUI with `EmojiText`
+- UIKit with `EmojiLabel` or `EmojiTextView`
+- AppKit with `EmojiTextField` or `EmojiTextView`
+
+Supports local and remote emojis.
 
 ## Usage
 
 Remote emoji
 
 ```swift
-EmojiText(verbatim: "Hello :my_emoji:",
-          emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
+EmojiText(
+    verbatim: "Hello :my_emoji:",
+    emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)]
+)
 ```
 
 Local emoji
 
 ```swift
-EmojiText(verbatim: "Hello :my_emoji:",
-          emojis: [LocalEmoji(shortcode: "my_emoji", image: /* some UIImage or NSImage */)])
+EmojiText(
+    verbatim: "Hello :my_emoji:",
+    emojis: [LocalEmoji(shortcode: "my_emoji", image: /* some UIImage or NSImage */)]
+)
 ```
 
 SF Symbol
 
 ```swift
-EmojiText(verbatim: "Hello Moon & Starts :moon.stars:",
-          emojis: [SFSymbolEmoji(shortcode: "moon.stars")])
+EmojiText(
+    verbatim: "Hello Moon & Starts :moon.stars:",
+    emojis: [SFSymbolEmoji(shortcode: "moon.stars")]
+)
 ```
 
 ### Markdown
@@ -34,8 +46,10 @@ EmojiText(verbatim: "Hello Moon & Starts :moon.stars:",
 Also supports Markdown
 
 ```swift
-EmojiText(markdown: "**Hello** *World* :my_emoji:",
-          emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)])
+EmojiText(
+    markdown: "**Hello** *World* :my_emoji:",
+    emojis: [RemoteEmoji(shortcode: "my_emoji", url: /* URL to emoji */)]
+)
 ```
 
 ### Animated Emoji
@@ -48,9 +62,11 @@ Currently only UIKit platforms support animated emoji.
 Enable animation by setting adding the `.animated()` modifier to `EmojiText`.
 
 ```swift
-EmojiText(verbatim: "GIF :my_gif:",
-          emojis: [RemoteEmoji(shortcode: "my_gif", url: /* URL to gif */)])
-    .animated()
+EmojiText(
+    verbatim: "GIF :my_gif:",
+    emojis: [RemoteEmoji(shortcode: "my_gif", url: /* URL to gif */)]
+)
+.animated()
 ```
 
 Supported formats:
@@ -63,10 +79,12 @@ Supported formats:
 > The animation will automatically pause when using low-power mode. To always play animations, even in low-power mode set the animation mode to `AnimatedEmojiMode.always`
 > 
 > ```swift
-> EmojiText(verbatim: "GIF :my_gif:",
->           emojis: [RemoteEmoji(shortcode: "my_gif", url:  /* URL to gif */)])
->   .animated()
->   .environment(\.emojiText.AnimatedMode, .always)
+> EmojiText(
+>     verbatim: "GIF :my_gif:",
+>     emojis: [RemoteEmoji(shortcode: "my_gif", url:  /* URL to gif */)]
+> )
+> .animated()
+> .environment(\.emojiText.AnimatedMode, .always)
 > ```
 
 ## Configuration
