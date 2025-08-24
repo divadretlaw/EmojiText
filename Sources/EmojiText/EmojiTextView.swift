@@ -69,16 +69,13 @@ open class EmojiTextView: UITextView, EmojiTextPresenter {
     }
 
     public init() {
-        // Create text container
-        let textContainer = NSTextContainer()
-        // Create layout manager using the text container
-        let layoutManager = NSLayoutManager()
-        layoutManager.addTextContainer(textContainer)
-        // Create text storage using the layout manager
-        let textStorage = NSTextStorage()
-        textStorage.addLayoutManager(layoutManager)
+        let textLayoutManager = NSTextLayoutManager()
+        let textContainer = NSTextContainer(size: .zero)
+        textLayoutManager.textContainer = textContainer
+        let textContentStorage = NSTextContentStorage()
+        textContentStorage.addTextLayoutManager(textLayoutManager)
 
-        super.init(frame: .zero, textContainer: textContainer)
+        super.init(frame: .zero, textContainer: textLayoutManager.textContainer)
 
         setup()
     }
@@ -182,31 +179,25 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
     }
 
     public override init(frame: CGRect) {
-        // Create text container
-        let textContainer = NSTextContainer()
-        // Create layout manager using the text container
-        let layoutManager = NSLayoutManager()
-        layoutManager.addTextContainer(textContainer)
-        // Create text storage using the layout manager
-        let textStorage = NSTextStorage()
-        textStorage.addLayoutManager(layoutManager)
+        let textLayoutManager = NSTextLayoutManager()
+        let textContainer = NSTextContainer(size: .zero)
+        textLayoutManager.textContainer = textContainer
+        let textContentStorage = NSTextContentStorage()
+        textContentStorage.addTextLayoutManager(textLayoutManager)
 
-        super.init(frame: frame, textContainer: textContainer)
+        super.init(frame: frame, textContainer: textLayoutManager.textContainer)
 
         setup()
     }
 
     public init() {
-        // Create text container
-        let textContainer = NSTextContainer()
-        // Create layout manager using the text container
-        let layoutManager = NSLayoutManager()
-        layoutManager.addTextContainer(textContainer)
-        // Create text storage using the layout manager
-        let textStorage = NSTextStorage()
-        textStorage.addLayoutManager(layoutManager)
+        let textLayoutManager = NSTextLayoutManager()
+        let textContainer = NSTextContainer(size: .zero)
+        textLayoutManager.textContainer = textContainer
+        let textContentStorage = NSTextContentStorage()
+        textContentStorage.addTextLayoutManager(textLayoutManager)
 
-        super.init(frame: .zero, textContainer: textContainer)
+        super.init(frame: .zero, textContainer: textLayoutManager.textContainer)
 
         setup()
     }
