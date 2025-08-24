@@ -286,6 +286,24 @@ extension EmojiTextView {
 }
 
 #if DEBUG
+#if canImport(AppKit)
+import SwiftUI
+
+struct NSPreview: NSViewRepresentable {
+    func makeNSView(context: Context) -> some NSView {
+        let view = EmojiTextView(frame: .zero, textContainer: nil)
+        view.emojis = .emojis
+        view.text = "**Hello** :iphone: _and_ :a:"
+        return view
+    }
+    func updateNSView(_ nsView: NSViewType, context: Context) {
+    }
+}
+
+#Preview {
+    NSPreview()
+}
+#else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 #Preview {
     let view = EmojiTextView()
@@ -293,4 +311,5 @@ extension EmojiTextView {
     view.text = "**Hello** :iphone: _and_ :a:"
     return view
 }
+#endif
 #endif

@@ -30,6 +30,12 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
         }
     }
 
+    open override var font: NSFont? {
+        didSet {
+            perform()
+        }
+    }
+
     /// Whether to omit spaces between emojis. Defaults to `true.
     public var shouldOmitSpacesBetweenEmojis: Bool = true {
         didSet {

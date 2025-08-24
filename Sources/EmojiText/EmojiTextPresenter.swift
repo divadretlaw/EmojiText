@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// A view that can present emojis
 @MainActor protocol EmojiTextPresenter: AnyObject, Sendable {
     var raw: String? { get set }
     var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? { get set }
@@ -24,7 +25,7 @@ import Foundation
     var syncEmojiProvider: SyncEmojiProvider { get set }
     var asyncEmojiProvider: AsyncEmojiProvider { get set }
 
-    /// Reload emojis
+    /// Load/Reload emojis
     func perform()
     /// Draw the emojis
     func draw(_ string: [String: LoadedEmoji])
