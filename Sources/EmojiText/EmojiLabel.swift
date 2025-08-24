@@ -5,8 +5,9 @@
 //  Created by David Walter on 10.08.25.
 //
 
-#if canImport(UIKit)
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 import UIKit
+import SwiftUI
 
 @available(iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 open class EmojiLabel: UILabel, EmojiTextPresenter {
@@ -105,7 +106,11 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
     }
 
     var emojiScale: CGFloat? {
+        #if os(visionOS)
+        EnvironmentValues().displayScale
+        #else
         window?.screen.scale
+        #endif
     }
 
     func draw(_ renderedEmojis: [String: LoadedEmoji]) {
@@ -171,7 +176,7 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
 #Preview {
     let label = EmojiLabel()
     label.emojis = .emojis
-    label.text = "Hello **World** :a:"
+    label.text = "Hello **World** :iphone:"
     return label
 }
 #endif

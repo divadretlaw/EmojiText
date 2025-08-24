@@ -56,7 +56,41 @@ struct ContentView: View {
                 } header: {
                     Text("Simple")
                 }
-                
+
+                #if canImport(UIKit)
+                Section {
+                    NavigationLink {
+                        EmojiLabelWrapper()
+                    } label: {
+                        Text("EmojiLabel")
+                    }
+                    NavigationLink {
+                        EmojiTextViewWrapper()
+                    } label: {
+                        Text("EmojiTextView")
+                    }
+                } header: {
+                    Text("UIKit")
+                }
+                #endif
+
+                #if canImport(AppKit)
+                Section {
+                    NavigationLink {
+                        EmojiTextFieldWrapper()
+                    } label: {
+                        Text("EmojiTextField")
+                    }
+                    NavigationLink {
+                        EmojiTextViewWrapper()
+                    } label: {
+                        Text("EmojiTextView")
+                    }
+                } header: {
+                    Text("AppKit")
+                }
+                #endif
+
                 Section {
                     NavigationLink {
                         MastodonView(statusId: "111773699547425887")

@@ -5,7 +5,8 @@
 //  Created by David Walter on 10.08.25.
 //
 
-#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(watchOS) || os(visionOS)
+import SwiftUI
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
 import UIKit
 
 open class EmojiTextView: UITextView, EmojiTextPresenter {
@@ -91,7 +92,9 @@ open class EmojiTextView: UITextView, EmojiTextPresenter {
     }
 
     private func setup() {
+        #if !os(tvOS)
         isEditable = false
+        #endif
         backgroundColor = .clear
     }
 
@@ -102,12 +105,19 @@ open class EmojiTextView: UITextView, EmojiTextPresenter {
     }
 
     var emojiScale: CGFloat? {
+        #if os(visionOS)
+        EnvironmentValues().displayScale
+        #else
         window?.screen.scale
+        #endif
     }
 
     func draw(_ renderedEmojis: [String: LoadedEmoji]) {
         guard let string = makeString(from: renderedEmojis) else { return }
         let result = NSMutableAttributedString(attributedString: string)
+        if let color = textColor {
+            result.addAttribute(.foregroundColor, value: color)
+        }
         result.enumerateAttribute(.link) { value, range, stop in
             guard value is URL else { return }
             result.addAttribute(.foregroundColor, value: UIColor.tintColor, range: range)
@@ -240,6 +250,7 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
 }
 #endif
 
+#if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS) || os(macOS)
 extension EmojiTextView {
     // MARK: - Modifier
 
@@ -284,11 +295,8 @@ extension EmojiTextView {
         }
     }
 }
-
 #if DEBUG
 #if canImport(AppKit)
-import SwiftUI
-
 struct NSPreview: NSViewRepresentable {
     func makeNSView(context: Context) -> some NSView {
         let view = EmojiTextView(frame: .zero, textContainer: nil)
@@ -311,5 +319,6 @@ struct NSPreview: NSViewRepresentable {
     view.text = "**Hello** :iphone: _and_ :a:"
     return view
 }
+#endif
 #endif
 #endif
