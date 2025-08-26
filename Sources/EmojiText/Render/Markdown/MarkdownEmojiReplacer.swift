@@ -1,5 +1,5 @@
 //
-//  EmojiReplacer.swift
+//  MarkdownEmojiReplacer.swift
 //  EmojiText
 //
 //  Created by David Walter on 30.01.24.
@@ -8,8 +8,8 @@
 import Foundation
 import Markdown
 
-struct EmojiReplacer: MarkupRewriter {
-    let emojis: [String: RenderedEmoji]
+struct MarkdownEmojiReplacer: MarkupRewriter {
+    let emojis: [String: LoadedEmoji]
     
     mutating func visitText(_ text: Text) -> Markup? {
         var string = text.string

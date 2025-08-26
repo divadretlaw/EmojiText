@@ -12,7 +12,7 @@ import UIKit
 
 /// Platform indepdendent image alias. Will be `UIImage`.
 public typealias EmojiImage = UIImage
-typealias EmojiFont = UIFont
+public typealias EmojiFont = UIFont
 /// Platform indepdendent color alias. Will be `UIColor`.
 public typealias EmojiColor = UIColor
 
@@ -25,18 +25,38 @@ extension EmojiColor {
         #endif
     }
 }
+
+extension UIImage {
+    static var placeholderEmoji: any CustomEmoji {
+        if let image = UIImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
+    }
+}
 #elseif os(macOS)
 import AppKit
 
 /// Platform indepdendent image alias. Will be `NSImage`.
 public typealias EmojiImage = NSImage
-typealias EmojiFont = NSFont
+public typealias EmojiFont = NSFont
 /// Platform indepdendent color alias. Will be `NSColor`.
 public typealias EmojiColor = NSColor
 
 extension EmojiColor {
     static var placeholderEmoji: EmojiColor {
         .placeholderTextColor
+    }
+}
+
+extension NSImage {
+    static var placeholderEmoji: any CustomEmoji {
+        if let image = NSImage(systemName: "square.dashed") {
+            return LocalEmoji(shortcode: "placeholder", image: image, color: .placeholderEmoji, renderingMode: .template)
+        } else {
+            return SFSymbolEmoji(shortcode: "placeholder", symbolRenderingMode: .monochrome, renderingMode: .template)
+        }
     }
 }
 #else

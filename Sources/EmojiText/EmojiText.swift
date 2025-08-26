@@ -40,7 +40,7 @@ import OSLog
     
     var shouldAnimateIfNeeded: Bool = false
     
-    @State var renderedEmojis: [String: RenderedEmoji]?
+    @State var renderedEmojis: [String: LoadedEmoji]?
     @State var renderTime: CFTimeInterval = 0
     
     public var body: some View {
@@ -50,13 +50,15 @@ import OSLog
                     renderedEmojis = [:]
                     return
                 }
-                
+
                 // Hash of currently displayed emojis
                 let renderedHash = renderedEmojis.hashValue
-                var emojis: [String: RenderedEmoji] = renderedEmojis ?? [:]
-                
+                var result: [String: LoadedEmoji] = renderedEmojis ?? [:]
+
+                let loader = makeLoader()
+
                 // Load emojis. Will set placeholders for lazy emojis
-                emojis = emojis.merging(loadEmojis()) { current, new in
+                result = result.merging(loader.loadEmojis(emojis)) { current, new in
                     if current.hasSameSource(as: new) {
                         if !new.isPlaceholder || current.isPlaceholder {
                             return new
@@ -67,18 +69,20 @@ import OSLog
                         return new
                     }
                 }
-                renderedEmojis = emojis
-                
+                guard !Task.isCancelled else { return }
+                renderedEmojis = result
+
                 // Load lazy emojis if needed (e.g. placeholders were set or source emojis changed)
-                if renderedHash != emojis.hashValue || emojis.contains(where: \.value.isPlaceholder) {
-                    emojis = emojis.merging(await loadLazyEmojis()) { _, new in
+                if renderedHash != result.hashValue || result.contains(where: \.value.isPlaceholder) {
+                    result = result.merging(await loader.loadLazyEmojis(emojis)) { _, new in
                         new
                     }
-                    renderedEmojis = emojis
+                    guard !Task.isCancelled else { return }
+                    renderedEmojis = result
                 }
-                
-                guard shouldAnimateIfNeeded, needsAnimation else { return }
-                
+
+                guard !Task.isCancelled, shouldAnimateIfNeeded, needsAnimation else { return }
+
                 #if os(iOS) || targetEnvironment(macCatalyst) || os(tvOS) || os(visionOS)
                 for await targetTimestamp in CADisplayLink.publish(mode: .common, stopOnLowPowerMode: animatedMode.disabledOnLowPower).targetTimestamps {
                     renderTime = targetTimestamp
@@ -95,9 +99,9 @@ import OSLog
         let result: Text
         
         if needsAnimation {
-            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? loadEmojis(), size: size, at: renderTime)
+            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? fallbackEmoji, size: size, at: renderTime)
         } else {
-            result = renderer.render(string: raw, emojis: renderedEmojis ?? loadEmojis(), size: size)
+            result = renderer.render(string: raw, emojis: renderedEmojis ?? fallbackEmoji, size: size)
         }
         
         return [prepend?(), result, append?()]
@@ -105,118 +109,17 @@ import OSLog
             .joined()
     }
 
-    // MARK: - Load Emojis
-    
-    func loadEmojis() -> [String: RenderedEmoji] {
-        let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
-        let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
-        
-        var renderedEmojis = [String: RenderedEmoji]()
-        
-        for emoji in emojis {
-            switch emoji {
-            case let sfSymbolEmoji as SFSymbolEmoji:
-                // SF Symbol emoji don't require a placeholder as they can be loaded instantly
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                    from: sfSymbolEmoji
-                )
-            case let emoji as any SyncCustomEmoji:
-                if let image = syncEmojiProvider.emojiImage(emoji: emoji, height: targetHeight) {
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: emoji,
-                        image: RawImage(image: image),
-                        animated: shouldAnimateIfNeeded,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
-                } else {
-                    // Sync emoji wasn't loaded and a placeholder will be used instead
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: emoji,
-                        placeholder: placeholder,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
-                }
-            case let emoji as any AsyncCustomEmoji:
-                // Try to load remote emoji from cache
-                let resizeHeight = targetHeight * displayScale
-                if let image = asyncEmojiProvider.cachedEmojiImage(emoji: emoji, height: resizeHeight) {
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: emoji,
-                        image: RawImage(image: image),
-                        animated: shouldAnimateIfNeeded,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
-                } else {
-                    // Async emoji wasn't found in cache and a placeholder will be used instead
-                    renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                        from: emoji,
-                        placeholder: placeholder,
-                        targetHeight: targetHeight,
-                        baselineOffset: baselineOffset
-                    )
-                }
-            default:
-                // Set a placeholder for all other emoji
-                renderedEmojis[emoji.shortcode] = RenderedEmoji(
-                    from: emoji,
-                    placeholder: placeholder,
-                    targetHeight: targetHeight,
-                    baselineOffset: baselineOffset
-                )
-            }
+    func makeLoader() -> EmojiLoader {
+        EmojiLoader(placeholder: placeholder, font: EmojiFont.preferredFont(from: font, for: dynamicTypeSize)) { parameter in
+            parameter
+                .overrideSize(size)
+                .overrideBaselineOffset(baselineOffset)
+                .displayScale(displayScale)
+                .shouldAnimateIfNeeded(shouldAnimateIfNeeded)
         }
-        
-        return renderedEmojis
+        .emojiProvider(syncEmojiProvider: syncEmojiProvider, asyncEmojiProvider: asyncEmojiProvider)
     }
-    
-    func loadLazyEmojis() async -> [String: RenderedEmoji] {
-        let font = EmojiFont.preferredFont(from: font, for: dynamicTypeSize)
-        let baselineOffset = baselineOffset ?? -(font.pointSize - font.capHeight) / 2
-        let resizeHeight = targetHeight * displayScale
-        
-        return await withTaskGroup(of: RenderedEmoji?.self, returning: [String: RenderedEmoji].self) { [asyncEmojiProvider, targetHeight, shouldAnimateIfNeeded] group in
-            for emoji in emojis {
-                switch emoji {
-                case let emoji as any AsyncCustomEmoji:
-                    _ = group.addTaskUnlessCancelled {
-                        do {
-                            let image: RawImage
-                            let data = try await asyncEmojiProvider.fetchEmojiData(emoji: emoji, height: resizeHeight)
-                            if shouldAnimateIfNeeded {
-                                image = try RawImage(animated: data)
-                            } else {
-                                image = try RawImage(static: data)
-                            }
-                            return RenderedEmoji(
-                                from: emoji,
-                                image: image,
-                                animated: shouldAnimateIfNeeded,
-                                targetHeight: targetHeight,
-                                baselineOffset: baselineOffset
-                            )
-                        } catch {
-                            Logger.emojiText.error("Unable to load '\(type(of: emoji))' with code '\(emoji.shortcode)': \(error.localizedDescription)")
-                            return nil
-                        }
-                    }
-                default:
-                    continue
-                }
-            }
-            // Collect TaskGroup results
-            var result: [String: RenderedEmoji] = [:]
-            for await emoji in group {
-                if let emoji {
-                    result[emoji.shortcode] = emoji
-                }
-            }
-            return result
-        }
-    }
-    
+
     // MARK: - Initializers
     
     /// Initialize a Markdown formatted ``EmojiText`` with support for custom emojis.
@@ -353,6 +256,11 @@ import OSLog
         default:
             return renderedEmojis.contains { $1.isAnimated }
         }
+    }
+
+    var fallbackEmoji: [String: LoadedEmoji] {
+        let loader = makeLoader()
+        return loader.loadEmojis(emojis)
     }
 }
 

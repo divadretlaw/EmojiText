@@ -52,6 +52,13 @@ extension UIFont {
         let traitCollection = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(from: dynamicTypeSize))
         return UIFont.preferredFont(from: font, compatibleWith: traitCollection)
     }
+
+    func with(traits: UIFontDescriptor.SymbolicTraits, size: CGFloat? = nil) -> UIFont {
+        var newTraits = traits
+        newTraits.insert(fontDescriptor.symbolicTraits)
+        guard let descriptor = fontDescriptor.withSymbolicTraits(newTraits) else { return self }
+        return UIFont(descriptor: descriptor, size: size ?? self.pointSize)
+    }
 }
 #elseif os(watchOS)
 import UIKit
@@ -93,6 +100,13 @@ extension UIFont {
     static func preferredFont(from font: Font?, for dynamicTypeSize: DynamicTypeSize) -> UIFont {
         UIFont.preferredFont(from: font)
     }
+
+    func with(traits: UIFontDescriptor.SymbolicTraits, size: CGFloat? = nil) -> UIFont {
+        var newTraits = traits
+        newTraits.insert(fontDescriptor.symbolicTraits)
+        guard let descriptor = fontDescriptor.withSymbolicTraits(newTraits) else { return self }
+        return UIFont(descriptor: descriptor, size: size ?? self.pointSize)
+    }
 }
 #endif
 
@@ -104,7 +118,7 @@ extension NSFont {
         guard let font = font else {
             return NSFont.preferredFont(forTextStyle: .body)
         }
-        
+
         switch font {
         case .largeTitle:
             return NSFont.preferredFont(forTextStyle: .largeTitle)
@@ -131,6 +145,13 @@ extension NSFont {
         default:
             return NSFont.preferredFont(forTextStyle: .body)
         }
+    }
+
+    func with(traits: NSFontDescriptor.SymbolicTraits, size: CGFloat? = nil) -> NSFont {
+        var newTraits = traits
+        newTraits.insert(fontDescriptor.symbolicTraits)
+        guard let font = NSFont(descriptor: fontDescriptor.withSymbolicTraits(newTraits), size: size ?? pointSize) else { return self }
+        return font
     }
 }
 #endif

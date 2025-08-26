@@ -1,5 +1,5 @@
 //
-//  RenderedEmoji.swift
+//  LoadedEmoji.swift
 //  EmojiText
 //
 //  Created by David Walter on 12.02.23.
@@ -10,7 +10,7 @@ import SwiftUI
 import OSLog
 
 /// A rendered custom emoji
-struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
+struct LoadedEmoji: Hashable, Equatable, Identifiable, Sendable {
     let shortcode: String
     let baselineOffset: CGFloat?
     let renderingMode: Image.TemplateRenderingMode?
@@ -94,14 +94,18 @@ struct RenderedEmoji: Hashable, Equatable, Identifiable, Sendable {
             .renderingMode(renderingMode)
             .symbolRenderingMode(symbolRenderingMode)
     }
-    
+
+    var emojiImage: EmojiImage {
+        rawImage.emojiImage
+    }
+
     func frame(at time: CFTimeInterval) -> Image {
         rawImage.frame(at: time)
             .renderingMode(renderingMode)
             .symbolRenderingMode(symbolRenderingMode)
     }
-    
-    func hasSameSource(as value: RenderedEmoji) -> Bool {
+
+    func hasSameSource(as value: LoadedEmoji) -> Bool {
         sourceHash == value.sourceHash
     }
     
