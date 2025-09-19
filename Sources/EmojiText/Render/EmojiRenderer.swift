@@ -8,16 +8,16 @@
 import SwiftUI
 import Combine
 
-protocol EmojiRenderer {
+protocol EmojiRenderer: Hashable {
     // SwiftUI
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> Text
-    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> Text
+    func renderAnimated(emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text
     // AttributedString
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString
 }
 
 extension EmojiRenderer {
-    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
-        render(string: string, emojis: emojis, size: size)
+    func renderAnimated(emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
+        render(emojis: emojis, size: size)
     }
 }

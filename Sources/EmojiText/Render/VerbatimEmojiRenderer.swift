@@ -9,15 +9,16 @@ import SwiftUI
 import OSLog
 
 struct VerbatimEmojiRenderer: EmojiRenderer {
+    let string: String
     let shouldOmitSpacesBetweenEmojis: Bool
 
     // MARK: - SwiftUI
 
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> Text {
-        renderAnimated(string: string, emojis: emojis, size: size, at: 0)
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> Text {
+        renderAnimated(emojis: emojis, size: size, at: 0)
     }
 
-    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
+    func renderAnimated(emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> Text {
         let string = renderString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -39,7 +40,7 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
 
     // MARK: - UIKit & AppKit
 
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
         let string = renderString(from: string, with: emojis)
 
         let result = NSMutableAttributedString()
@@ -69,6 +70,16 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         }
         
         return text
+    }
+
+    // MARK: - Hashable & Equatable
+
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        lhs.string == rhs.string
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(string)
     }
 }
 

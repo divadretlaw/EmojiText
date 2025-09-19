@@ -31,9 +31,8 @@ import OSLog
     #endif
     @Environment(\.emojiText.animatedMode) var animatedMode
     
-    let raw: String
     let emojis: [any CustomEmoji]
-    let renderer: EmojiRenderer
+    let renderer: any EmojiRenderer
     
     var prepend: (() -> Text)?
     var append: (() -> Text)?
@@ -99,9 +98,9 @@ import OSLog
         let result: Text
         
         if needsAnimation {
-            result = renderer.renderAnimated(string: raw, emojis: renderedEmojis ?? fallbackEmoji, size: size, at: renderTime)
+            result = renderer.renderAnimated(emojis: renderedEmojis ?? fallbackEmoji, size: size, at: renderTime)
         } else {
-            result = renderer.render(string: raw, emojis: renderedEmojis ?? fallbackEmoji, size: size)
+            result = renderer.render(emojis: renderedEmojis ?? fallbackEmoji, size: size)
         }
         
         return [prepend?(), result, append?()]
@@ -141,8 +140,7 @@ import OSLog
         emojis: [any CustomEmoji],
         shouldOmitSpacesBetweenEmojis: Bool = true
     ) {
-        self.renderer = MarkdownEmojiRenderer(shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis, interpretedSyntax: interpretedSyntax)
-        self.raw = content
+        self.renderer = MarkdownEmojiRenderer(string: content, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis, interpretedSyntax: interpretedSyntax)
         self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
     }
     
@@ -163,8 +161,7 @@ import OSLog
         emojis: [any CustomEmoji],
         shouldOmitSpacesBetweenEmojis: Bool = true
     ) {
-        self.renderer = VerbatimEmojiRenderer(shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
-        self.raw = content
+        self.renderer = VerbatimEmojiRenderer(string: content, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
         self.emojis = emojis.filter { content.contains(":\($0.shortcode):") }
     }
     
@@ -187,7 +184,20 @@ import OSLog
     ) where S: StringProtocol {
         self.init(verbatim: String(content), emojis: emojis, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
     }
-    
+
+    /// Initialize a ``EmojiText`` with support for custom emojis from an `AttributedString`.
+    ///
+    /// - Parameters:
+    ///     - content: The `AttributedString` to display.
+    ///     - emojis: The custom emojis to render.
+    public init(
+        _ content: AttributedString,
+        emojis: [any CustomEmoji]
+    ) {
+        self.renderer = AttributedStringEmojiRenderer(attributedString: content)
+        self.emojis = emojis
+    }
+
     // MARK: - Modifier
     
     /// Prepend `Text` to the ``EmojiText`` view.
@@ -225,7 +235,7 @@ import OSLog
     // swiftlint:disable:next legacy_hashing
     var hashValue: Int {
         var hasher = Hasher()
-        hasher.combine(raw)
+        hasher.combine(renderer.hashValue)
         for emoji in emojis {
             hasher.combine(emoji)
         }

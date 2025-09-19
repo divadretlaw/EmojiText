@@ -93,19 +93,20 @@ extension EmojiTextPresenter {
     /// Helper to create `NSAttributedString` from emojis
     func makeString(from emojis: [String: LoadedEmoji]) -> NSAttributedString? {
         guard let raw else { return nil }
-        let renderer: EmojiRenderer = if let interpretedSyntax {
+        let renderer: any EmojiRenderer = if let interpretedSyntax {
             MarkdownEmojiRenderer(
+                string: raw,
                 font: emojiFont,
                 shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
                 interpretedSyntax: interpretedSyntax
             )
         } else {
             VerbatimEmojiRenderer(
+                string: raw,
                 shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
             )
         }
         return renderer.render(
-            string: raw,
             emojis: emojis,
             size: emojiTargetHeight
         )
