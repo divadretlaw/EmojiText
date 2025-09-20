@@ -21,7 +21,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
         }
     }
 
-    open override var stringValue: String {
+    override open var stringValue: String {
         get {
             text ?? super.stringValue
         }
@@ -30,7 +30,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
         }
     }
 
-    open override var font: NSFont? {
+    override open var font: NSFont? {
         didSet {
             perform()
         }
@@ -77,7 +77,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
 
     // MARK: Init
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         setup()
@@ -89,7 +89,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
         setup()
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
 
         setup()

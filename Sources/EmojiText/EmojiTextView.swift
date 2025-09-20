@@ -63,7 +63,7 @@ open class EmojiTextView: UITextView, EmojiTextPresenter {
 
     // MARK: Init
 
-    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
 
         setup()
@@ -81,7 +81,7 @@ open class EmojiTextView: UITextView, EmojiTextPresenter {
         setup()
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
 
         setup()
@@ -182,13 +182,13 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
 
     // MARK: Init
 
-    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
 
         setup()
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         let textLayoutManager = NSTextLayoutManager()
         let textContainer = NSTextContainer(size: .zero)
         textLayoutManager.textContainer = textContainer
@@ -212,7 +212,7 @@ open class EmojiTextView: NSTextView, EmojiTextPresenter {
         setup()
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
 
         setup()

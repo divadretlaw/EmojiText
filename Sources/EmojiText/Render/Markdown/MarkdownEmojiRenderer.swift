@@ -66,7 +66,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
 
                 // If the same emoji is added multiple times in a row the run gets merged into one
                 // with their shortcodes joined. Therefore we simply divide distance of the range by
-                // the character count of the emojo to calculate how often the emoji needs to be displayed
+                // the character count of the emoji to calculate how often the emoji needs to be displayed
                 let distance = attributedString.distance(from: run.range.lowerBound, to: run.range.upperBound)
                 let count = emoji.shortcode.count
                 

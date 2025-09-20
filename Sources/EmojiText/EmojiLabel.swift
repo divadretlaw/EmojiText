@@ -64,7 +64,7 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
 
     // MARK: Init
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         #if !os(watchOS)
@@ -80,7 +80,7 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
         #endif
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         self.emojis = []
         self.shouldOmitSpacesBetweenEmojis = true
 
