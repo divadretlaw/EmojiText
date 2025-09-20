@@ -17,11 +17,11 @@ struct URLSessionEmojiProvider: AsyncEmojiProvider {
     
     // MARK: - AsyncEmojiProvider
     
-    func lazyEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
+    func cachedEmojiImage(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         return nil
     }
     
-    func lazyEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
+    func fetchEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
         switch emoji {
         case let emoji as RemoteEmoji:
             let (data, _) = try await session.data(from: emoji.url)

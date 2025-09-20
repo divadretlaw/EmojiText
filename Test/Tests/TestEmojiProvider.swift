@@ -14,7 +14,7 @@ struct TestEmojiProvider: AsyncEmojiProvider {
     
     // MARK: - AsyncEmojiProvider
     
-    func fetchEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
+    func cachedEmojiImage(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         switch emoji.shortcode {
         case "wide":
             return EmojiImage(named: "wide")
@@ -23,7 +23,7 @@ struct TestEmojiProvider: AsyncEmojiProvider {
         }
     }
     
-    func lazyEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
+    func fetchEmojiData(emoji: any AsyncCustomEmoji, height: CGFloat?) async throws -> Data {
         EmojiImage(systemName: "exclamationmark.triangle")?.pngData() ?? Data()
     }
 }

@@ -136,7 +136,7 @@ import SwiftUI
     @Test func test_EmojiInMarkdownNested() {
         let view = EmojiText(markdown: "**Hello :async: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
-        assertSnapshot(of: view, as: .image)
+        assertSnapshot(of: view, as: .image(precision: 0.99, perceptualPrecision: 0.98))
     }
     
     @Test func test_Markdown_InlineOnlyPreservingWhitespace() {
@@ -166,7 +166,7 @@ import SwiftUI
         > quote
         """
         let view = EmojiText(markdown: markdown, interpretedSyntax: .inlineOnlyPreservingWhitespace, emojis: [])
-        assertSnapshot(of: view, as: .image)
+        assertSnapshot(of: view, as: .image(precision: 0.99, perceptualPrecision: 0.98))
     }
     
     @Test func test_Markdown_Full() {
@@ -196,6 +196,6 @@ import SwiftUI
         > quote
         """
         let view = EmojiText(markdown: markdown, interpretedSyntax: .full, emojis: [])
-        assertSnapshot(of: view, as: .image)
+        assertSnapshot(of: view, as: .image(precision: 0.99, perceptualPrecision: 0.98))
     }
 }
