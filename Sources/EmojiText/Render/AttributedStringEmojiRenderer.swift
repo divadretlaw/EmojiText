@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AttributedStringEmojiRenderer: EmojiRenderer {
     let attributedString: AttributedString
+    let shouldOmitSpacesBetweenEmojis: Bool
 
     // MARK: SwiftUI
 
@@ -71,6 +72,9 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
                 string[range].emoji = emoji
             }
         }
+        if shouldOmitSpacesBetweenEmojis, string.runs.count > 2 {
+            string.removeWhitespaceBetweenEmojis()
+        }
         return string
     }
 
@@ -112,6 +116,12 @@ private extension AttributeDynamicLookup {
     }
 }
 
+private extension AttributedString.Runs.Run {
+    var isEmoji: Bool {
+        attributes[EmojiAttribute.self] != nil
+    }
+}
+
 private extension AttributedString {
     func ranges(of string: String) -> [Range<Index>] {
         let plainText = String(characters)
@@ -127,6 +137,37 @@ private extension AttributedString {
             searchRange = range.upperBound..<searchRange.upperBound
         }
         return ranges
+    }
+
+    mutating func removeWhitespaceBetweenEmojis() {
+        var indicesToRemove: [AttributedString.Runs.Index] = []
+        var index = runs.startIndex
+        while index < runs.endIndex {
+            guard runs[index].isEmoji else {
+                index = runs.index(after: index)
+                continue
+            }
+            index = runs.index(after: index)
+            var potentialIndicesToRemove: [Runs.Index] = []
+            while index < runs.endIndex && self[runs[index].range].isWhitespaceExcludingNewline {
+                potentialIndicesToRemove.append(index)
+                index = runs.index(after: index)
+            }
+            if index < runs.endIndex && runs[index].isEmoji {
+                indicesToRemove.append(contentsOf: potentialIndicesToRemove)
+            }
+        }
+        for index in indicesToRemove.reversed() {
+            removeSubrange(runs[index].range)
+        }
+    }
+}
+
+private extension AttributedSubstring {
+    var isWhitespaceExcludingNewline: Bool {
+        characters.allSatisfy { character in
+            character.isWhitespace && !character.isNewline
+        }
     }
 }
 
@@ -152,6 +193,23 @@ private extension AttributedString {
         )
         EmojiText(
             hello + AttributedString(" World :a::a::a:"),
+            emojis: .emojis
+        )
+        EmojiText(
+            hello + AttributedString(" World :a: :a:   :a:"),
+            emojis: .emojis
+        )
+        EmojiText(
+            hello + AttributedString(" World :a: :a:   :a:"),
+            emojis: .emojis,
+            shouldOmitSpacesBetweenEmojis: false
+        )
+        EmojiText(
+            AttributedString(":a: :a: ") + AttributedString(" ", attributes: AttributeContainer().font(.body.bold())) + AttributedString(" :a:"),
+            emojis: .emojis
+        )
+        EmojiText(
+            AttributedString(":a:   \n   :a:"),
             emojis: .emojis
         )
     }

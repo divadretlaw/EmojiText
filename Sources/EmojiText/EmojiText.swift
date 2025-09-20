@@ -131,7 +131,7 @@ import OSLog
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce
-    /// the amount of text contactenations needed to render the emojis.
+    /// the amount of text concatenations needed to render the emojis.
     /// >
     /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     public init(
@@ -153,7 +153,7 @@ import OSLog
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce
-    /// the amount of text contactenations needed to render the emojis.
+    /// the amount of text concatenations needed to render the emojis.
     /// >
     /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     public init(
@@ -174,7 +174,7 @@ import OSLog
     ///
     /// > Info:
     /// > Consider removing spaces between emojis as this will often drastically reduce
-    /// the amount of text contactenations needed to render the emojis.
+    /// the amount of text concatenations needed to render the emojis.
     /// >
     /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     public init<S>(
@@ -190,11 +190,19 @@ import OSLog
     /// - Parameters:
     ///     - content: The `AttributedString` to display.
     ///     - emojis: The custom emojis to render.
+    ///     - shouldOmitSpacesBetweenEmojis: Whether to omit spaces between emojis. Defaults to `true.
+    ///
+    /// > Info:
+    /// > Consider removing spaces between emojis as this will often drastically reduce
+    /// the amount of text concatenations needed to render the emojis.
+    /// >
+    /// > There is a limit in SwiftUI Text concatenations and if this limit is reached the application will crash.
     public init(
         _ content: AttributedString,
-        emojis: [any CustomEmoji]
+        emojis: [any CustomEmoji],
+        shouldOmitSpacesBetweenEmojis: Bool = true
     ) {
-        self.renderer = AttributedStringEmojiRenderer(attributedString: content)
+        self.renderer = AttributedStringEmojiRenderer(attributedString: content, shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis)
         self.emojis = emojis
     }
 
