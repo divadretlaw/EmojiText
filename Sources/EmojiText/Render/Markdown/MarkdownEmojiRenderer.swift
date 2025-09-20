@@ -130,12 +130,23 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
 
     // MARK: - Hashable & Equatable
 
-    static func ==(lhs: Self, rhs: Self) -> Bool {
-        lhs.string == rhs.string
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        guard
+            lhs.string == rhs.string,
+            lhs.font == rhs.font,
+            lhs.shouldOmitSpacesBetweenEmojis == rhs.shouldOmitSpacesBetweenEmojis,
+            lhs.interpretedSyntax == rhs.interpretedSyntax
+        else {
+            return false
+        }
+        return true
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(string)
+        hasher.combine(font)
+        hasher.combine(shouldOmitSpacesBetweenEmojis)
+        hasher.combine(interpretedSyntax)
     }
 }
 

@@ -71,16 +71,6 @@ struct VerbatimEmojiRenderer: EmojiRenderer {
         
         return text
     }
-
-    // MARK: - Hashable & Equatable
-
-    static func ==(lhs: Self, rhs: Self) -> Bool {
-        lhs.string == rhs.string
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(string)
-    }
 }
 
 #if DEBUG

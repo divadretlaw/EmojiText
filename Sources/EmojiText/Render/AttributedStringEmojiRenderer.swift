@@ -33,7 +33,7 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
                 // with their shortcodes joined. Therefore we simply divide distance of the range by
                 // the character count of the emojo to calculate how often the emoji needs to be displayed
                 let distance = attributedString.distance(from: run.range.lowerBound, to: run.range.upperBound)
-                let count = emoji.shortcode.count + 2
+                let count = emoji.shortcode.count + 2 // leading and trailing ':'
 
                 if distance == count {
                     // Emoji is only displayed once
@@ -81,17 +81,7 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
     // MARK: - UIKit & AppKit
 
     func render(emojis: [String : LoadedEmoji], size: CGFloat?) -> NSAttributedString {
-        return NSAttributedString(attributedString)
-    }
-
-    // MARK: - Hashable & Equatable
-
-    static func ==(lhs: Self, rhs: Self) -> Bool {
-        lhs.attributedString == rhs.attributedString
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(attributedString)
+        NSAttributedString(renderAttributedString(with: emojis))
     }
 }
 

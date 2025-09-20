@@ -243,7 +243,7 @@ import OSLog
     // swiftlint:disable:next legacy_hashing
     var hashValue: Int {
         var hasher = Hasher()
-        hasher.combine(renderer.hashValue)
+        hasher.combine(renderer)
         for emoji in emojis {
             hasher.combine(emoji)
         }
