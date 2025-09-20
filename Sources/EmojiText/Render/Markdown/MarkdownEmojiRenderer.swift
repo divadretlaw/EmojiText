@@ -10,20 +10,23 @@ import Markdown
 import OSLog
 
 struct MarkdownEmojiRenderer: EmojiRenderer {
+    let string: String
     let font: EmojiFont?
     let shouldOmitSpacesBetweenEmojis: Bool
     let interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
     private let formatterOptions: MarkupFormatter.Options
-    
+
     init(
+        string: String,
         font: EmojiFont? = nil,
         shouldOmitSpacesBetweenEmojis: Bool,
         interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax
     ) {
+        self.string = string
         self.font = font
         self.shouldOmitSpacesBetweenEmojis = shouldOmitSpacesBetweenEmojis
         self.interpretedSyntax = interpretedSyntax
-        
+
         self.formatterOptions = MarkupFormatter.Options(
             unorderedListMarker: .star,
             orderedListNumerals: .incrementing(start: 1)
@@ -46,11 +49,11 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
 
     // MARK: - SwiftUI
 
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> SwiftUI.Text {
-        renderAnimated(string: string, emojis: emojis, size: size, at: 0)
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> SwiftUI.Text {
+        renderAnimated(emojis: emojis, size: size, at: 0)
     }
 
-    func renderAnimated(string: String, emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> SwiftUI.Text {
+    func renderAnimated(emojis: [String: LoadedEmoji], size: CGFloat?, at time: CFTimeInterval) -> SwiftUI.Text {
         let attributedString = renderAttributedString(from: string, with: emojis)
         
         var result = Text(verbatim: "")
@@ -115,7 +118,7 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
 
     // MARK: - UIKit & AppKit
 
-    func render(string: String, emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
+    func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
         let markdown = formatMarkdown(string, emojis: emojis)
         var renderer = MarkdownEmojiVisitor(
             emojis: emojis,
@@ -123,6 +126,27 @@ struct MarkdownEmojiRenderer: EmojiRenderer {
             interpretedSyntax: interpretedSyntax
         )
         return renderer.parseAndVisit(markdown)
+    }
+
+    // MARK: - Hashable & Equatable
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        guard
+            lhs.string == rhs.string,
+            lhs.font == rhs.font,
+            lhs.shouldOmitSpacesBetweenEmojis == rhs.shouldOmitSpacesBetweenEmojis,
+            lhs.interpretedSyntax == rhs.interpretedSyntax
+        else {
+            return false
+        }
+        return true
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(string)
+        hasher.combine(font)
+        hasher.combine(shouldOmitSpacesBetweenEmojis)
+        hasher.combine(interpretedSyntax)
     }
 }
 
