@@ -12,6 +12,16 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
     let attributedString: AttributedString
     let shouldOmitSpacesBetweenEmojis: Bool
 
+    init(attributedString: AttributedString, shouldOmitSpacesBetweenEmojis: Bool) {
+        self.attributedString = attributedString
+        self.shouldOmitSpacesBetweenEmojis = shouldOmitSpacesBetweenEmojis
+    }
+
+    init(attributedString: NSAttributedString, shouldOmitSpacesBetweenEmojis: Bool) {
+        self.attributedString = AttributedString(attributedString)
+        self.shouldOmitSpacesBetweenEmojis = shouldOmitSpacesBetweenEmojis
+    }
+
     // MARK: SwiftUI
 
     func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> Text {
@@ -42,8 +52,8 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
                         Text(&partialString),
                         text
                     ]
-                        .compactMap { $0 }
-                        .joined()
+                    .compactMap { $0 }
+                    .joined()
                 } else {
                     // Emojis is displayed multiple times
                     result = [
@@ -51,8 +61,8 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
                         Text(&partialString),
                         Text(repating: text, count: distance / count)
                     ]
-                        .compactMap { $0 }
-                        .joined()
+                    .compactMap { $0 }
+                    .joined()
                 }
             } else {
                 // Otherwise we just append the run to AttributedPartialstring
@@ -81,7 +91,19 @@ struct AttributedStringEmojiRenderer: EmojiRenderer {
     // MARK: - UIKit & AppKit
 
     func render(emojis: [String: LoadedEmoji], size: CGFloat?) -> NSAttributedString {
-        NSAttributedString(renderAttributedString(with: emojis))
+        let attributedString = renderAttributedString(with: emojis)
+        let result = NSMutableAttributedString()
+        for run in attributedString.runs {
+            if let emoji = run.attributes[EmojiAttribute.self] {
+                // If the run is an emoji we render it as an interpolated image in an NSAttributedString
+                result.append(NSAttributedString(emoji, size: size))
+            } else {
+                // Otherwise we just append the run to NSAttributedString
+                let string = AttributedString(attributedString[run.range])
+                result.append(NSAttributedString(string))
+            }
+        }
+        return result
     }
 }
 

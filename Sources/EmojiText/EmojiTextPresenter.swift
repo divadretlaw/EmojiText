@@ -9,7 +9,7 @@ import Foundation
 
 /// A view that can present emojis
 @MainActor protocol EmojiTextPresenter: AnyObject, Sendable {
-    var raw: String? { get set }
+    var source: EmojiTextSource? { get set }
     var interpretedSyntax: AttributedString.MarkdownParsingOptions.InterpretedSyntax? { get set }
     var emojis: [any CustomEmoji] { get }
     var shouldOmitSpacesBetweenEmojis: Bool { get set }
@@ -92,17 +92,30 @@ extension EmojiTextPresenter {
 
     /// Helper to create `NSAttributedString` from emojis
     func makeString(from emojis: [String: LoadedEmoji]) -> NSAttributedString? {
-        guard let raw else { return nil }
-        let renderer: any EmojiRenderer = if let interpretedSyntax {
-            MarkdownEmojiRenderer(
-                string: raw,
-                font: emojiFont,
-                shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
-                interpretedSyntax: interpretedSyntax
+        guard let source else { return nil }
+        let renderer: any EmojiRenderer = switch source {
+        case let .string(string):
+            if let interpretedSyntax {
+                MarkdownEmojiRenderer(
+                    string: string,
+                    font: emojiFont,
+                    shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis,
+                    interpretedSyntax: interpretedSyntax
+                )
+            } else {
+                VerbatimEmojiRenderer(
+                    string: string,
+                    shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
+                )
+            }
+        case let .attributedString(string):
+            AttributedStringEmojiRenderer(
+                attributedString: string,
+                shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
             )
-        } else {
-            VerbatimEmojiRenderer(
-                string: raw,
+        case let .nsAttributedString(string):
+            AttributedStringEmojiRenderer(
+                attributedString: string,
                 shouldOmitSpacesBetweenEmojis: shouldOmitSpacesBetweenEmojis
             )
         }

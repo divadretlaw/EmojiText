@@ -11,22 +11,55 @@ import AppKit
 open class EmojiTextField: NSTextField, EmojiTextPresenter {
     // MARK: Public
 
+    @available(*, deprecated, renamed: "stringValue", message: "Use built-in 'stringValue' instead")
     public var text: String? {
         get {
-            raw
+            stringValue
         }
         set {
-            raw = newValue
-            perform()
+            if let newValue {
+                stringValue = newValue
+            } else {
+                source = nil
+            }
         }
     }
 
     override open var stringValue: String {
         get {
-            text ?? super.stringValue
+            switch source {
+            case let .string(string):
+                return string
+            case let .attributedString(string):
+                return String(string.characters[...])
+            case let .nsAttributedString(string):
+                return string.string
+            default:
+                return super.stringValue
+            }
         }
         set {
-            text = newValue
+            source = .string(newValue)
+            perform()
+        }
+    }
+
+    override open var attributedStringValue: NSAttributedString {
+        get {
+            switch source {
+            case let .string(string):
+                return NSAttributedString(string: string)
+            case let .attributedString(string):
+                return NSAttributedString(string)
+            case let .nsAttributedString(string):
+                return string
+            default:
+                return super.attributedStringValue
+            }
+        }
+        set {
+            source = .nsAttributedString(newValue)
+            perform()
         }
     }
 
@@ -61,7 +94,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
 
     // MARK: Internal
 
-    var raw: String?
+    var source: EmojiTextSource?
     var emojiTargetHeight: CGFloat?
     var emojiBaselineOffset: CGFloat?
     var emojiPlaceholder: any CustomEmoji = EmojiImage.placeholderEmoji
@@ -123,7 +156,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
             guard value is URL else { return }
             result.addAttribute(.foregroundColor, value: NSColor.controlAccentColor, range: range)
         }
-        self.attributedStringValue = result
+        super.attributedStringValue = result
     }
 
     // MARK: - Modifier
@@ -175,7 +208,7 @@ open class EmojiTextField: NSTextField, EmojiTextPresenter {
 #Preview {
     let textField = EmojiTextField()
     textField.emojis = .emojis
-    textField.text = "Hello **World** :a:"
+    textField.stringValue = "Hello **World** :a:"
     return textField
 }
 #endif

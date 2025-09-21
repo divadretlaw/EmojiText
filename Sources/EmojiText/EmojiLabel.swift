@@ -15,10 +15,46 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
 
     override public var text: String? {
         get {
-            raw
+            switch source {
+            case let .string(string):
+                return string
+            case let .attributedString(string):
+                return String(string.characters[...])
+            case let .nsAttributedString(string):
+                return string.string
+            default:
+                return nil
+            }
         }
         set {
-            raw = newValue
+            if let newValue {
+                source = .string(newValue)
+            } else {
+                source = nil
+            }
+            perform()
+        }
+    }
+
+    override public var attributedText: NSAttributedString? {
+        get {
+            switch source {
+            case let .string(string):
+                return NSAttributedString(string: string)
+            case let .attributedString(string):
+                return NSAttributedString(string)
+            case let .nsAttributedString(string):
+                return string
+            default:
+                return super.attributedText
+            }
+        }
+        set {
+            if let newValue {
+                source = .nsAttributedString(newValue)
+            } else {
+                source = nil
+            }
             perform()
         }
     }
@@ -48,7 +84,7 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
 
     // MARK: Internal
 
-    var raw: String?
+    var source: EmojiTextSource?
     var emojiTargetHeight: CGFloat?
     var emojiBaselineOffset: CGFloat?
     var emojiPlaceholder: any CustomEmoji = EmojiImage.placeholderEmoji
@@ -121,9 +157,9 @@ open class EmojiLabel: UILabel, EmojiTextPresenter {
                 guard value is URL else { return }
                 result.addAttribute(.foregroundColor, value: color, range: range)
             }
-            self.attributedText = result
+            super.attributedText = result
         } else {
-            self.attributedText = string
+            super.attributedText = string
         }
     }
 
