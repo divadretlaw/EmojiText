@@ -64,6 +64,7 @@ public extension AsyncEmojiProvider {
 // MARK: - Deprecations
 
 // swiftlint:disable missing_docs
+@available(*, deprecated, message: "Deprecated implementations")
 public extension AsyncEmojiProvider {
     func lazyEmojiCached(emoji: any AsyncCustomEmoji, height: CGFloat?) -> EmojiImage? {
         nil
