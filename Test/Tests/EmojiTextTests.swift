@@ -11,62 +11,62 @@ import Testing
 import SwiftUI
 
 @MainActor struct EmojiTextTests {
-    @Test func test_Empty() {
+    @Test func `empty`() {
         let view = EmojiText(verbatim: "", emojis: [])
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 100, height: 100)))
     }
     
-    @Test func test_No_Emoji() {
+    @Test func `no emoji`() {
         let view = EmojiText(verbatim: "Hello World", emojis: [])
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async() {
+    @Test func `async`() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Verbatim_Double() {
+    @Test func `async verbatim double`() {
         let view = EmojiText(verbatim: "Hello Async :async: :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Markdown_Double() {
+    @Test func `async markdown double`() {
         let view = EmojiText(markdown: "Hello Async :async: :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Scaled() {
+    @Test func `async scaled`() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .font(.largeTitle)
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Custom_Scaled() {
+    @Test func `async custom scaled`() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Offset() {
+    @Test func `async offset`() {
         let view = EmojiText(verbatim: "Hello Async :async: and :async_offset:", emojis: [Emojis.async, Emojis.asyncWithOffset])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Offset_Positive() {
+    @Test func `async offset positive`() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(8)
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Async_Offset_Negative() {
+    @Test func `async offset negative`() {
         let view = EmojiText(verbatim: "Hello Async :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.baselineOffset(-8)
@@ -74,35 +74,35 @@ import SwiftUI
     }
     
     @MainActor
-    func test_Async_Markdown() {
+    func `async markdownn`() {
         let view = EmojiText(markdown: "**Hello** _Async_ :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_iPhone() {
+    @Test func `sync`() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_iPhone_Scaled() {
+    @Test func `sync scaled`() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone])
             .font(.largeTitle)
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_iPhone_RenderingMode() {
+    @Test func `sync rendering mode`() {
         let view = EmojiText(verbatim: "SF Symbol for iPhone: :iphone:", emojis: [Emojis.iPhone(renderingMode: .template)])
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Multiple() {
+    @Test func `sync multiple`() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Prepend_Append() {
+    @Test func `prepend/append`() {
         let view = EmojiText(verbatim: "Hello :face.smiling: how are you? :face.dashed:", emojis: Emojis.multiple)
             .prepend {
                 Text("Prepended - ")
@@ -114,32 +114,32 @@ import SwiftUI
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Wide() {
+    @Test func `wide`() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_Wide_Custom_Scaled() {
+    @Test func `wide custom scaled`() {
         let view = EmojiText(verbatim: "Hello Wide :wide:", emojis: [Emojis.wide])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
             .emojiText.size(30)
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_EmojiInMarkdown() {
+    @Test func `emoji in markdown`() {
         let view = EmojiText(markdown: "**Hello :async:** _Async :async:_ :async:", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image)
     }
     
-    @Test func test_EmojiInMarkdownNested() {
+    @Test func `emoji in markdown nested`() {
         let view = EmojiText(markdown: "**Hello :async: _World_** with `code` and Mi**x***e*d", emojis: [Emojis.async])
             .environment(\.emojiText.asyncEmojiProvider, TestEmojiProvider())
         assertSnapshot(of: view, as: .image(precision: 0.99, perceptualPrecision: 0.98))
     }
     
-    @Test func test_Markdown_InlineOnlyPreservingWhitespace() {
+    @Test func `markdown inline only preserving whitespace`() {
         let markdown = """
         # Title 1
         
@@ -169,7 +169,7 @@ import SwiftUI
         assertSnapshot(of: view, as: .image(precision: 0.99, perceptualPrecision: 0.98))
     }
     
-    @Test func test_Markdown_Full() {
+    @Test func `markdown full`() {
         let markdown = """
         # Title 1
         
